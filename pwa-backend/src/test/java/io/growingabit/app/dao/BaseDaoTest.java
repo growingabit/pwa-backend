@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -306,20 +308,28 @@ public class BaseDaoTest extends BaseDatastoreTest {
 
     @Override
     public boolean equals(Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null || getClass() != obj.getClass()) {
+
+      if (obj == null) { return false; }
+      if (obj == this) { return true; }
+      if (obj.getClass() != getClass()) {
         return false;
       }
-
-      DummyModel model = (DummyModel) obj;
-
-      if (!id.equals(model.id)) {
-        return false;
-      }
-      return property != null ? property.equals(model.property) : model.property == null;
+      DummyModel rhs = (DummyModel) obj;
+      return new EqualsBuilder()
+          .appendSuper(super.equals(obj))
+          .append(this.id, rhs.id)
+          .append(this.property, rhs.property)
+          .isEquals();
     }
+
+    @Override
+    public int hashCode() {
+      return new HashCodeBuilder(17, 37)
+          .append(this.id)
+          .append(this.property)
+          .toHashCode();
+    }
+
   }
 
 
