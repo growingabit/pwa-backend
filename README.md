@@ -1,5 +1,10 @@
 # pwa-backend
 
+[![Build Status](https://travis-ci.org/growingabit/pwa-backend.svg?branch=master)](https://travis-ci.org/growingabit/pwa-backend)
+[![codecov](https://codecov.io/gh/growingabit/pwa-backend/branch/master/graph/badge.svg)](https://codecov.io/gh/growingabit/pwa-backend)
+[![Code Climate](https://codeclimate.com/github/growingabit/pwa-backend/badges/gpa.svg)](https://codeclimate.com/github/growingabit/pwa-backend)
+[![Issue Count](https://codeclimate.com/github/growingabit/pwa-backend/badges/issue_count.svg)](https://codeclimate.com/github/growingabit/pwa-backend)
+
 ## Contribution
 Please respect our code style.
 We use a sligtly modified version of Google Java Style Guide. You can find useful files to configure your ide or to make code analisys through checkstyle into the resources directory
