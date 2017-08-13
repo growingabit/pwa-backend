@@ -1,5 +1,6 @@
 language: java
 sudo: required
+# https://docs.travis-ci.com/user/customizing-the-build/#Skipping-the-Installation-Step
 install: true
 
 branches:
@@ -27,6 +28,7 @@ before_script:
 script:
   - mvn -f ./pwa-backend/pom.xml clean test cobertura:cobertura
   - bash <(curl -s https://codecov.io/bash)
+  # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
   - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then mvn appengine:deploy; fi
 
 notifications:
