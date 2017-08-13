@@ -88,8 +88,7 @@ dist
 # BlueJ files
 *.ctxt
 
-# GCP service account, and Travis related secrets
-travis-cigrowbit-52554fcb00cd.json
+# Travis related secrets
 secrets/**
 !secrets/.gitkeep
 !secrets/README
