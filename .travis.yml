@@ -27,12 +27,7 @@ before_script:
 script:
   - mvn -f ./pwa-backend/pom.xml clean test cobertura:cobertura
   - bash <(curl -s https://codecov.io/bash)
-  - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then mvn appengine:update -Dappengine.additionalParams="--service_account_json_key_file=secrets/travis-cigrowbit-52554fcb00cd.json"; fi
-
-after_script:
-  - appengine_version=$(grep -oPm1 "(?<=<version>)[^<]+" <<< cat pwa-backend/src/main/webapp/WEB-INF/appengine-web.xml)
-  - appengine_service=$(grep -oPm1 "(?<=<service>)[^<]+" <<< cat pwa-backend/src/main/webapp/WEB-INF/appengine-web.xml)
-  - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then gcloud app services set-traffic ${appengine_service} --splits ${appengine_version}=1 --migrate --quiet --verbosity info; fi
+  - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then mvn appengine:deploy; fi
 
 notifications:
   email: false

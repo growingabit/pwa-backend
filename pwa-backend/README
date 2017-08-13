@@ -1,0 +1,14 @@
+The pom.xml is using the new appengine-maven-plugin based on Google Cloud SDK
+
+https://cloud.google.com/appengine/docs/standard/java/tools/using-maven
+
+If you haven't installed the sdk in one of the "customary location"[1] you need
+
+export GOOGLE_CLOUD_SDK_HOME=/path/to
+
+before run
+
+mvn appengine:whatever
+
+
+[1] https://github.com/GoogleCloudPlatform/appengine-plugins-core/blob/master/src/main/java/com/google/cloud/tools/appengine/cloudsdk/PathResolver.java#L48
