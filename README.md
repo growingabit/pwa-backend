@@ -1,5 +1,9 @@
 # pwa-backend
 
+## Contribution
+Please respect our code style.
+We use a sligtly modified version of Google Java Style Guide. You can find useful files to configure your ide or to make code analisys through checkstyle into the resources directory
+
 ## useful maven commands:
 
 - `mvn test` to run test (obv :D);
