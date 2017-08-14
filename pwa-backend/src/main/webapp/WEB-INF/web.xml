@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <!-- Objectify clean up filter -->
   <filter>
     <filter-name>ObjectifyFilter</filter-name>
@@ -15,4 +18,24 @@
     <servlet-class>io.growingabit.objectify.OfyServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+
+  <!-- Jersey front controller -->
+  <filter>
+    <filter-name>jersey-front-controller</filter-name>
+    <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>io.growingabit.jersey.Application</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.servlet.filter.contextPath</param-name>
+      <param-value>/</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>jersey-front-controller</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
 </web-app>
