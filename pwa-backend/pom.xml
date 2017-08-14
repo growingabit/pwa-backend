@@ -186,7 +186,7 @@
         <configuration>
           <!--https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference-->
           <project>growbit-0</project>
-          <version>1-0-0</version>
+          <version>${project.version}</version>
         </configuration>
       </plugin>
 
