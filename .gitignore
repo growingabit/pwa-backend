@@ -93,4 +93,4 @@ secrets/**
 !secrets/.gitkeep
 !secrets/README
 secrets.tar
-pwa-backend/src/main/java/app.properties
+app.properties
