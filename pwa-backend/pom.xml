@@ -4,7 +4,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <packaging>war</packaging>
-  <version>1.0.0</version>
+  <version>0.0.1</version>
 
   <groupId>io.growingabit</groupId>
   <artifactId>pwa-backend</artifactId>
@@ -179,6 +179,26 @@
     <!-- for hot reload of the web application-->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
     <plugins>
+      <!-- modify content of a maven property and save it into a new property via Groovy Maven Plugin ... -->
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                System.setProperty("appengineVersion", "${project.version}".replace('.', '-'))
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>appengine-maven-plugin</artifactId>
@@ -186,7 +206,7 @@
         <configuration>
           <!--https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference-->
           <project>growbit-0</project>
-          <version>${project.version}</version>
+          <version>${appengineVersion}</version>
         </configuration>
       </plugin>
 

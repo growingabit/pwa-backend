@@ -12,7 +12,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class Settings {
 
-  private static final String DEFAULT_PROPERTIES_NAME = "app.properties";
+  private static final String DEFAULT_PROPERTIES_NAME = "dev.properties";
   private static Configuration config = null;
 
   public static final Configuration getConfiguration() {

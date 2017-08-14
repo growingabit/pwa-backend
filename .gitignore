@@ -87,10 +87,3 @@ dist
 
 # BlueJ files
 *.ctxt
-
-# Travis related secrets
-secrets/**
-!secrets/.gitkeep
-!secrets/README
-secrets.tar
-app.properties
