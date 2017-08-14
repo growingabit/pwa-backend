@@ -2,6 +2,7 @@ package io.growingabit.jersey;
 
 
 import com.google.common.collect.ImmutableMap;
+import io.growingabit.jersey.controllers.HealthCheckController;
 import io.growingabit.jersey.filters.SecurityFilter;
 import io.growingabit.jersey.providers.GsonProvider;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class Application extends ResourceConfig {
 
 //    Avoid classpath scanning!!
 //    Register all endpoints class here
-//    this.register(AnEndpoint.class);
+    this.register(HealthCheckController.class);
 
     /* @formatter:off */
     Map<String, Object> params = new ImmutableMap.Builder<String, Object>()
