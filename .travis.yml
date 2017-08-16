@@ -25,8 +25,8 @@ before_install:
 #   - gcloud config set project growbit-0
 
 script:
-  - apache-maven-3.5.0/bin/mvn -f ./pwa-backend/pom.xml clean cobertura:cobertura
-  - bash <(curl -s https://codecov.io/bash)
+  - apache-maven-3.5.0/bin/mvn -f ./pwa-backend/pom.xml clean verify -P all-tests
+  - bash <(curl -s https://codecov.io/bash -f ./pwa-backend/target/site/jacoco-merged/jacoco.xml)
   # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
   # - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then apache-maven-3.5.0/bin/mvn appengine:deploy; fi
 
