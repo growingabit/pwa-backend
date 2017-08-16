@@ -11,7 +11,7 @@ public class HealthCheckController {
   @GET
   @Path("/jersey")
   @Produces("text/plain")
-  public String getUser() {
+  public String healthCheck() {
     return "Jersey is alive";
   }
 
