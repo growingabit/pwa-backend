@@ -87,3 +87,7 @@ dist
 
 # BlueJ files
 *.ctxt
+
+# properties files
+main/**/production.properties
+main/**/development.properties
