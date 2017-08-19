@@ -9,7 +9,7 @@ import org.junit.Test;
 public class HealthCheckControllerTest {
 
   @Test()
-  public void allFileOverwritingTest() {
+  public void doNotThrowExceptionTest() {
     HealthCheckController controller = new HealthCheckController();
     try {
       controller.healthCheck();
