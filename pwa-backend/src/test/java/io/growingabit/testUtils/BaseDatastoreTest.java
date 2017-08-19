@@ -1,4 +1,4 @@
-package io.growingabit.utils;
+package io.growingabit.testUtils;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;

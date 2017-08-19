@@ -22,7 +22,111 @@
     <archiveClasses>true</archiveClasses>
     <jersey.version>2.25.1</jersey.version>
     <jackson.version>2.8.9</jackson.version>
+    <jacoco.coverage.reports.folder>${project.build.directory}/coverage-reports</jacoco.coverage.reports.folder>
+    <jacoco.it.execution.data.file>${jacoco.coverage.reports.folder}/jacoco-it.exec</jacoco.it.execution.data.file>
+    <jacoco.ut.execution.data.file>${jacoco.coverage.reports.folder}/jacoco-ut.exec</jacoco.ut.execution.data.file>
+    <jacoco.merged.execution.data.file>${jacoco.coverage.reports.folder}/jacoco-merged.exec</jacoco.merged.execution.data.file>
+    <skip.integration.tests>true</skip.integration.tests>
+    <skip.unit.tests>false</skip.unit.tests>
   </properties>
+
+  <profiles>
+
+    <profile>
+      <id>all-tests</id>
+      <properties>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>false</skip.unit.tests>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>appengine-maven-plugin</artifactId>
+            <version>1.3.1</version>
+            <configuration>
+              <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
+              <project>growbit-0</project>
+              <version>${appengineVersion}</version>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-gae</id>
+                <!--
+                  The appengine start is done during to integration-test phase
+                  to ensure that appengineArgLine is correctly populated
+                -->
+                <phase>integration-test</phase>
+                <configuration>
+                  <jvmFlags>
+                    <jvmFlag>${appengineArgLine}</jvmFlag>
+                  </jvmFlags>
+                </configuration>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-gae</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>integration-tests</id>
+      <properties>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>appengine-maven-plugin</artifactId>
+            <version>1.3.1</version>
+            <configuration>
+              <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
+              <project>growbit-0</project>
+              <version>${appengineVersion}</version>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-gae</id>
+                <!--
+                  The appengine start is done during to integration-test phase
+                  to ensure that appengineArgLine is correctly populated
+                -->
+                <phase>integration-test</phase>
+                <configuration>
+                  <jvmFlags>
+                    <jvmFlag>${appengineArgLine}</jvmFlag>
+                  </jvmFlags>
+                </configuration>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-gae</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
 
   <prerequisites>
     <maven>3.5</maven>
@@ -156,16 +260,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.10.19</version>
+      <artifactId>mockito-core</artifactId>
+      <version>2.8.47</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.rest-assured</groupId>
@@ -173,12 +283,98 @@
       <version>3.0.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>2.4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <build>
-    <!-- for hot reload of the web application-->
+    <!--for hot reload of the web application-->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+
     <plugins>
+
+      <!-- Standard maven plugins -->
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.6</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+      </plugin>
+
+      <!-- Build helper -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>add-integration-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/integration-test/java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-integration-test-resource</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>src/integration-test/resources</directory>
+                  <targetPath>resources</targetPath>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- modify content of a maven property and save it into a new property via Groovy Maven Plugin ... -->
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
@@ -199,17 +395,7 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>appengine-maven-plugin</artifactId>
-        <version>1.3.1</version>
-        <configuration>
-          <!--https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference-->
-          <project>growbit-0</project>
-          <version>${appengineVersion}</version>
-        </configuration>
-      </plugin>
-
+      <!-- To check dependencies and plugin versions -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
@@ -225,46 +411,199 @@
         </executions>
       </plugin>
 
+      <!-- Cloud SDK Plugin -->
       <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>3.1.0</version>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>appengine-maven-plugin</artifactId>
+        <version>1.3.1</version>
+        <configuration>
+          <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
+          <project>growbit-0</project>
+          <version>${appengineVersion}</version>
+        </configuration>
       </plugin>
 
+      <!-- Code style checks -->
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.2</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>8.1</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>../resources/checkstyle.xml</configLocation>
+        </configuration>
       </plugin>
 
+      <!-- Unit tests -->
       <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>3.0.0</version>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
-      </plugin>
-
-      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.20</version>
+        <configuration>
+          <!-- Sets the VM argument line used when unit tests are run. -->
+          <argLine>${surefireArgLine}</argLine>
+          <!-- Skips unit tests if the value of skip.unit.tests property is true -->
+          <skip>${skip.unit.tests}</skip>
+        </configuration>
       </plugin>
 
+      <!-- Integration tests -->
       <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.6</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.20</version>
+        <executions>
+          <!--
+            Ensures that both integration-test and verify goals of the Failsafe Maven
+            plugin are executed.
+          -->
+          <execution>
+            <id>integration-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <!--
+                Skips integration tests if the value of skip.integration.tests property
+                is true
+              -->
+              <skip>${skip.integration.tests}</skip>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
+      <!-- Code coverage reports -->
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.0.2</version>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.9</version>
+        <executions>
+          <!--
+            Prepares the property pointing to the JaCoCo runtime agent which
+            is passed as VM argument when Maven the Surefire plugin is executed.
+          -->
+          <execution>
+            <id>pre-unit-test</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains the execution data. -->
+              <destFile>${jacoco.ut.execution.data.file}</destFile>
+              <!--
+                Sets the name of the property containing the settings
+                for JaCoCo runtime agent.
+              -->
+              <propertyName>surefireArgLine</propertyName>
+              <skip>${skip.unit.tests}</skip>
+            </configuration>
+          </execution>
+          <!--
+            Ensures that the code coverage report for unit tests is created after
+            unit tests have been run.
+          -->
+          <execution>
+            <id>post-unit-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains the execution data. -->
+              <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+              <!-- Sets the output directory for the code coverage report. -->
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+              <skip>${skip.unit.tests}</skip>
+            </configuration>
+          </execution>
+          <!--
+            Prepares the property pointing to the JaCoCo runtime agent which
+            is passed as VM argument when Maven the Failsafe plugin is executed.
+          -->
+          <execution>
+            <id>pre-integration-test</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains the execution data. -->
+              <destFile>${jacoco.it.execution.data.file}</destFile>
+              <!--
+                Sets the name of the property containing the settings
+                for JaCoCo runtime agent.
+              -->
+              <address>127.0.0.1</address>
+              <port>8181</port>
+              <output>tcpserver</output>
+              <propertyName>appengineArgLine</propertyName>
+              <skip>${skip.integration.tests}</skip>
+            </configuration>
+          </execution>
+          <!--
+            Ensures that the code coverage report for integration tests after
+            integration tests have been run.
+          -->
+          <execution>
+            <id>post-integration-test</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>dump</goal>
+              <goal>report-integration</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains the execution data. -->
+              <dataFile>${jacoco.it.execution.data.file}</dataFile>
+              <!-- Sets the output directory for the code coverage report. -->
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+              <address>127.0.0.1</address>
+              <port>8181</port>
+              <destFile>${jacoco.it.execution.data.file}</destFile>
+              <skip>${skip.integration.tests}</skip>
+            </configuration>
+          </execution>
+          <!-- Merge unit test and integration test code coverage -->
+          <execution>
+            <id>merge-results</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>merge</goal>
+            </goals>
+            <configuration>
+              <fileSets>
+                <fileSet>
+                  <directory>${jacoco.coverage.reports.folder}</directory>
+                  <includes>
+                    <include>*.exec</include>
+                  </includes>
+                </fileSet>
+              </fileSets>
+              <destFile>${jacoco.merged.execution.data.file}</destFile>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-merge-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <dataFile>${jacoco.merged.execution.data.file}</dataFile>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
-      <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
-      </plugin>
-
+      <!-- Control environmental constraints -->
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>1.4.1</version>
@@ -294,58 +633,6 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.9</version>
-        <configuration>
-          <output>file</output>
-          <append>true</append>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-          <check/>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.17</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>8.1</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configLocation>../resources/checkstyle.xml</configLocation>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>

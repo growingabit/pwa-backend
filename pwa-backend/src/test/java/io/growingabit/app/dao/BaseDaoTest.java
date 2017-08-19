@@ -8,7 +8,7 @@ import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import io.growingabit.utils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.app.model.BaseModel;
 
 import java.util.ArrayList;

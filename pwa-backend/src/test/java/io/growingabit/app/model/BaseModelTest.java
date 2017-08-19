@@ -5,7 +5,7 @@ import static com.google.common.truth.Truth.assertThat;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import io.growingabit.utils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.app.dao.BaseDao;
 import org.junit.Before;
 import org.junit.Test;

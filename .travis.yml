@@ -12,10 +12,10 @@ cache:
     - '$HOME/.m2/repository'
 
 before_install:
-  # - export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
-  # - echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-  # - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-  # - sudo apt-get update && sudo apt-get install -y kubectl google-cloud-sdk google-cloud-sdk-app-engine-java wget unzip
+  - export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+  - echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+  - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  - sudo apt-get update && sudo apt-get install -y kubectl google-cloud-sdk google-cloud-sdk-app-engine-java wget unzip
   - wget http://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip
   - unzip apache-maven-3.5.0-bin.zip
   - apache-maven-3.5.0/bin/mvn -v
@@ -25,8 +25,8 @@ before_install:
 #   - gcloud config set project growbit-0
 
 script:
-  - apache-maven-3.5.0/bin/mvn -f ./pwa-backend/pom.xml clean test cobertura:cobertura
-  - bash <(curl -s https://codecov.io/bash)
+  - apache-maven-3.5.0/bin/mvn -f ./pwa-backend/pom.xml clean verify -P all-tests
+  - bash <(curl -s https://codecov.io/bash -f ./pwa-backend/target/site/jacoco-merged/jacoco.xml)
   # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
   # - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then apache-maven-3.5.0/bin/mvn appengine:deploy; fi
 

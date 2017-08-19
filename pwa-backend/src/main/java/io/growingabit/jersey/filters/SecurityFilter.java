@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.collect.ImmutableSet;
 import io.growingabit.app.utils.Authorizer;
+import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.jersey.annotations.Secured;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import org.apache.commons.configuration2.Configuration;
 @Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter implements ContainerRequestFilter {
 
-  private static final Configuration config = Settings.getConfiguration();
+  private static final Configuration config = new Settings(new ResourceFetcher()).getConfig();
   private static final String OAUTH2_SECRET = config.getString("oauth2.secret");
   private static final String OAUTH2_ISSUER = config.getString("oauth2.issuer");
 
