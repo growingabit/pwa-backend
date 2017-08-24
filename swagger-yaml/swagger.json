@@ -1,0 +1,243 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "This is a simple API",
+    "version" : "1",
+    "title" : "GROWBIT API",
+    "contact" : {
+      "email" : "hey@growingabit.io"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "virtserver.swaggerhub.com",
+  "basePath" : "/grow-bit/growbit-signup/1",
+  "tags" : [ {
+    "name" : "users",
+    "description" : "Operations available to regular users with JWT header"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/users/{auth0_user_id}" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "get user info",
+        "description" : "Retrieve all user info on growbit\n",
+        "operationId" : "getUserInfo",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "auth0_user_id",
+          "in" : "path",
+          "description" : "auth0 user id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer <JWT here>"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "all user info on growbit",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      }
+    },
+    "/users/{auth0_user_id}/{stage_n}" : {
+      "put" : {
+        "tags" : [ "users" ],
+        "summary" : "add user data for this stage",
+        "description" : "Add user data for signup stages\n",
+        "operationId" : "addUserDataForStage",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "auth0_user_id",
+          "in" : "path",
+          "description" : "auth0 user id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "stage_n",
+          "in" : "path",
+          "description" : "indica lo stage per il quale si stanno inviando i dati",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "stage_0", "stage_1", "stage_2", "stage_3", "stage_4", "stage_5", "stage_6" ]
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer <JWT here>"
+        }, {
+          "in" : "body",
+          "name" : "stage_data",
+          "description" : "Dati inseriti dall'utente per questo stage",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/StageData"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "all user info on growbit",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      }
+    },
+    "/users/{auth0_user_id}/stage_5/blockcerts_otp" : {
+      "get" : {
+        "tags" : [ "users" ],
+        "summary" : "get OTP for Blockcerts app",
+        "description" : "durante lo stage 5 e' necessario mostrare all'utente un codice otp\ne un url che dovra' inserire nell'app Blockcerts\n",
+        "parameters" : [ {
+          "name" : "auth0_user_id",
+          "in" : "path",
+          "description" : "auth0 user id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer <JWT here>"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "blockcerts issuer otp",
+            "schema" : {
+              "$ref" : "#/definitions/BlockcertsOtp"
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "User" : {
+      "type" : "object",
+      "required" : [ "signup_done" ],
+      "properties" : {
+        "signup_done" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "true solo quando tutti gli stage_n sono completati"
+        },
+        "signup_stages" : {
+          "$ref" : "#/definitions/User_signup_stages"
+        }
+      }
+    },
+    "SignupStage" : {
+      "type" : "object",
+      "properties" : {
+        "done" : {
+          "type" : "boolean"
+        },
+        "state" : {
+          "type" : "integer",
+          "description" : "for each state there is a mapped i18n message for the user"
+        },
+        "title" : {
+          "type" : "string",
+          "description" : "title for this stage shown to the user"
+        }
+      }
+    },
+    "StageData" : {
+      "type" : "object",
+      "properties" : {
+        "invite_code" : {
+          "type" : "boolean",
+          "description" : "mandatory for stage_0"
+        },
+        "name" : {
+          "type" : "integer",
+          "description" : "mandatory for stage_1"
+        },
+        "surname" : {
+          "type" : "string",
+          "description" : "mandatory for stage_1"
+        },
+        "birthday" : {
+          "type" : "string",
+          "description" : "mandatory for stage_1"
+        },
+        "email" : {
+          "type" : "string",
+          "description" : "mandatory for stage_2"
+        },
+        "phone" : {
+          "type" : "string",
+          "description" : "mandatory for stage_3"
+        },
+        "bitcoin_wallet" : {
+          "type" : "string",
+          "description" : "mandatory for stage_4"
+        },
+        "parent_phone" : {
+          "type" : "string",
+          "description" : "mandatory for stage_6"
+        }
+      }
+    },
+    "BlockcertsOtp" : {
+      "type" : "object",
+      "properties" : {
+        "otp" : {
+          "type" : "string"
+        },
+        "issuer_url" : {
+          "type" : "string"
+        }
+      }
+    },
+    "User_signup_stages" : {
+      "properties" : {
+        "stage_0" : {
+          "$ref" : "#/definitions/SignupStage"
+        },
+        "stage_1" : {
+          "$ref" : "#/definitions/SignupStage"
+        },
+        "stage_2" : {
+          "$ref" : "#/definitions/SignupStage"
+        },
+        "stage_3" : {
+          "$ref" : "#/definitions/SignupStage"
+        },
+        "stage_4" : {
+          "$ref" : "#/definitions/SignupStage"
+        },
+        "stage_5" : {
+          "$ref" : "#/definitions/SignupStage"
+        },
+        "stage_6" : {
+          "$ref" : "#/definitions/SignupStage"
+        }
+      },
+      "description" : "stage_0 - done quando viene inserito un codice di invito valido\nstage_1 - done quando viene inserito un codice di invito valido\nstage_2 - done quando viene viene confermata l'email dello studente\nstage_3 - done quando viene confermato il telefono dello studente\nstage_4 - done quando viene inserito un Bitcoin wallet valido\nstage_5 - done quando viene ricevuta la callback dalla app Blockcerts\nstage_6 - done quando viene confermato il numero di cellulare di un genitore/tutore\n"
+    }
+  }
+}
