@@ -9,6 +9,7 @@ import org.glassfish.jersey.servlet.ServletProperties;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.growingabit.backoffice.controllers.InvitationController;
 import io.growingabit.jersey.controllers.HealthCheckController;
 import io.growingabit.jersey.filters.SecurityFilter;
 import io.growingabit.jersey.providers.GsonProvider;
@@ -25,6 +26,7 @@ public class Application extends ResourceConfig {
         // Avoid classpath scanning!!
         // Register all endpoints class here
         this.register(HealthCheckController.class);
+        this.register(InvitationController.class);
 
     /* @formatter:off */
     Map<String, Object> params = new ImmutableMap.Builder<String, Object>()

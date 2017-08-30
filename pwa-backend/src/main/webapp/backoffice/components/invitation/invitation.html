@@ -9,18 +9,19 @@
 			<th>Specialization</th>
 			<th>School year</th>
 			<th>Realated User Id</th>
+			<th>Valid</th>
 			<th></th>
 			<th></th>
 		</tr>
 		<tr ng-repeat="i in $ctrl.invitations">
-			<td>{{i.id}}</td>
-			<td contenteditable>{{i.school}}
-			<td contenteditable>{{i.schoolClass}}
-			<td contenteditable>{{i.specialization}}
-			<td contenteditable>{{i.schoolYear}}
+			<td>{{i.invitationCode}}</td>
+			<td>{{i.school}}
+			<td>{{i.schoolClass}}
+			<td>{{i.specialization}}
+			<td>{{i.schoolYear}}
 			<td>{{i.relatedUserId}}</td>
-			<td><button>Save</button></td>
-			<td><button>Delete</button></td>
+			<td><input type="checkbox" ng-model="i.valid"></td>
+			<td><button ng-click="$ctrl.update(i)">Update</button></td>
 		</tr>
 	</table>
 	
@@ -32,7 +33,7 @@
 		Specialization:<br> <input type="text" ng-model="invitation.specialization"><br> 
 		School year:<br> <input type="text" ng-model="invitation.schoolYear"><br> 
 		<br>
-		<button ng-click="$ctrl.create(invitation)">Create</button>
+		<button ng-click="$ctrl.save(invitation)">Create</button>
 	</form>
 
 </div>

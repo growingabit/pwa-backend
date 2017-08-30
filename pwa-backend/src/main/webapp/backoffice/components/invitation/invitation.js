@@ -1,17 +1,27 @@
 function InvitationController($state, InvitationService) {
-    var ctrl = this;
-    
-    ctrl.create = create;
+	var ctrl = this;
 
-    ctrl.invitations = InvitationService.list();
-    
-    function create(invitation){
-    		console.log("created")
-    		console.log(invitation)
-    }
+	ctrl.save = save;
+	ctrl.update = update;
+
+	ctrl.invitations = InvitationService.query();
+
+	function save(invitation) {
+		console.log(invitation)
+		console.log("creating...")
+		InvitationService.save(invitation, function(data) {
+			ctrl.invitations.push(data);
+		});
+	}
+	
+	function update(invitation){
+		InvitationService.update(invitation, function(){
+			alert("Gone");
+		});
+	}
 }
 
 angular.module('backofficeApp').component('invitation', {
-    templateUrl: '/backoffice/components/invitation/invitation.html',
-    controller: InvitationController
+	templateUrl : '/backoffice/components/invitation/invitation.html',
+	controller : InvitationController
 });
