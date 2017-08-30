@@ -75,6 +75,14 @@ public class BaseDaoTest extends BaseDatastoreTest {
     DummyModel findedModel = baseDao.find(model.getWebSafeKey());
     assertThat(findedModel).isEqualTo(model);
   }
+  
+  @Test
+  public void testFindByKey() {
+    DummyModel model = new DummyModel(null);
+    Key<DummyModel> key = baseDao.persist(model);
+    DummyModel findedModel = baseDao.find(key);
+    assertThat(findedModel).isEqualTo(model);
+  }
 
   @Test
   public void testFindAll() {
