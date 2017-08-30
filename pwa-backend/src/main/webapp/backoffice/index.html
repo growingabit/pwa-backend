@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="">
+<meta name="viewport" content="initial-scale=1" />
+
+<title>Backoffice</title>
+
+<link rel="stylesheet" href="./components/invitation-code/invitationCode.css" />
+
+</head>
+
+<body ng-app="backofficeApp" ng-cloak>
+	
+	<a ui-sref="invitationCodeList">Invitation codes</a>
+	<div ui-view></div>
+
+	<script type="text/javascript" src="./libs/angular/angular.min.js"></script>
+	<script type="text/javascript" src="./libs/angular-ui-router/angular-ui-router.min.js"></script>
+	<script type="text/javascript" src="./app.js"></script>
+
+	<!-- Components -->
+	<script type="text/javascript" src="./components/invitation-code/invitationCodeList.js"></script>
+</body>
+</html>
