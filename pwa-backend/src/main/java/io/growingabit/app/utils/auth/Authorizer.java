@@ -1,4 +1,4 @@
-package io.growingabit.app.utils;
+package io.growingabit.app.utils.auth;
 
 import java.security.Principal;
 import java.util.Set;
@@ -7,23 +7,20 @@ import javax.ws.rs.core.SecurityContext;
 public class Authorizer implements SecurityContext {
 
   private Set<String> roles;
-  private String username;
+  private String userid;
+  private String name;
   private boolean isSecure;
 
-  public Authorizer(Set<String> roles, final String username, boolean isSecure) {
+  public Authorizer(String userid, Set<String> roles, final String name, boolean isSecure) {
+    this.userid = userid;
     this.roles = roles;
-    this.username = username;
+    this.name = name;
     this.isSecure = isSecure;
   }
 
   @Override
   public Principal getUserPrincipal() {
-    return new Principal() {
-      @Override
-      public String getName() {
-        return username;
-      }
-    };
+    return new Auth0UserProfile(this.userid, this.name);
   }
 
   @Override
