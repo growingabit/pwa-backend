@@ -2,14 +2,11 @@ package io.growingabit.app.utils;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import java.util.Collection;
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.configuration2.Configuration;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.invocation.Invocation;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
