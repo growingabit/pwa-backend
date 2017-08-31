@@ -8,6 +8,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import com.google.common.collect.ImmutableSet;
 import io.growingabit.app.utils.auth.Authorizer;
 import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -29,8 +31,9 @@ import org.apache.commons.configuration2.Configuration;
 public class SecurityFilter implements ContainerRequestFilter {
 
   private static final Configuration config = new Settings(new ResourceFetcher()).getConfig();
-  private static final String OAUTH2_SECRET = config.getString("oauth2.secret");
   private static final String OAUTH2_ISSUER = config.getString("oauth2.issuer");
+  private static final String CUSTOM_CLAIMS_NAMESPACE = "https://growbit.io/";
+  private static final String ROLES_CLAIM = CUSTOM_CLAIMS_NAMESPACE + "roles";
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -40,17 +43,16 @@ public class SecurityFilter implements ContainerRequestFilter {
       try {
         DecodedJWT jwt = validateToken(token);
 
-        // I leave here this line if we need user roles in the future
-        // Set<String> roles = ImmutableSet.copyOf(jwt.getClaim("roles").asArray(String.class));
+        Set<String> roles = ImmutableSet.copyOf(jwt.getClaim(ROLES_CLAIM).asArray(String.class));
 
-        // TODO: WTF??? that's is the user id...
+        // WTF??? that's is the user id...
         // I think .split("\\|")[1]; have killed some developer around the world... sorry
         String userid = jwt.getSubject().split("\\|")[1];
 
         String username = jwt.getClaim("nickname").asString();
         boolean isSecure = requestContext.getSecurityContext().isSecure();
 
-        Authorizer authorizer = new Authorizer(userid, new HashSet<String>(), username, isSecure);
+        Authorizer authorizer = new Authorizer(userid, roles, username, isSecure);
         requestContext.setSecurityContext(authorizer);
       } catch (Exception exception) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
