@@ -1,11 +1,16 @@
 package io.growingabit.backoffice.model;
 
+import java.security.SecureRandom;
+
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.OnSave;
 
 import io.growingabit.app.model.BaseModel;
+import io.growingabit.objectify.ObjectifyUtils;
+import io.growingabit.objectify.annotations.Required;
 
 @Entity
 @Cache
@@ -17,15 +22,29 @@ public class Invitation extends BaseModel {
     @Index
     private String invitationCode;
 
+    @Required
     private String school;
+    @Required
     private String schoolClass;
+    @Required
     private String schoolYear;
+    @Required
     private String specialization;
 
     @Index
     private String relatedUserId;
 
     private boolean valid = true;
+
+    public Invitation() {}
+
+    public Invitation(String school, String schoolClass, String schoolYear, String specialization) {
+        super();
+        this.school = school;
+        this.schoolClass = schoolClass;
+        this.schoolYear = schoolYear;
+        this.specialization = specialization;
+    }
 
     public Long getId() {
         return id;
@@ -85,6 +104,12 @@ public class Invitation extends BaseModel {
 
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    @OnSave
+    private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
+        ObjectifyUtils.checkRequiredFields(this);
+        this.invitationCode = new SecureRandom().toString().substring(0, 6);
     }
 
 }

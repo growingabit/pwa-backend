@@ -31,11 +31,12 @@ public class InvitationController {
     public Response save(Invitation invitation) {
         Key<Invitation> key = dao.persist(invitation);
         invitation = dao.find(key);
-        // TODO: fare SHA1
-        invitation.setInvitationCode(invitation.getId().toString().substring(0, 6));
-        dao.persist(invitation);
 
         return Response.ok(invitation).build();
+    }
+
+    public String createInvitationCode(Invitation invitation) {
+        return invitation.getId().toString().substring(0, 6);
     }
 
     @PUT
