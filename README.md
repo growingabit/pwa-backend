@@ -21,10 +21,10 @@ Read the [CONTRIBUTING](CONTRIBUTING.md) file.
 `mvn clean verify`
 
 ### Integration tests
-`mvn clean -P integration-tests`
+`mvn clean verify -P integration-tests`
 
 ### All tests
-`mvn clean -P all-tests`
+`mvn clean verify -P all-tests`
 
 ## Other useful maven commands:
 
