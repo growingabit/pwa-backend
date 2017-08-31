@@ -15,7 +15,7 @@ function InvitationController($state, InvitationService) {
 	}
 	
 	function update(invitation){
-		InvitationService.update(invitation, function(){
+		InvitationService.save(invitation, function(){
 			alert("Gone");
 		});
 	}

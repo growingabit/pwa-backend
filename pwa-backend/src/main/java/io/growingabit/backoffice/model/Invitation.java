@@ -109,7 +109,9 @@ public class Invitation extends BaseModel {
     @OnSave
     private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
         ObjectifyUtils.checkRequiredFields(this);
-        this.invitationCode = new SecureRandom().toString().substring(0, 6);
+        if (this.invitationCode == null) {
+            this.invitationCode = new SecureRandom().toString().substring(0, 6);
+        }
     }
 
 }

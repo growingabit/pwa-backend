@@ -13,7 +13,7 @@ public class ObjectifyUtils {
         for (Field field : fields) {
             if (field.isAnnotationPresent(Required.class)) {
                 field.setAccessible(true);
-                Preconditions.checkNotNull(field.get(object));
+                Preconditions.checkNotNull(field.get(object), "Field " + field.getName() + " is marked as @Required but has null value");
             }
         }
     }

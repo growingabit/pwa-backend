@@ -7,18 +7,19 @@ import org.junit.Test;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.SaveException;
 
-import io.growingabit.app.dao.BaseDao;
+import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 
 public class InvitationTest extends BaseDatastoreTest {
 
-    private BaseDao<Invitation> dao;
+    private InvitationDao dao;
 
     @Before
     public void setUp() {
         ObjectifyService.register(Invitation.class);
-        this.dao = new BaseDao<>(Invitation.class);
+        this.dao = new InvitationDao();
     }
 
     @Test
@@ -28,44 +29,28 @@ public class InvitationTest extends BaseDatastoreTest {
         assertThat(invitation.getCreationDate()).isGreaterThan(0L);
     }
 
-    @Test
+    @Test(expected = SaveException.class)
     public void missingSchoolRequiredField() {
-        try {
-            Invitation invitation = new Invitation(null, "My class", "This Year", "My Spec");
-            dao.persist(invitation);
-        } catch (Exception e) {
-            assertThat(NullPointerException.class);
-        }
+        Invitation invitation = new Invitation(null, "My class", "This Year", "My Spec");
+        dao.persist(invitation);
     }
 
-    @Test
+    @Test(expected = SaveException.class)
     public void missingClassRequiredField() {
-        try {
-            Invitation invitation = new Invitation("My school", null, "This Year", "My Spec");
-            dao.persist(invitation);
-        } catch (Exception e) {
-            assertThat(NullPointerException.class);
-        }
+        Invitation invitation = new Invitation("My school", null, "This Year", "My Spec");
+        dao.persist(invitation);
     }
 
-    @Test
+    @Test(expected = SaveException.class)
     public void missingYearRequiredField() {
-        try {
-            Invitation invitation = new Invitation("My school", "My class", null, "My Spec");
-            dao.persist(invitation);
-        } catch (Exception e) {
-            assertThat(NullPointerException.class);
-        }
+        Invitation invitation = new Invitation("My school", "My class", null, "My Spec");
+        dao.persist(invitation);
     }
 
-    @Test
+    @Test(expected = SaveException.class)
     public void missingSpecRequiredField() {
-        try {
-            Invitation invitation = new Invitation("My school", "My class", "This Year", null);
-            dao.persist(invitation);
-        } catch (Exception e) {
-            assertThat(NullPointerException.class);
-        }
+        Invitation invitation = new Invitation("My school", "My class", "This Year", null);
+        dao.persist(invitation);
     }
 
     @Test
