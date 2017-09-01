@@ -9,7 +9,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.SaveException;
 
 import io.growingabit.backoffice.dao.InvitationDao;
@@ -30,13 +29,9 @@ public class InvitationController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response save(Invitation invitation) {
-
         try {
-            Key<Invitation> key = dao.persist(invitation);
-            invitation = dao.find(key);
-
+            dao.persist(invitation);
             return Response.ok(invitation).build();
-
         } catch (SaveException e) {
             return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
         }

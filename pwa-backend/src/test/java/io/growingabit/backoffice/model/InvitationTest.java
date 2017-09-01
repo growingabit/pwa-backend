@@ -5,7 +5,6 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 
@@ -56,8 +55,7 @@ public class InvitationTest extends BaseDatastoreTest {
     @Test
     public void checkInvitationCode() {
         Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
-        Key<Invitation> key = dao.persist(invitation);
-        dao.find(key);
+        dao.persist(invitation);
         assertThat(invitation.getInvitationCode().length() == 7);
     }
 
