@@ -17,27 +17,27 @@ import io.growingabit.backoffice.model.Invitation;
 @Path("backoffice/invitation")
 public class InvitationController {
 
-    private InvitationDao dao = new InvitationDao();
+  private InvitationDao dao = new InvitationDao();
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response list() {
-        return Response.ok(dao.findAll()).build();
-    }
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response list() {
+    return Response.ok(dao.findAll()).build();
+  }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response save(Invitation invitation) {
-        try {
-            dao.persist(invitation);
-            return Response.ok(invitation).build();
-        } catch (SaveException e) {
-            return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
-        }
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response save(Invitation invitation) {
+    try {
+      dao.persist(invitation);
+      return Response.ok(invitation).build();
+    } catch (SaveException e) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
     }
+  }
 
-    public String createInvitationCode(Invitation invitation) {
-        return invitation.getId().toString().substring(0, 6);
-    }
+  public String createInvitationCode(Invitation invitation) {
+    return invitation.getId().toString().substring(0, 6);
+  }
 }
