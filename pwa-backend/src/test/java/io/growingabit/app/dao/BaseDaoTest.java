@@ -4,7 +4,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -199,7 +198,7 @@ public class BaseDaoTest extends BaseDatastoreTest {
     DummyModel yeatAnotherModel = new DummyModel(null);
 
     List<DummyModel> models = Lists.newArrayList(model, anotherModel, yeatAnotherModel);
-    Map<Key<DummyModel>, DummyModel> keys = baseDao.persist(models);
+    baseDao.persist(models);
     assertThat(baseDao.findAll()).hasSize(3);
   }
 
@@ -340,6 +339,4 @@ public class BaseDaoTest extends BaseDatastoreTest {
     }
 
   }
-
-
 }
