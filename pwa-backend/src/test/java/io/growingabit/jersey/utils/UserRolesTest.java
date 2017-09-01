@@ -8,7 +8,7 @@ public class UserRolesTest {
 
   @Test
   public void neverGenerateNull() {
-    assertThat(UserRoles.ADMIN_ROLE).isEqualTo("admin");
+    assertThat(UserRoles.ADMIN).isEqualTo("admin");
   }
 
 }
