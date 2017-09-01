@@ -12,15 +12,15 @@ public class SecureStringGenerator {
   private final Random random = new SecureRandom();
   private final char[] buf;
 
-  public SecureStringGenerator(int length){
+  public SecureStringGenerator(final int length) {
     Preconditions.checkArgument(length > 0, "Length should be greater than 0");
-    buf = new char[length];
+    this.buf = new char[length];
   }
 
-  public String nextString(){
-    for (int idx = 0; idx < buf.length; ++idx){
-      buf[idx] = symbols.charAt(random.nextInt(symbols.length()));
+  public String nextString() {
+    for (int idx = 0; idx < this.buf.length; ++idx) {
+      this.buf[idx] = symbols.charAt(this.random.nextInt(symbols.length()));
     }
-    return new String(buf);
+    return new String(this.buf);
   }
 }

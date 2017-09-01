@@ -5,11 +5,11 @@ import java.net.URL;
 
 public class ResourceFetcher {
 
-  public InputStream fetchResourceAsStream(String name) {
+  public InputStream fetchResourceAsStream(final String name) {
     return ResourceFetcher.class.getClassLoader().getResourceAsStream(name);
   }
 
-  public URL fetchResource(String name){
+  public URL fetchResource(final String name) {
     return ResourceFetcher.class.getClassLoader().getResource(name);
   }
 

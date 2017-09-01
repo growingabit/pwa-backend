@@ -32,22 +32,22 @@ public class GsonProvider implements MessageBodyWriter<Object>, MessageBodyReade
   private static final Charset charset = StandardCharsets.UTF_8;
 
   @Override
-  public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+  public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
     return true;
   }
 
   @Override
-  public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+  public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
     return true;
   }
 
   @Override
-  public long getSize(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+  public long getSize(final Object obj, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
     return -1;
   }
 
   @Override
-  public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+  public void writeTo(final Object obj, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream) throws IOException, WebApplicationException {
     final Type jsonType = type.equals(genericType) ? type : genericType;
     try (Writer writer = new OutputStreamWriter(entityStream, charset)) {
       GsonFactory.getGsonInstance().toJson(obj, jsonType, writer);
@@ -57,7 +57,7 @@ public class GsonProvider implements MessageBodyWriter<Object>, MessageBodyReade
   }
 
   @Override
-  public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+  public Object readFrom(final Class<Object> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException, WebApplicationException {
     final Type jsonType = type.equals(genericType) ? type : genericType;
     try (Reader reader = new InputStreamReader(entityStream, charset)) {
       return GsonFactory.getGsonInstance().fromJson(reader, jsonType);

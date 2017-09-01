@@ -20,12 +20,12 @@ public class Application extends ResourceConfig {
 
     this.register(SecurityFilter.class);
 
-//    Avoid classpath scanning!!
-//    Register all endpoints class here
+//  Avoid classpath scanning!!
+//  Register all endpoints class here
     this.register(HealthCheckController.class);
 
     /* @formatter:off */
-    Map<String, Object> params = new ImmutableMap.Builder<String, Object>()
+    final Map<String, Object> params = new ImmutableMap.Builder<String, Object>()
         .put(ServletProperties.FILTER_FORWARD_ON_404, true)
         .build();
     /* @formatter:on */

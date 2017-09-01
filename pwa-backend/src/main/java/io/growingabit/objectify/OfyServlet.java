@@ -1,6 +1,5 @@
 package io.growingabit.objectify;
 
-import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.http.HttpServlet;
 
 public class OfyServlet extends HttpServlet {
@@ -11,4 +10,3 @@ public class OfyServlet extends HttpServlet {
     // ObjectifyService.factory().register(aClass.class);
   }
 }
-

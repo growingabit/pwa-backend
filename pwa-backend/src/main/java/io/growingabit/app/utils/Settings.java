@@ -20,21 +20,21 @@ public class Settings {
   public static final String DEV_PROPERTIES_NAME = "development.properties";
   public static final String PRODUCTION_PROPERTIES_NAME = "production.properties";
 
-  private ResourceFetcher resourceFetcher;
-  private Parameters paramsInitiator;
+  private final ResourceFetcher resourceFetcher;
+  private final Parameters paramsInitiator;
   private CombinedConfiguration config = null;
 
-  public Settings(ResourceFetcher resourceFetcher){
+  public Settings(final ResourceFetcher resourceFetcher) {
     this.resourceFetcher = resourceFetcher;
     this.paramsInitiator = new Parameters();
   }
 
   public final Configuration getConfig() {
 
-    try{
-      URL defaultPropertiesFile = this.resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME);
+    try {
+      final URL defaultPropertiesFile = this.resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME);
       Preconditions.checkNotNull(defaultPropertiesFile, "At least default properties file " + Settings.DEFAULT_PROPERTIES_NAME + " should pre present");
-      Configuration defaultConfig = this.loadConfigurationFile(defaultPropertiesFile);
+      final Configuration defaultConfig = this.loadConfigurationFile(defaultPropertiesFile);
       /*
         NOTE:
         Someone could be tempted to use DCL.
@@ -42,42 +42,42 @@ public class Settings {
         For now seems to be resonable simply sinchronize the execution
        */
       synchronized (DEFAULT_PROPERTIES_NAME) {
-        if (config == null) {
-          config = new CombinedConfiguration(new OverrideCombiner());
+        if (this.config == null) {
+          this.config = new CombinedConfiguration(new OverrideCombiner());
 
           /*
             Precedences over configuration files:
             - development.properties have maximum priority, overriding all other files
             - production.properties ovveride default but not dev
             - default is the last and ovverride nothing.
-         */
-          URL devPropertiesFile = this.resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME);
-          if(devPropertiesFile != null){
-            Configuration devConfig = this.loadConfigurationFile(devPropertiesFile);
-            config.addConfiguration(devConfig);
+          */
+          final URL devPropertiesFile = this.resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME);
+          if (devPropertiesFile != null) {
+            final Configuration devConfig = this.loadConfigurationFile(devPropertiesFile);
+            this.config.addConfiguration(devConfig);
           }
 
-          URL productionPropertiesFile = this.resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME);
-          if(productionPropertiesFile != null){
-            Configuration productionConfig = this.loadConfigurationFile(productionPropertiesFile);
-            config.addConfiguration(productionConfig);
+          final URL productionPropertiesFile = this.resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME);
+          if (productionPropertiesFile != null) {
+            final Configuration productionConfig = this.loadConfigurationFile(productionPropertiesFile);
+            this.config.addConfiguration(productionConfig);
           }
 
-          config.addConfiguration(defaultConfig);
+          this.config.addConfiguration(defaultConfig);
 
         }
       }
-      return config;
-    }catch (Exception e){
+      return this.config;
+    } catch (final Exception e) {
       throw new WebServiceException(e);
     }
   }
 
-  private Configuration loadConfigurationFile(URL configFileUrl) throws ConfigurationException {
+  private Configuration loadConfigurationFile(final URL configFileUrl) throws ConfigurationException {
     Preconditions.checkNotNull(configFileUrl);
 
     return new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-        .configure(paramsInitiator.properties()
+        .configure(this.paramsInitiator.properties()
             .setURL(configFileUrl)
             .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
             .setIncludesAllowed(true)
