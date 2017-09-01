@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -49,6 +50,34 @@ public class InvitationControllerTest extends BaseDatastoreTest {
     Response response = new InvitationController().save(invitation);
     Invitation i = (Invitation) response.getEntity();
     assertThat(i).isEqualTo(invitation);
+  }
+
+  @Test
+  public void saveFailWithOutSchol() {
+    Invitation invitation = new Invitation(null, "My class", "This Year", "My Spec");
+    Response response = new InvitationController().save(invitation);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void saveFailWithOutClass() {
+    Invitation invitation = new Invitation("My school", null, "This Year", "My Spec");
+    Response response = new InvitationController().save(invitation);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void saveFailWithOutYear() {
+    Invitation invitation = new Invitation("My school", "My class", null, "My Spec");
+    Response response = new InvitationController().save(invitation);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void saveFailWithOutSpecialization() {
+    Invitation invitation = new Invitation("My school", "My class", "This Year", null);
+    Response response = new InvitationController().save(invitation);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
 

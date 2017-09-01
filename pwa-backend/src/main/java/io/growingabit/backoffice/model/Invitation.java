@@ -5,6 +5,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
+
 import io.growingabit.app.model.BaseModel;
 import io.growingabit.app.utils.SecureStringGenerator;
 import io.growingabit.objectify.ObjectifyUtils;
@@ -18,6 +19,7 @@ public class Invitation extends BaseModel {
   private Long id;
 
   @Index
+  @Required
   private String invitationCode;
 
   @Required
@@ -34,8 +36,7 @@ public class Invitation extends BaseModel {
 
   private boolean confirmed;
 
-  public Invitation() {
-  }
+  public Invitation() {}
 
   public Invitation(final String school, final String schoolClass, final String schoolYear, final String specialization) {
     super();
@@ -108,10 +109,10 @@ public class Invitation extends BaseModel {
 
   @OnSave
   private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
-    ObjectifyUtils.checkRequiredFields(this);
     if (this.invitationCode == null) {
       this.invitationCode = new SecureStringGenerator(7).nextString();
     }
+    ObjectifyUtils.checkRequiredFields(this);
   }
 
 }
