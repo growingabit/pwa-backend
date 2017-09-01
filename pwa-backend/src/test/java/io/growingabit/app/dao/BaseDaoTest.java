@@ -2,23 +2,25 @@ package io.growingabit.app.dao;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import io.growingabit.testUtils.BaseDatastoreTest;
-import io.growingabit.app.model.BaseModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import io.growingabit.app.model.BaseModel;
+import io.growingabit.testUtils.BaseDatastoreTest;
 
 public class BaseDaoTest extends BaseDatastoreTest {
 
@@ -52,7 +54,6 @@ public class BaseDaoTest extends BaseDatastoreTest {
   public void testNotExist() {
     DummyModel model = new DummyModel(null);
     baseDao.persist(model);
-    String modelKey = model.getWebSafeKey();
     baseDao.delete(model);
     boolean exist = baseDao.exist(model.getWebSafeKey());
     assertThat(exist).isFalse();

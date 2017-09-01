@@ -22,7 +22,7 @@ public class ObjectifyUtilsTest {
     assertThat(dummyModel.getRequiredField() != null);
   }
   
-  @Test(expected = NullPointerException.class)
+  @Test(expected = IllegalStateException.class)
   public void checkNullRequiredFieldsTest() throws IllegalArgumentException, IllegalAccessException {
     DummyModel dummyModel = new DummyModel();
     ObjectifyUtils.checkRequiredFields(dummyModel);
@@ -46,6 +46,5 @@ public class ObjectifyUtilsTest {
     }
 
   }
-
 
 }
