@@ -10,4 +10,3 @@ public class OfyServlet extends HttpServlet {
     // ObjectifyService.factory().register(aClass.class);
   }
 }
-

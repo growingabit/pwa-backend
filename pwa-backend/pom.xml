@@ -199,6 +199,11 @@
       <version>3.2.0</version>
     </dependency>
     <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>jwks-rsa</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
@@ -485,6 +490,18 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.7.9</version>
+        <configuration>
+          <excludes>
+            <!--
+              Some class may be safely excluded from coverage report,
+              as for example OfyServlet and Application, that are only
+              for configuration purpose
+              (note that errors on these classes prevents application to start)
+            -->
+            <exclude>**/io/growingabit/objectify/OfyServlet.*</exclude>
+            <exclude>**/io/growingabit/jersey/Application.*</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <!--
             Prepares the property pointing to the JaCoCo runtime agent which
