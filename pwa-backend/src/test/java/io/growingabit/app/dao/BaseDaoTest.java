@@ -60,7 +60,14 @@ public class BaseDaoTest extends BaseDatastoreTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFindNullKey() {
-    baseDao.find(null);
+    Key<DummyModel> key = null;
+    baseDao.find(key);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFindNullKeyString() {
+    String key = null;
+    baseDao.find(key);
   }
 
   @Test(expected = IllegalArgumentException.class)
