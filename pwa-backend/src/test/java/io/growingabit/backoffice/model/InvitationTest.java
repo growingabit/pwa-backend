@@ -63,7 +63,7 @@ public class InvitationTest extends BaseDatastoreTest {
   public void checkInvitationCode() {
     Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
     dao.persist(invitation);
-    assertThat(invitation.getInvitationCode().length() == 7);
+    assertThat(invitation.getInvitationCode().length()).isEqualTo(7);;
   }
 
 }

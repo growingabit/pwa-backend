@@ -15,17 +15,25 @@ import io.growingabit.objectify.annotations.Required;
 public class ObjectifyUtilsTest {
 
   @Test
-  public void checkNotNullRequiredFieldsTest() throws IllegalArgumentException, IllegalAccessException {
+  public void checkNotNullRequiredFieldsTest() {
     DummyModel dummyModel = new DummyModel();
     dummyModel.setRequiredField(new Random().toString());
-    ObjectifyUtils.checkRequiredFields(dummyModel);
-    assertThat(dummyModel.getRequiredField() != null);
+    try {
+      ObjectifyUtils.checkRequiredFields(dummyModel);
+      assertThat(dummyModel.getRequiredField()).isNotNull();
+    } catch (IllegalArgumentException | IllegalAccessException | IllegalStateException e) {
+      assert (false);
+    }
   }
-  
+
   @Test(expected = IllegalStateException.class)
-  public void checkNullRequiredFieldsTest() throws IllegalArgumentException, IllegalAccessException {
+  public void checkNullRequiredFieldsTest() {
     DummyModel dummyModel = new DummyModel();
-    ObjectifyUtils.checkRequiredFields(dummyModel);
+    try {
+      ObjectifyUtils.checkRequiredFields(dummyModel);
+    } catch (IllegalArgumentException | IllegalAccessException e) {
+      assert (false);
+    }
   }
 
   @Entity
