@@ -10,7 +10,7 @@
 			<th>Specialization</th>
 			<th>School year</th>
 			<th>Realated User Id</th>
-			<th>Valid</th>
+			<th>Confirmed</th>
 			<th></th>
 			<th></th>
 		</tr>
@@ -21,7 +21,7 @@
 			<td>{{i.specialization}}
 			<td>{{i.schoolYear}}
 			<td>{{i.relatedUserId}}</td>
-			<td><input type="checkbox" ng-model="i.valid"></td>
+			<td><input type="checkbox" ng-model="i.confirmed"></td>
 			<td><button ng-click="$ctrl.update(i)">Update</button></td>
 		</tr>
 	</table>
