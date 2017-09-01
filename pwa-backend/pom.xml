@@ -306,6 +306,18 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.openpojo</groupId>
+      <artifactId>openpojo</artifactId>
+      <version>0.8.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>nl.jqno.equalsverifier</groupId>
+      <artifactId>equalsverifier</artifactId>
+      <version>2.3.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
