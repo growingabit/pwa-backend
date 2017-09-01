@@ -3,6 +3,7 @@ package io.growingabit.app.utils;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ public class SecureStringGeneratorTest {
 
   @Before
   public void setup() {
-    this.stringLenght = new Random().nextInt(100);
+    this.stringLenght = new Random().nextInt(100) + 1;
     this.secureStringGenerator = new SecureStringGenerator(this.stringLenght);
   }
 
@@ -51,7 +52,7 @@ public class SecureStringGeneratorTest {
   @Test(expected = IllegalArgumentException.class)
   public void lenghtMustBeNotNegative() {
     int n = new Random().nextInt(1000);
-    new SecureStringGenerator(-1*n);
+    new SecureStringGenerator(-1 * n);
   }
 
 }

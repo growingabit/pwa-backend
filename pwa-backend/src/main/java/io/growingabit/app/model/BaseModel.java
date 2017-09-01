@@ -29,7 +29,7 @@ public abstract class BaseModel {
   public String getWebSafeKey() {
     try {
       return Key.create(this).getString();
-    } catch (Throwable throwable) {
+    } catch (final Throwable throwable) {
       return null;
     }
   }

@@ -5,8 +5,8 @@ import static com.google.common.truth.Truth.assertThat;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.app.dao.BaseDao;
+import io.growingabit.testUtils.BaseDatastoreTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,12 +18,12 @@ public class BaseModelTest extends BaseDatastoreTest {
   @Before
   public void setUp() {
     ObjectifyService.register(DummyModel.class);
-    this.baseDao = new BaseDao<DummyModel>(DummyModel.class);
+    this.baseDao = new BaseDao<>(DummyModel.class);
   }
 
   @Test
   public void creationDateTest() {
-    DummyModel model = new DummyModel();
+    final DummyModel model = new DummyModel();
     assertThat(model.getCreationDate()).isEqualTo(-1L);
     this.baseDao.persist(model);
     assertThat(model.getCreationDate()).isGreaterThan(0L);
@@ -31,7 +31,7 @@ public class BaseModelTest extends BaseDatastoreTest {
 
   @Test
   public void modifiedDateTest() throws InterruptedException {
-    DummyModel model = new DummyModel();
+    final DummyModel model = new DummyModel();
     this.baseDao.persist(model);
     assertThat(model.getCreationDate()).isEqualTo(model.getModifiedDate());
     Thread.sleep(200);
@@ -41,7 +41,7 @@ public class BaseModelTest extends BaseDatastoreTest {
 
   @Test
   public void webSafeKeyTest() throws InterruptedException {
-    DummyModel model = new DummyModel();
+    final DummyModel model = new DummyModel();
     assertThat(model.getWebSafeKey()).isNull();
     this.baseDao.persist(model);
     assertThat(model.getWebSafeKey()).isNotNull();
@@ -54,10 +54,10 @@ public class BaseModelTest extends BaseDatastoreTest {
     private Long id;
 
     public Long getId() {
-      return id;
+      return this.id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
       this.id = id;
     }
   }

@@ -1,14 +1,17 @@
 package io.growingabit.app.dao;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
+
 import io.growingabit.app.model.BaseModel;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public class BaseDao<T extends BaseModel> {
 
@@ -23,7 +26,12 @@ public class BaseDao<T extends BaseModel> {
     return ObjectifyService.ofy().load().key(Key.create(webSafeStringKey)).now() != null;
   }
 
-  public T find(String webSafeStringKey) throws NotFoundException {
+  public T find(Key<T> key) throws NotFoundException, IllegalArgumentException {
+    Preconditions.checkArgument(key != null, "key cannot be null");
+    return ObjectifyService.ofy().load().key(key).safe();
+  }
+
+  public T find(String webSafeStringKey) throws NotFoundException, IllegalArgumentException {
     Preconditions.checkArgument(StringUtils.isNotEmpty(webSafeStringKey), "webSafeStringKey cannot be null");
     Key<T> key = Key.create(webSafeStringKey);
     return ObjectifyService.ofy().load().key(key).safe();

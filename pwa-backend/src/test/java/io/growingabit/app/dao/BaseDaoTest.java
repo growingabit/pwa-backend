@@ -2,23 +2,24 @@ package io.growingabit.app.dao;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import io.growingabit.testUtils.BaseDatastoreTest;
-import io.growingabit.app.model.BaseModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import io.growingabit.app.model.BaseModel;
+import io.growingabit.testUtils.BaseDatastoreTest;
 
 public class BaseDaoTest extends BaseDatastoreTest {
 
@@ -52,7 +53,6 @@ public class BaseDaoTest extends BaseDatastoreTest {
   public void testNotExist() {
     DummyModel model = new DummyModel(null);
     baseDao.persist(model);
-    String modelKey = model.getWebSafeKey();
     baseDao.delete(model);
     boolean exist = baseDao.exist(model.getWebSafeKey());
     assertThat(exist).isFalse();
@@ -60,7 +60,14 @@ public class BaseDaoTest extends BaseDatastoreTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFindNullKey() {
-    baseDao.find(null);
+    Key<DummyModel> key = null;
+    baseDao.find(key);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFindNullKeyString() {
+    String key = null;
+    baseDao.find(key);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -73,6 +80,14 @@ public class BaseDaoTest extends BaseDatastoreTest {
     DummyModel model = new DummyModel(null);
     baseDao.persist(model);
     DummyModel findedModel = baseDao.find(model.getWebSafeKey());
+    assertThat(findedModel).isEqualTo(model);
+  }
+  
+  @Test
+  public void testFindByKey() {
+    DummyModel model = new DummyModel(null);
+    Key<DummyModel> key = baseDao.persist(model);
+    DummyModel findedModel = baseDao.find(key);
     assertThat(findedModel).isEqualTo(model);
   }
 
@@ -190,7 +205,7 @@ public class BaseDaoTest extends BaseDatastoreTest {
     DummyModel yeatAnotherModel = new DummyModel(null);
 
     List<DummyModel> models = Lists.newArrayList(model, anotherModel, yeatAnotherModel);
-    Map<Key<DummyModel>, DummyModel> keys = baseDao.persist(models);
+    baseDao.persist(models);
     assertThat(baseDao.findAll()).hasSize(3);
   }
 
@@ -331,6 +346,4 @@ public class BaseDaoTest extends BaseDatastoreTest {
     }
 
   }
-
-
 }

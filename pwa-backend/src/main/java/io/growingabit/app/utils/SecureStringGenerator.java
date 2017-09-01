@@ -1,8 +1,9 @@
 package io.growingabit.app.utils;
 
-import com.google.common.base.Preconditions;
 import java.security.SecureRandom;
 import java.util.Random;
+
+import com.google.common.base.Preconditions;
 
 public class SecureStringGenerator {
 
@@ -18,7 +19,7 @@ public class SecureStringGenerator {
   }
 
   public String nextString() {
-    for (int idx = 0; idx < this.buf.length; ++idx) {
+    for (int idx = 0; idx < this.buf.length; idx++) {
       this.buf[idx] = symbols.charAt(this.random.nextInt(symbols.length()));
     }
     return new String(this.buf);

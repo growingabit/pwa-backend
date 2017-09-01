@@ -1,0 +1,39 @@
+<div>
+	<h3>List</h3>
+
+	<table>
+		<tr>
+			<th>Invitation code</th>
+			<th>School</th>
+			<th>School class</th>
+			<th>Specialization</th>
+			<th>School year</th>
+			<th>Realated User Id</th>
+			<th>Valid</th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr ng-repeat="i in $ctrl.invitations">
+			<td>{{i.invitationCode}}</td>
+			<td>{{i.school}}
+			<td>{{i.schoolClass}}
+			<td>{{i.specialization}}
+			<td>{{i.schoolYear}}
+			<td>{{i.relatedUserId}}</td>
+			<td><input type="checkbox" ng-model="i.valid"></td>
+			<td><button ng-click="$ctrl.update(i)">Update</button></td>
+		</tr>
+	</table>
+	
+	<h3>Create</h3>
+
+	<form novalidate>
+		School:<br> <input type="text" ng-model="invitation.school"><br>
+		School class:<br> <input type="text" ng-model="invitation.schoolClass"><br> 
+		Specialization:<br> <input type="text" ng-model="invitation.specialization"><br> 
+		School year:<br> <input type="text" ng-model="invitation.schoolYear"><br> 
+		<br>
+		<button ng-click="$ctrl.save(invitation)">Create</button>
+	</form>
+
+</div>
