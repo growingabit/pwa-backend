@@ -33,7 +33,7 @@ public class Invitation extends BaseModel {
   @Index
   private String relatedUserId;
 
-  private boolean valid = true;
+  private boolean confirmed;
 
   public Invitation() {}
 
@@ -43,6 +43,7 @@ public class Invitation extends BaseModel {
     this.schoolClass = schoolClass;
     this.schoolYear = schoolYear;
     this.specialization = specialization;
+    this.confirmed = false;
   }
 
   public Long getId() {
@@ -97,12 +98,12 @@ public class Invitation extends BaseModel {
     this.relatedUserId = relatedUserId;
   }
 
-  public boolean isValid() {
-    return valid;
+  public boolean isConfirmed() {
+    return confirmed;
   }
 
-  public void setValid(boolean valid) {
-    this.valid = valid;
+  public void setConfirmed(boolean confirmed) {
+    this.confirmed = confirmed;
   }
 
   @OnSave
