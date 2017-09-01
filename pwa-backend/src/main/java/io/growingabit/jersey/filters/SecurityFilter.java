@@ -9,14 +9,15 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.google.common.collect.ImmutableSet;
-import io.growingabit.app.utils.auth.Authorizer;
 import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
+import io.growingabit.app.utils.auth.Authorizer;
 import io.growingabit.jersey.annotations.Secured;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -34,27 +35,28 @@ public class SecurityFilter implements ContainerRequestFilter {
   private static final String OAUTH2_ISSUER = config.getString("oauth2.issuer");
   private static final String CUSTOM_CLAIMS_NAMESPACE = "https://growbit.io/";
   private static final String ROLES_CLAIM = CUSTOM_CLAIMS_NAMESPACE + "roles";
+  private static final String JWK_URL = config.getString("jwk.url");
 
   @Override
-  public void filter(ContainerRequestContext requestContext) throws IOException {
-    String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+  public void filter(final ContainerRequestContext requestContext) throws IOException {
+    final String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      String token = authorizationHeader.substring("Bearer".length()).trim();
+      final String token = authorizationHeader.substring("Bearer".length()).trim();
       try {
-        DecodedJWT jwt = validateToken(token);
+        final DecodedJWT jwt = validateToken(token);
 
-        Set<String> roles = ImmutableSet.copyOf(jwt.getClaim(ROLES_CLAIM).asArray(String.class));
+        final Set<String> roles = ImmutableSet.copyOf(jwt.getClaim(ROLES_CLAIM).asArray(String.class));
 
         // WTF??? that's is the user id...
         // I think .split("\\|")[1]; have killed some developer around the world... sorry
-        String userid = jwt.getSubject().split("\\|")[1];
+        final String userid = jwt.getSubject().split("\\|")[1];
 
-        String username = jwt.getClaim("nickname").asString();
-        boolean isSecure = requestContext.getSecurityContext().isSecure();
+        final String username = jwt.getClaim("nickname").asString();
+        final boolean isSecure = requestContext.getSecurityContext().isSecure();
 
-        Authorizer authorizer = new Authorizer(userid, roles, username, isSecure);
+        final Authorizer authorizer = new Authorizer(userid, roles, username, isSecure);
         requestContext.setSecurityContext(authorizer);
-      } catch (Exception exception) {
+      } catch (final Exception exception) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
       }
     } else {
@@ -62,36 +64,49 @@ public class SecurityFilter implements ContainerRequestFilter {
     }
   }
 
-  private DecodedJWT validateToken(String token) throws Exception {
-    RSAKeyProvider keyProvider = new RSAKeyProvider() {
-      @Override
-      public RSAPublicKey getPublicKeyById(String kid) {
-        try {
-          // Here we can use some more intelligent JwkProvider, that could cache the key.
-          // See https://github.com/auth0/jwks-rsa-java
-          JwkProvider provider = new UrlJwkProvider("https://growbit-development.eu.auth0.com/");
-          Jwk jwk = provider.get(kid);
-          RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
-          return (RSAPublicKey) publicKey;
-        }catch (Exception e){
-          e.printStackTrace();
-          return null;
-        }
-      }
+  private DecodedJWT validateToken(final String token) throws Exception {
+    try {
+      final RSAKeyProvider keyProvider = new KeyProvider(new URL(JWK_URL));
+      final Algorithm algorithm = Algorithm.RSA256(keyProvider);
+      final JWTVerifier verifier = JWT.require(algorithm).withIssuer(OAUTH2_ISSUER).build();
+      return verifier.verify(token);
+    } catch (final MalformedURLException e) {
+      return null;
+    }
+  }
 
-      @Override
-      public RSAPrivateKey getPrivateKey() {
+  private class KeyProvider implements RSAKeyProvider {
+
+    private final JwkProvider jwkProvider;
+
+    // Here we can use some more intelligent JwkProvider, that could cache the key.
+    // See https://github.com/auth0/jwks-rsa-java
+    public KeyProvider(final URL url) {
+      this.jwkProvider = new UrlJwkProvider(url);
+    }
+
+    @Override
+    public RSAPublicKey getPublicKeyById(final String kid) {
+      try {
+        final Jwk jwk = this.jwkProvider.get(kid);
+        final RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
+        return (RSAPublicKey) publicKey;
+      } catch (final Exception e) {
+        e.printStackTrace();
         return null;
       }
+    }
 
-      @Override
-      public String getPrivateKeyId() {
-        return null;
-      }
-    };
+    @Override
+    public RSAPrivateKey getPrivateKey() {
+      // we can safely return null, beacuse we only validate tokens
+      return null;
+    }
 
-    Algorithm algorithm = Algorithm.RSA256(keyProvider);
-    JWTVerifier verifier = JWT.require(algorithm).withIssuer(OAUTH2_ISSUER).build();
-    return verifier.verify(token);
+    @Override
+    public String getPrivateKeyId() {
+      // we can safely return null, beacuse we only validate tokens
+      return null;
+    }
   }
 }
