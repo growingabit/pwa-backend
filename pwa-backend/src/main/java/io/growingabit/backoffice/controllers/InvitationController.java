@@ -1,5 +1,6 @@
 package io.growingabit.backoffice.controllers;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,8 +14,12 @@ import com.googlecode.objectify.SaveException;
 
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
+import io.growingabit.jersey.annotations.Secured;
+import io.growingabit.jersey.utils.UserRoles;
 
 @Path("backoffice/invitation")
+@Secured
+@RolesAllowed(UserRoles.ADMIN)
 public class InvitationController {
 
   private InvitationDao dao = new InvitationDao();
@@ -35,9 +40,5 @@ public class InvitationController {
     } catch (SaveException e) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
     }
-  }
-
-  public String createInvitationCode(Invitation invitation) {
-    return invitation.getId().toString().substring(0, 6);
   }
 }

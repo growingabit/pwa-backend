@@ -1,7 +1,5 @@
 package io.growingabit.backoffice.model;
 
-import java.security.SecureRandom;
-
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -9,6 +7,7 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
 
 import io.growingabit.app.model.BaseModel;
+import io.growingabit.app.utils.SecureStringGenerator;
 import io.growingabit.objectify.ObjectifyUtils;
 import io.growingabit.objectify.annotations.Required;
 
@@ -110,7 +109,7 @@ public class Invitation extends BaseModel {
   private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
     ObjectifyUtils.checkRequiredFields(this);
     if (this.invitationCode == null) {
-      this.invitationCode = new SecureRandom().toString().substring(0, 6);
+      this.invitationCode = new SecureStringGenerator(7).nextString();
     }
   }
 
