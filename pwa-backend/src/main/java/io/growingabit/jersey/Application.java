@@ -16,23 +16,21 @@ import io.growingabit.jersey.providers.GsonProvider;
 
 public class Application extends ResourceConfig {
 
-    public Application() {
-        this.register(GsonProvider.class);
-        this.register(GaeFeature.class);
-        this.register(RolesAllowedDynamicFeature.class);
+  public Application() {
+    this.register(GsonProvider.class);
+    this.register(GaeFeature.class);
+    this.register(RolesAllowedDynamicFeature.class);
 
-        this.register(SecurityFilter.class);
+    this.register(SecurityFilter.class);
 
-        // Avoid classpath scanning!!
-        // Register all endpoints class here
-        this.register(HealthCheckController.class);
-        this.register(InvitationController.class);
+    // Avoid classpath scanning!!
+    // Register all endpoints class here
+    this.register(HealthCheckController.class);
+    this.register(InvitationController.class);
 
     /* @formatter:off */
-    Map<String, Object> params = new ImmutableMap.Builder<String, Object>()
-        .put(ServletProperties.FILTER_FORWARD_ON_404, true)
-        .build();
+    Map<String, Object> params = new ImmutableMap.Builder<String, Object>().put(ServletProperties.FILTER_FORWARD_ON_404, true).build();
     /* @formatter:on */
-        this.addProperties(params);
-    }
+    this.addProperties(params);
+  }
 }
