@@ -2,7 +2,6 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
@@ -45,17 +44,17 @@ public class MeControllerTest extends BaseDatastoreTest {
     assertThat(returnedUser).isEqualTo(user);
   }
 
-  @Test
-  public void createUserIfNotExist() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final Response response = new MeController().getCurrenUserInfo(context);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-
-    final User returnedUser = (User) response.getEntity();
-    assertThat(this.userDao.find(Key.create(User.class, "id"))).isEqualTo(returnedUser);
-  }
+//  @Test
+//  public void createUserIfNotExist() {
+//    final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
+//    final SecurityContext context = Mockito.mock(SecurityContext.class);
+//    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+//
+//    final Response response = new MeController().getCurrenUserInfo(context);
+//    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+//
+//    final User returnedUser = (User) response.getEntity();
+//    assertThat(this.userDao.find(Key.create(User.class, "id"))).isEqualTo(returnedUser);
+//  }
 
 }

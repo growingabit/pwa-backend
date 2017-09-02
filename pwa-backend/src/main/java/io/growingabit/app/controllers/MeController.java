@@ -22,6 +22,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 public class MeController {
 
   private final Logger logger = Logger.getLogger(MeController.class.getName());
+
   private final UserDao userDao;
 
   public MeController() {
@@ -44,7 +45,7 @@ public class MeController {
           user.addSignupStage(signupStage);
         }
         this.userDao.persist(user);
-      } catch (final Exception ex) {
+      } catch (final IllegalAccessException | InstantiationException ex) {
         this.logger.severe(ExceptionUtils.getStackTrace(e));
         return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
       }
