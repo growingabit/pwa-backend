@@ -10,6 +10,7 @@ import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
+import io.growingabit.testUtils.EqualsHashCodeRule;
 import io.growingabit.testUtils.RefGenerator;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,6 +34,7 @@ public class AppPojoTest {
         .with(new GetterTester())
         .with(new NoFieldShadowingRule())
         .with(new NoPublicFieldsExceptStaticFinalRule())
+        .with(new EqualsHashCodeRule())
         .build();
   }
 

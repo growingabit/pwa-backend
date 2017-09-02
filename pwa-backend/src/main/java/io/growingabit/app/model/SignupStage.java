@@ -1,5 +1,6 @@
 package io.growingabit.app.model;
 
+import com.google.common.base.Objects;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
@@ -56,4 +57,23 @@ public abstract class SignupStage<T extends BaseModel> extends BaseModel {
     this.data = data;
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final SignupStage<?> that = (SignupStage<?>) o;
+    return isDone() == that.isDone() &&
+        Objects.equal(getId(), that.getId()) &&
+        Objects.equal(getUser(), that.getUser()) &&
+        Objects.equal(getData(), that.getData());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getId(), getUser(), isDone(), getData());
+  }
 }

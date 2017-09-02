@@ -1,5 +1,6 @@
 package io.growingabit.backoffice.model;
 
+import com.google.common.base.Objects;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -107,6 +108,30 @@ public class Invitation extends BaseModel {
 
   public void setConfirmed(final boolean confirmed) {
     this.confirmed = confirmed;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Invitation that = (Invitation) o;
+    return isConfirmed() == that.isConfirmed() &&
+        Objects.equal(getId(), that.getId()) &&
+        Objects.equal(getInvitationCode(), that.getInvitationCode()) &&
+        Objects.equal(getSchool(), that.getSchool()) &&
+        Objects.equal(getSchoolClass(), that.getSchoolClass()) &&
+        Objects.equal(getSchoolYear(), that.getSchoolYear()) &&
+        Objects.equal(getSpecialization(), that.getSpecialization()) &&
+        Objects.equal(getRelatedUserId(), that.getRelatedUserId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserId(), isConfirmed());
   }
 
   @OnSave
