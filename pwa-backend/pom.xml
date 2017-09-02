@@ -318,6 +318,12 @@
       <version>5.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava-testlib</artifactId>
+      <version>22.0-android</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

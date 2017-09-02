@@ -2,6 +2,7 @@ package io.growingabit.app.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.common.dao.BaseDao;
@@ -99,6 +100,56 @@ public class UserTest extends BaseDatastoreTest {
     user.addSignupStage(uncompletedStage);
 
     assertThat(user.isSignupDone()).isFalse();
+  }
+
+  @Test
+  public void equalsAndHashCode() {
+
+    final int n = new Random().nextInt(10) + 1;
+
+    final User user1 = new User();
+    final User user2 = new User();
+    final User user3 = new User();
+    final User user4 = new User();
+
+    user1.setId("id1");
+    user2.setId("id1");
+    user3.setId("id2");
+    user4.setId("id2");
+    boolean b;
+    DummySignupStage completedStage;
+    for (int i = 1; i < n; i++) {
+      b = Math.random() > 0.5;
+      completedStage = new DummySignupStage();
+      completedStage.setDone(b);
+      this.baseDao.persist(completedStage);
+      user1.addSignupStage(completedStage);
+
+      completedStage = new DummySignupStage();
+      completedStage.setDone(b);
+      this.baseDao.persist(completedStage);
+      user2.addSignupStage(completedStage);
+
+      b = !b;
+      completedStage = new DummySignupStage();
+      completedStage.setDone(b);
+      this.baseDao.persist(completedStage);
+      user3.addSignupStage(completedStage);
+
+      completedStage = new DummySignupStage();
+      completedStage.setDone(b);
+      this.baseDao.persist(completedStage);
+      user4.addSignupStage(completedStage);
+    }
+
+    new EqualsTester()
+        .addEqualityGroup(user1, user2)
+        .addEqualityGroup(user3, user4)
+        .testEquals();
+
+    assertThat(user1.hashCode()).isEqualTo(user1.hashCode());
+    assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
+    assertThat(user1.hashCode()).isNotEqualTo(user3.hashCode());
   }
 
 }

@@ -50,13 +50,12 @@ public class User extends BaseModel {
       return false;
     }
     final User user = (User) o;
-    return Objects.equal(getId(), user.getId()) &&
-        Objects.equal(getSignupStages(), user.getSignupStages());
+    return Objects.equal(getId(), user.getId());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getId(), getSignupStages());
+    return Objects.hashCode(getId());
   }
 
   @ExposeMethodResult("signupDone")

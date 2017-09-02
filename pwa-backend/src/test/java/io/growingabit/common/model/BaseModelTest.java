@@ -14,6 +14,7 @@ import org.junit.Test;
 public class BaseModelTest extends BaseDatastoreTest {
 
   private BaseDao<DummyModel> baseDao;
+  private DummyModel dummyModel4;
 
   @Before
   public void setUp() {

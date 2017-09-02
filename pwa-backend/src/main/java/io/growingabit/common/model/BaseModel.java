@@ -41,5 +41,4 @@ public abstract class BaseModel {
       this.creationDate = this.modifiedDate;
     }
   }
-
 }
