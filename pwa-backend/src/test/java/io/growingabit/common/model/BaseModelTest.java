@@ -1,11 +1,11 @@
-package io.growingabit.app.model;
+package io.growingabit.common.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import io.growingabit.app.dao.BaseDao;
+import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import org.junit.Before;
 import org.junit.Test;

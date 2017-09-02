@@ -1,24 +1,29 @@
 package io.growingabit.app.model;
 
+import com.openpojo.random.RandomFactory;
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoClassFilter;
-import com.openpojo.reflection.filters.FilterChain;
-import com.openpojo.reflection.filters.FilterNonConcrete;
 import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.rule.impl.GetterMustExistRule;
 import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
-import com.openpojo.validation.test.impl.DefaultValuesNullTester;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
+import io.growingabit.testUtils.RefGenerator;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class AppPojoTest {
 
   private final String packageName = "io.growingabit.app.model";
   private Validator validator;
+
+  @BeforeClass
+  public static void onlyOnce() {
+    RandomFactory.addRandomGenerator(new RefGenerator());
+  }
 
   @Before
   public void setup() {
@@ -28,13 +33,12 @@ public class AppPojoTest {
         .with(new GetterTester())
         .with(new NoFieldShadowingRule())
         .with(new NoPublicFieldsExceptStaticFinalRule())
-        .with(new DefaultValuesNullTester())
         .build();
   }
 
   @Test
   public void validatePojos() {
-    this.validator.validate(this.packageName, new FilterChain(new FilterNonConcrete(), new FilterTestClasses()));
+    this.validator.validate(this.packageName, new FilterTestClasses());
   }
 
   private static class FilterTestClasses implements PojoClassFilter {

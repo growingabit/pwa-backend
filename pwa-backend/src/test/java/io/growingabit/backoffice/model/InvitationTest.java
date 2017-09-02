@@ -62,6 +62,22 @@ public class InvitationTest extends BaseDatastoreTest {
     final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
     this.dao.persist(invitation);
     assertThat(invitation.getInvitationCode().length()).isEqualTo(7);
-    ;
+  }
+
+  @Test
+  public void checkEmpyInvitationCode() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setInvitationCode("");
+    this.dao.persist(invitation);
+    assertThat(invitation.getInvitationCode().length()).isEqualTo(7);
+  }
+
+  @Test
+  public void doesNotModifyAlreadyDefinedInvitationCode() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final String invitationCode = "1234567";
+    invitation.setInvitationCode(invitationCode);
+    this.dao.persist(invitation);
+    assertThat(invitation.getInvitationCode()).isEqualTo(invitationCode);
   }
 }
