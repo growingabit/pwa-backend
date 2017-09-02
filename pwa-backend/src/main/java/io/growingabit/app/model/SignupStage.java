@@ -17,7 +17,7 @@ public abstract class SignupStage<T extends BaseModel> extends BaseModel {
   Key<User> user;
   private boolean isDone;
   private T data;
-  // TODO: missing stage identifier
+  // TODO: missing stage identifie
 
   public SignupStage() {
     super();

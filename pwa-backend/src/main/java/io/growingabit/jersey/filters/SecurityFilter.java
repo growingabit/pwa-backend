@@ -1,19 +1,5 @@
 package io.growingabit.jersey.filters;
 
-import java.io.IOException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Set;
-
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.configuration2.Configuration;
-
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.UrlJwkProvider;
@@ -23,11 +9,23 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.google.common.collect.ImmutableSet;
-
 import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.app.utils.auth.Authorizer;
 import io.growingabit.jersey.annotations.Secured;
+import java.io.IOException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Set;
+import java.util.logging.Logger;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 @Secured
 @Priority(Priorities.AUTHENTICATION)
@@ -75,6 +73,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
   private class KeyProvider implements RSAKeyProvider {
 
+    private final Logger logger = Logger.getLogger(KeyProvider.class.getName());
     private final JwkProvider jwkProvider;
 
     // Here we can use some more intelligent JwkProvider, that could cache the key.
@@ -90,7 +89,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         final RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
         return (RSAPublicKey) publicKey;
       } catch (final Exception e) {
-        e.printStackTrace();
+        this.logger.severe(ExceptionUtils.getStackTrace(e));
         return null;
       }
     }
