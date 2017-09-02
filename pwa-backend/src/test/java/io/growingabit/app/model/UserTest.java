@@ -3,6 +3,7 @@ package io.growingabit.app.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.testing.EqualsTester;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.common.dao.BaseDao;
@@ -57,7 +58,13 @@ public class UserTest extends BaseDatastoreTest {
   @Test(expected = UnsupportedOperationException.class)
   public void signupStageListShouldBeImmutable() {
 
+    final User model = new User();
+    model.setId("id");
+    this.userDao.persist(model);
+    final Key<User> userKey = Key.create(model);
+
     final DummySignupStage addedStage = new DummySignupStage();
+    addedStage.setUser(userKey);
     this.baseDao.persist(addedStage);
 
     final User user = new User();
@@ -68,13 +75,20 @@ public class UserTest extends BaseDatastoreTest {
 
   @Test
   public void signupIsDone() {
+    final User model = new User();
+    model.setId("id");
+    this.userDao.persist(model);
+    final Key<User> userKey = Key.create(model);
+
     final int n = new Random().nextInt(10) + 1;
 
     final User user = new User();
     DummySignupStage completedStage;
     for (int i = 1; i < n; i++) {
       completedStage = new DummySignupStage();
+      completedStage.setUser(userKey);
       completedStage.setDone(true);
+
       this.baseDao.persist(completedStage);
       user.addSignupStage(completedStage);
     }
@@ -84,6 +98,11 @@ public class UserTest extends BaseDatastoreTest {
 
   @Test
   public void signupIsNotDone() {
+    final User model = new User();
+    model.setId("id");
+    this.userDao.persist(model);
+    final Key<User> userKey = Key.create(model);
+
     final int n = new Random().nextInt(10) + 1;
 
     final User user = new User();
@@ -91,11 +110,13 @@ public class UserTest extends BaseDatastoreTest {
     for (int i = 1; i < n; i++) {
       completedStage = new DummySignupStage();
       completedStage.setDone(true);
+      completedStage.setUser(userKey);
       this.baseDao.persist(completedStage);
       user.addSignupStage(completedStage);
     }
 
     final DummySignupStage uncompletedStage = new DummySignupStage();
+    uncompletedStage.setUser(userKey);
     this.baseDao.persist(uncompletedStage);
     user.addSignupStage(uncompletedStage);
 
@@ -122,10 +143,12 @@ public class UserTest extends BaseDatastoreTest {
       b = Math.random() > 0.5;
       completedStage = new DummySignupStage();
       completedStage.setDone(b);
+      completedStage.setUser(Key.create(user1));
       this.baseDao.persist(completedStage);
       user1.addSignupStage(completedStage);
 
       completedStage = new DummySignupStage();
+      completedStage.setUser(Key.create(user2));
       completedStage.setDone(b);
       this.baseDao.persist(completedStage);
       user2.addSignupStage(completedStage);
@@ -133,10 +156,12 @@ public class UserTest extends BaseDatastoreTest {
       b = !b;
       completedStage = new DummySignupStage();
       completedStage.setDone(b);
+      completedStage.setUser(Key.create(user3));
       this.baseDao.persist(completedStage);
       user3.addSignupStage(completedStage);
 
       completedStage = new DummySignupStage();
+      completedStage.setUser(Key.create(user4));
       completedStage.setDone(b);
       this.baseDao.persist(completedStage);
       user4.addSignupStage(completedStage);

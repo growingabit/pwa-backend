@@ -2,11 +2,18 @@ package io.growingabit.app.model;
 
 import com.google.common.base.Objects;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.SaveException;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
+import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
+import io.growingabit.app.utils.ResourceFetcher;
+import io.growingabit.app.utils.Settings;
 import io.growingabit.common.model.BaseModel;
+import io.growingabit.objectify.annotations.Required;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Cache
@@ -14,11 +21,15 @@ public abstract class SignupStage<T extends BaseModel> extends BaseModel {
 
   @Id
   private Long id;
+
   @Parent
+  @Required
   Key<User> user;
   private boolean isDone;
   private T data;
-  // TODO: missing stage identifie
+
+  @Ignore
+  private String stageIdentifier;
 
   public SignupStage() {
     super();
@@ -57,6 +68,20 @@ public abstract class SignupStage<T extends BaseModel> extends BaseModel {
     this.data = data;
   }
 
+  public String getStageIdentifier() {
+    return this.stageIdentifier;
+  }
+
+  @OnSave
+  private void onSave() {
+    if (StringUtils.isEmpty(this.stageIdentifier)) {
+      this.stageIdentifier = new Settings(new ResourceFetcher()).getConfig().getString(this.getClass().getCanonicalName());
+      if (StringUtils.isEmpty(this.stageIdentifier)) {
+        throw new SaveException(this, "Missing " + this.getClass().getCanonicalName() + " propery on settings file", null);
+      }
+    }
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -76,4 +101,5 @@ public abstract class SignupStage<T extends BaseModel> extends BaseModel {
   public int hashCode() {
     return Objects.hashCode(getId(), getUser(), isDone(), getData());
   }
+
 }

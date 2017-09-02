@@ -3,6 +3,7 @@ package io.growingabit.common.model;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
+import io.growingabit.objectify.ObjectifyUtils;
 import io.gsonfire.annotations.ExposeMethodResult;
 import org.joda.time.DateTime;
 
@@ -35,10 +36,11 @@ public abstract class BaseModel {
   }
 
   @OnSave
-  private void onSave() {
+  private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
     this.modifiedDate = new DateTime().getMillis();
     if (this.creationDate < 0) {
       this.creationDate = this.modifiedDate;
     }
+    ObjectifyUtils.checkRequiredFields(this);
   }
 }

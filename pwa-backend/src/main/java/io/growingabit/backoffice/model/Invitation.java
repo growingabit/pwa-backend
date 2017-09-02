@@ -5,10 +5,8 @@ import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
-import com.googlecode.objectify.annotation.OnSave;
 import io.growingabit.app.utils.SecureStringGenerator;
 import io.growingabit.common.model.BaseModel;
-import io.growingabit.objectify.ObjectifyUtils;
 import io.growingabit.objectify.annotations.Required;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,6 +37,7 @@ public class Invitation extends BaseModel {
 
   public Invitation() {
     super();
+    this.invitationCode = new SecureStringGenerator(7).nextString();
     this.confirmed = false;
   }
 
@@ -59,7 +58,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setInvitationCode(final String invitationCode) {
-    this.invitationCode = invitationCode;
+    if (StringUtils.isNotEmpty(invitationCode)) {
+      this.invitationCode = invitationCode;
+    }
   }
 
   public String getSchool() {
@@ -132,14 +133,6 @@ public class Invitation extends BaseModel {
   @Override
   public int hashCode() {
     return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserId(), isConfirmed());
-  }
-
-  @OnSave
-  private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
-    if (StringUtils.isEmpty(this.invitationCode)) {
-      this.invitationCode = new SecureStringGenerator(7).nextString();
-    }
-    ObjectifyUtils.checkRequiredFields(this);
   }
 
 }

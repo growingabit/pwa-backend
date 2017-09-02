@@ -3,10 +3,33 @@ package io.growingabit.app.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.testing.EqualsTester;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.SaveException;
+import io.growingabit.app.dao.UserDao;
+import io.growingabit.common.dao.BaseDao;
+import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.DummySignupStage;
 import java.util.Random;
+import org.junit.Before;
 import org.junit.Test;
 
-public class SignupStageTest {
+public class SignupStageTest extends BaseDatastoreTest {
+
+  private BaseDao<DummySignupStage> baseDao;
+  private UserDao userDao;
+
+  @Before
+  public void setUp() {
+    ObjectifyService.register(io.growingabit.testUtils.DummySignupStage.class);
+    ObjectifyService.register(User.class);
+    this.baseDao = new BaseDao<>(io.growingabit.testUtils.DummySignupStage.class);
+    this.userDao = new UserDao();
+  }
+
+  @Test(expected = SaveException.class)
+  public void userIsRequired() {
+    this.baseDao.persist(new DummySignupStage());
+  }
 
   @Test
   public void isNotDoneByDefault() {
@@ -39,7 +62,4 @@ public class SignupStageTest {
     assertThat(dummySignupStage1.hashCode()).isNotEqualTo(dummySignupStage3.hashCode());
   }
 
-  private class DummySignupStage extends SignupStage {
-
-  }
 }
