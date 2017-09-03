@@ -1,0 +1,5 @@
+<button ng-hide="$ctrl.authService.isAuthenticated()" ng-click="$ctrl.authService.login()">LOGIN</button>
+<button ng-show="$ctrl.authService.isAuthenticated()" ng-click="$ctrl.logout()">LOGOUT</button>
+<div ng-show="$ctrl.authService.isAuthenticated()">
+	<br> <a ui-sref="invitation">Invitation codes</a>
+</div>

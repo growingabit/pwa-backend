@@ -1,5 +1,19 @@
 package io.growingabit.jersey.filters;
 
+import java.io.IOException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Set;
+
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.configuration2.Configuration;
+
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.UrlJwkProvider;
@@ -9,23 +23,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.google.common.collect.ImmutableSet;
+
 import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.app.utils.auth.Authorizer;
 import io.growingabit.jersey.annotations.Secured;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Set;
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import org.apache.commons.configuration2.Configuration;
 
 @Secured
 @Priority(Priorities.AUTHENTICATION)
@@ -65,14 +67,10 @@ public class SecurityFilter implements ContainerRequestFilter {
   }
 
   private DecodedJWT validateToken(final String token) throws Exception {
-    try {
-      final RSAKeyProvider keyProvider = new KeyProvider(new URL(JWK_URL));
-      final Algorithm algorithm = Algorithm.RSA256(keyProvider);
-      final JWTVerifier verifier = JWT.require(algorithm).withIssuer(OAUTH2_ISSUER).build();
-      return verifier.verify(token);
-    } catch (final MalformedURLException e) {
-      return null;
-    }
+    final RSAKeyProvider keyProvider = new KeyProvider(JWK_URL);
+    final Algorithm algorithm = Algorithm.RSA256(keyProvider);
+    final JWTVerifier verifier = JWT.require(algorithm).withIssuer(OAUTH2_ISSUER).build();
+    return verifier.verify(token);
   }
 
   private class KeyProvider implements RSAKeyProvider {
@@ -81,7 +79,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     // Here we can use some more intelligent JwkProvider, that could cache the key.
     // See https://github.com/auth0/jwks-rsa-java
-    public KeyProvider(final URL url) {
+    public KeyProvider(final String url) {
       this.jwkProvider = new UrlJwkProvider(url);
     }
 

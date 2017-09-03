@@ -3,7 +3,7 @@ function InvitationController($state, InvitationService) {
 
 	ctrl.save = save;
 	ctrl.update = update;
-
+	
 	ctrl.invitations = InvitationService.query();
 
 	function save(invitation) {
