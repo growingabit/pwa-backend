@@ -16,6 +16,7 @@ import io.growingabit.jersey.annotations.Secured;
 import java.io.IOException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.annotation.Priority;
@@ -25,6 +26,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 @Secured
@@ -45,16 +47,20 @@ public class SecurityFilter implements ContainerRequestFilter {
       try {
         final DecodedJWT jwt = validateToken(token);
 
-        final Set<String> roles = ImmutableSet.copyOf(jwt.getClaim(ROLES_CLAIM).asArray(String.class));
+        final String[] roles = jwt.getClaim(ROLES_CLAIM).asArray(String.class);
+        Set<String> rolesSet = null;
+        if (ArrayUtils.isNotEmpty(roles)) {
+          rolesSet = ImmutableSet.copyOf(roles);
+        } else {
+          rolesSet = new HashSet<>();
+        }
 
-        // WTF??? that's is the user id...
-        // I think .split("\\|")[1]; have killed some developer around the world... sorry
-        final String userid = jwt.getSubject().split("\\|")[1];
+        final String userid = jwt.getSubject();
 
         final String username = jwt.getClaim("nickname").asString();
         final boolean isSecure = requestContext.getSecurityContext().isSecure();
 
-        final Authorizer authorizer = new Authorizer(userid, roles, username, isSecure);
+        final Authorizer authorizer = new Authorizer(userid, rolesSet, username, isSecure);
         requestContext.setSecurityContext(authorizer);
       } catch (final Exception exception) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
