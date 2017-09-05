@@ -9,9 +9,9 @@ import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.rule.impl.GetterMustExistRule;
 import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
-import com.openpojo.validation.test.impl.DefaultValuesNullTester;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
+import io.growingabit.testUtils.EqualsHashCodeRule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class BackofficePojoTest {
         .with(new GetterTester())
         .with(new NoFieldShadowingRule())
         .with(new NoPublicFieldsExceptStaticFinalRule())
-        .with(new DefaultValuesNullTester())
+        .with(new EqualsHashCodeRule())
         .build();
   }
 

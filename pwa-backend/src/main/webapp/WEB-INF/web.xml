@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <!-- Objectify clean up filter -->
   <filter>
     <filter-name>ObjectifyFilter</filter-name>
@@ -12,10 +12,10 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- Objectify Startup Servlet -->
+  <!-- Startup Servlet -->
   <servlet>
-    <servlet-name>ObjectifyStartupServlet</servlet-name>
-    <servlet-class>io.growingabit.objectify.OfyServlet</servlet-class>
+    <servlet-name>StartupServlet</servlet-name>
+    <servlet-class>io.growingabit.common.utils.StartupServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

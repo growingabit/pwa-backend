@@ -1,15 +1,14 @@
 package io.growingabit.backoffice.model;
 
+import com.google.common.base.Objects;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
-import com.googlecode.objectify.annotation.OnSave;
-
-import io.growingabit.app.model.BaseModel;
 import io.growingabit.app.utils.SecureStringGenerator;
-import io.growingabit.objectify.ObjectifyUtils;
+import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Cache
@@ -36,15 +35,18 @@ public class Invitation extends BaseModel {
 
   private boolean confirmed;
 
-  public Invitation() {}
+  public Invitation() {
+    super();
+    this.invitationCode = new SecureStringGenerator(7).nextString();
+    this.confirmed = false;
+  }
 
   public Invitation(final String school, final String schoolClass, final String schoolYear, final String specialization) {
-    super();
+    this();
     this.school = school;
     this.schoolClass = schoolClass;
     this.schoolYear = schoolYear;
     this.specialization = specialization;
-    this.confirmed = false;
   }
 
   public Long getId() {
@@ -56,7 +58,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setInvitationCode(final String invitationCode) {
-    this.invitationCode = invitationCode;
+    if (StringUtils.isNotEmpty(invitationCode)) {
+      this.invitationCode = invitationCode;
+    }
   }
 
   public String getSchool() {
@@ -107,12 +111,28 @@ public class Invitation extends BaseModel {
     this.confirmed = confirmed;
   }
 
-  @OnSave
-  private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
-    if (this.invitationCode == null) {
-      this.invitationCode = new SecureStringGenerator(7).nextString();
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
-    ObjectifyUtils.checkRequiredFields(this);
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Invitation that = (Invitation) o;
+    return isConfirmed() == that.isConfirmed() &&
+        Objects.equal(getId(), that.getId()) &&
+        Objects.equal(getInvitationCode(), that.getInvitationCode()) &&
+        Objects.equal(getSchool(), that.getSchool()) &&
+        Objects.equal(getSchoolClass(), that.getSchoolClass()) &&
+        Objects.equal(getSchoolYear(), that.getSchoolYear()) &&
+        Objects.equal(getSpecialization(), that.getSpecialization()) &&
+        Objects.equal(getRelatedUserId(), that.getRelatedUserId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserId(), isConfirmed());
   }
 
 }

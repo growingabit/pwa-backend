@@ -1,8 +1,9 @@
-package io.growingabit.app.model;
+package io.growingabit.common.model;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
+import io.growingabit.objectify.ObjectifyUtils;
 import io.gsonfire.annotations.ExposeMethodResult;
 import org.joda.time.DateTime;
 
@@ -17,16 +18,16 @@ public abstract class BaseModel {
     this.creationDate = -1;
   }
 
-  public long getCreationDate() {
+  public final long getCreationDate() {
     return this.creationDate;
   }
 
-  public long getModifiedDate() {
+  public final long getModifiedDate() {
     return this.modifiedDate;
   }
 
   @ExposeMethodResult("webSafeKey")
-  public String getWebSafeKey() {
+  public final String getWebSafeKey() {
     try {
       return Key.create(this).getString();
     } catch (final Throwable throwable) {
@@ -35,11 +36,11 @@ public abstract class BaseModel {
   }
 
   @OnSave
-  private void onSave() {
+  private void onSave() throws IllegalArgumentException, IllegalAccessException, NullPointerException {
     this.modifiedDate = new DateTime().getMillis();
     if (this.creationDate < 0) {
       this.creationDate = this.modifiedDate;
     }
+    ObjectifyUtils.checkRequiredFields(this);
   }
-
 }
