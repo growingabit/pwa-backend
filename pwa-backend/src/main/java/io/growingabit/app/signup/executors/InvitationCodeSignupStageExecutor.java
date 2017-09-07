@@ -1,6 +1,7 @@
 package io.growingabit.app.signup.executors;
 
 import com.google.common.base.Preconditions;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.VoidWork;
 import io.growingabit.app.dao.InvitationCodeSignupStageDao;
@@ -34,7 +35,7 @@ class InvitationCodeSignupStageExecutor {
             throw new SignupStageExecutionException("Invitation code already confirmed");
           } else {
             invitation.setConfirmed();
-            invitation.setRelatedUserId(user.getId());
+            invitation.setRelatedUserWebSafeKey(Key.create(user));
             InvitationCodeSignupStageExecutor.this.invitationDao.persist(invitation);
 
             stage.setDone();

@@ -1,10 +1,12 @@
 package io.growingabit.backoffice.model;
 
 import com.google.common.base.Objects;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import io.growingabit.app.model.User;
 import io.growingabit.app.utils.SecureStringGenerator;
 import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
@@ -30,8 +32,7 @@ public class Invitation extends BaseModel {
   @Required
   private String specialization;
 
-  @Index
-  private String relatedUserId;
+  private String relatedUserWebSafeKey;
 
   private boolean confirmed;
 
@@ -95,12 +96,14 @@ public class Invitation extends BaseModel {
     this.specialization = specialization;
   }
 
-  public String getRelatedUserId() {
-    return this.relatedUserId;
+  public String getRelatedUserWebSafeKey() {
+    return this.relatedUserWebSafeKey;
   }
 
-  public void setRelatedUserId(final String relatedUserId) {
-    this.relatedUserId = relatedUserId;
+  public void setRelatedUserWebSafeKey(final Key<User> relatedUserWebSafeKey) {
+    if (relatedUserWebSafeKey != null) {
+      this.relatedUserWebSafeKey = relatedUserWebSafeKey.toWebSafeString();
+    }
   }
 
   public boolean isConfirmed() {
@@ -127,12 +130,12 @@ public class Invitation extends BaseModel {
         Objects.equal(getSchoolClass(), that.getSchoolClass()) &&
         Objects.equal(getSchoolYear(), that.getSchoolYear()) &&
         Objects.equal(getSpecialization(), that.getSpecialization()) &&
-        Objects.equal(getRelatedUserId(), that.getRelatedUserId());
+        Objects.equal(getRelatedUserWebSafeKey(), that.getRelatedUserWebSafeKey());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserId(), isConfirmed());
+    return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserWebSafeKey(), isConfirmed());
   }
 
 }
