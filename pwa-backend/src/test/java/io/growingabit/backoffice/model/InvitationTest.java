@@ -90,17 +90,17 @@ public class InvitationTest extends BaseDatastoreTest {
 
     final Invitation invitation1 = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     invitation1.setInvitationCode("1234567");
-    invitation1.setConfirmed(true);
+    invitation1.setConfirmed();
     final Invitation invitation2 = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     invitation2.setInvitationCode("1234567");
-    invitation2.setConfirmed(true);
+    invitation2.setConfirmed();
 
     final Invitation invitation3 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
     invitation3.setInvitationCode("7654321");
-    invitation3.setConfirmed(true);
+    invitation3.setConfirmed();
     final Invitation invitation4 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
     invitation4.setInvitationCode("7654321");
-    invitation4.setConfirmed(true);
+    invitation4.setConfirmed();
 
     new EqualsTester()
         .addEqualityGroup(invitation1, invitation2)

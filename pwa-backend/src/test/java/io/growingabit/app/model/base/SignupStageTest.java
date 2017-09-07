@@ -1,4 +1,4 @@
-package io.growingabit.app.model;
+package io.growingabit.app.model.base;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -6,6 +6,7 @@ import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.User;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.DummySignupStage;
@@ -20,9 +21,9 @@ public class SignupStageTest extends BaseDatastoreTest {
 
   @Before
   public void setUp() {
-    ObjectifyService.register(io.growingabit.testUtils.DummySignupStage.class);
+    ObjectifyService.register(DummySignupStage.class);
     ObjectifyService.register(User.class);
-    this.baseDao = new BaseDao<>(io.growingabit.testUtils.DummySignupStage.class);
+    this.baseDao = new BaseDao<>(DummySignupStage.class);
     this.userDao = new UserDao();
   }
 

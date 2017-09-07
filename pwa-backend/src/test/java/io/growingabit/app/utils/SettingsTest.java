@@ -2,8 +2,10 @@ package io.growingabit.app.utils;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.lang.reflect.Field;
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.configuration2.Configuration;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -12,9 +14,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class SettingsTest {
 
+  @Before
+  public void setup() throws NoSuchFieldException, IllegalAccessException {
+    final Field config = Settings.class.getDeclaredField("config");
+    config.setAccessible(true);
+    config.set(null, null);
+  }
+
   @Test
   public void allFileOverwritingTest() {
-    Configuration configuration = new Settings(new ResourceFetcher()).getConfig();
+    final Configuration configuration = new Settings(new ResourceFetcher()).getConfig();
 
     // dev overwrite all
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("dev");
@@ -39,11 +48,11 @@ public class SettingsTest {
   }
 
   @Test
-  public void missingDevFileTest(){
-    ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
+  public void missingDevFileTest() {
+    final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
     Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(null);
-    Configuration configuration = new Settings(resourceFetcher).getConfig();
+    final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("prod");
 
@@ -62,11 +71,11 @@ public class SettingsTest {
   }
 
   @Test
-  public void missingProdFileTest(){
-    ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
+  public void missingProdFileTest() {
+    final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
     Mockito.when(resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME)).thenReturn(null);
-    Configuration configuration = new Settings(resourceFetcher).getConfig();
+    final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("dev");
 
@@ -85,12 +94,12 @@ public class SettingsTest {
   }
 
   @Test
-  public void missingDevAndProdFilesTest(){
-    ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
+  public void missingDevAndProdFilesTest() {
+    final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
     Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(null);
     Mockito.when(resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME)).thenReturn(null);
-    Configuration configuration = new Settings(resourceFetcher).getConfig();
+    final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("def");
 
@@ -109,19 +118,36 @@ public class SettingsTest {
 
   @Test(expected = WebServiceException.class)
   public void missingDefFileTest() {
-    ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
+    final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
     Mockito.when(resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME)).thenReturn(null);
-    new Settings(resourceFetcher).getConfig();
+    new Settings(resourceFetcher).getConfiguration();
   }
 
   @Test()
   public void skipDoubleConfigCreationTest() {
-    ResourceFetcher resourceFetcher = Mockito.spy(ResourceFetcher.class);
-    Settings settings = new Settings(resourceFetcher);
-    Configuration config1 = settings.getConfig();
-    Configuration config2 = settings.getConfig();
+    final ResourceFetcher resourceFetcher = Mockito.spy(ResourceFetcher.class);
+    final Settings settings = new Settings(resourceFetcher);
+    final Configuration config1 = settings.getConfiguration();
+    final Configuration config2 = settings.getConfiguration();
 
+    assertThat(config1).isEqualTo(config2);
+  }
+
+  @Test()
+  public void skipDoubleConfigCreationTest2() {
+    final ResourceFetcher resourceFetcher = Mockito.spy(ResourceFetcher.class);
+    final Configuration config1 = Settings.getConfig();
+    final Configuration config2 = Settings.getConfig();
+    assertThat(config1).isEqualTo(config2);
+  }
+
+  @Test()
+  public void returnSameConfig() {
+    final ResourceFetcher resourceFetcher = Mockito.spy(ResourceFetcher.class);
+    final Settings settings = new Settings(resourceFetcher);
+    final Configuration config1 = settings.getConfiguration();
+    final Configuration config2 = Settings.getConfig();
     assertThat(config1).isEqualTo(config2);
   }
 }
