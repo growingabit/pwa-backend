@@ -2,7 +2,7 @@ package io.growingabit.jersey.providers;
 
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import io.growingabit.app.utils.GsonFactory;
+import io.growingabit.app.utils.gson.GsonFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
