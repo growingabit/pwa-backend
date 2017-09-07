@@ -5,7 +5,6 @@ import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoClassFilter;
 import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
-import com.openpojo.validation.rule.impl.GetterMustExistRule;
 import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
 import com.openpojo.validation.test.impl.GetterTester;
@@ -29,7 +28,6 @@ public class AppPojoTest {
   @Before
   public void setup() {
     this.validator = ValidatorBuilder.create()
-        .with(new GetterMustExistRule())
         .with(new SetterTester())
         .with(new GetterTester())
         .with(new NoFieldShadowingRule())

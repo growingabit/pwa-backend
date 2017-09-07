@@ -3,8 +3,11 @@ package io.growingabit.backoffice.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.testing.EqualsTester;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
+import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import java.util.Random;
@@ -14,11 +17,14 @@ import org.junit.Test;
 public class InvitationTest extends BaseDatastoreTest {
 
   private InvitationDao dao;
+  private UserDao userDao;
 
   @Before
   public void setUp() {
     ObjectifyService.register(Invitation.class);
+    ObjectifyService.register(User.class);
     this.dao = new InvitationDao();
+    this.userDao = new UserDao();
   }
 
   @Test
@@ -82,6 +88,26 @@ public class InvitationTest extends BaseDatastoreTest {
     this.dao.persist(invitation);
     assertThat(invitation.getInvitationCode()).isEqualTo(invitationCode);
   }
+
+  @Test
+  public void getUserShouldReturnNull() {
+    final Invitation invitation = new Invitation();
+    final String s = invitation.getRelatedUserWebSafeKey();
+    assertThat(s).isNull();
+  }
+
+  @Test
+  public void setUserShouldNotAcceptNull() {
+    final Invitation invitation = new Invitation();
+    final User u = new User();
+    u.setId("id");
+    this.userDao.persist(u);
+    invitation.setRelatedUserWebSafeKey(Key.create(u));
+    invitation.setRelatedUserWebSafeKey(null);
+    final String s = invitation.getRelatedUserWebSafeKey();
+    assertThat(s).isNotNull();
+  }
+
 
   @Test
   public void equalsAndHashCode() {
