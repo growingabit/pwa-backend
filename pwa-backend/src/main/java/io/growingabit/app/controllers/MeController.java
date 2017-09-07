@@ -49,7 +49,7 @@ public class MeController {
   }
 
   @GET
-  @Path("/")
+  @Path("")
   public Response getCurrenUserInfo(@Context final SecurityContext securityContext) {
     User user = null;
     try {

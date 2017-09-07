@@ -2,7 +2,6 @@ package io.growingabit.app.model.base;
 
 import com.google.common.base.Objects;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.SaveException;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Parent;
@@ -38,7 +37,7 @@ public abstract class SignupStage<T> extends BaseModel {
     this.isDone = false;
     this.stageIdentifier = Settings.getConfig().getString(this.getClass().getCanonicalName());
     if (StringUtils.isEmpty(this.stageIdentifier)) {
-      throw new SaveException(this, "Missing " + this.getClass().getCanonicalName() + " property on settings file", null);
+      throw new IllegalStateException("Missing " + this.getClass().getCanonicalName() + " property on settings file");
     }
   }
 
