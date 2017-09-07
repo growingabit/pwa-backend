@@ -168,4 +168,63 @@ public class MeControllerTest extends BaseDatastoreTest {
     assertThat(savedStage.isDone()).isTrue();
   }
 
+  @Test
+  public void invitationCodeAlreadyUsed() {
+    ObjectifyService.factory().register(Invitation.class);
+    ObjectifyService.factory().register(User.class);
+    ObjectifyService.factory().register(InvitationCodeSignupStage.class);
+
+    final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
+    invitation.setConfirmed();
+    this.invitationDao.persist(invitation);
+
+    final User user = new User();
+    user.setId("id");
+
+    final Key<User> userKey = Key.create(user);
+    final InvitationCodeSignupStage stage = new InvitationCodeSignupStage();
+    stage.setUser(userKey);
+    stage.setData(invitation);
+    this.invitationCodeSignupStageDao.persist(stage);
+
+    user.addMandatorySignupStage(stage);
+    this.userDao.persist(user);
+
+    final Response response = new MeController().confirmInvitationCode(context, invitation.getInvitationCode());
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void invitationCodeNotFound() {
+    ObjectifyService.factory().register(Invitation.class);
+    ObjectifyService.factory().register(User.class);
+    ObjectifyService.factory().register(InvitationCodeSignupStage.class);
+    final User user = new User();
+    user.setId("id");
+    this.userDao.persist(user);
+
+    final Auth0UserProfile userProfile = new Auth0UserProfile(user.getId(), "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final Response response = new MeController().confirmInvitationCode(context, "inexintent code");
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void userNotFound() {
+    ObjectifyService.factory().register(Invitation.class);
+    ObjectifyService.factory().register(User.class);
+    ObjectifyService.factory().register(InvitationCodeSignupStage.class);
+    final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final Response response = new MeController().confirmInvitationCode(context, "a code");
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
 }

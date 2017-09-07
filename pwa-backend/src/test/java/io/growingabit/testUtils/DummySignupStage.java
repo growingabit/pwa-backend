@@ -8,10 +8,6 @@ import io.growingabit.common.model.BaseModel;
 @Entity
 public class DummySignupStage extends EmbeddedEntitySignupStage<BaseModel> {
 
-  public DummySignupStage() {
-    super();
-  }
-
   @Override
   public void exec(final SignupStageExecutor executor) {
 

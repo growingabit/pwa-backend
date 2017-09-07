@@ -5,14 +5,14 @@ import com.googlecode.objectify.Key;
 import io.growingabit.app.dao.GenericSignupStageDao;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 public class SignupStageFactory {
 
-  private static final Set<Class> signupStages = new HashSet<>();
-  private static final Set<Class> mandatorySignupStages = new HashSet<>();
+  private static final Set<Class> signupStages = new LinkedHashSet<>();
+  private static final Set<Class> mandatorySignupStages = new LinkedHashSet<>();
   private static final GenericSignupStageDao genericSignupStageDao = new GenericSignupStageDao();
 
   public static <T extends SignupStage> void register(final Class<T> stageClass) {

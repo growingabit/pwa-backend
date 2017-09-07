@@ -44,7 +44,7 @@ class InvitationCodeSignupStageExecutor {
         }
       });
     } catch (final RuntimeException e) {
-      if (e.getCause() instanceof SignupStageExecutionException) {
+      if (e instanceof SignupStageExecutionException) {
         throw e;
       } else {
         throw new SignupStageExecutionException(e);
