@@ -6,11 +6,12 @@ import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Load;
+import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.common.model.BaseModel;
-import io.growingabit.common.utils.ReferenceGetter;
 import io.gsonfire.annotations.ExposeMethodResult;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Cache
@@ -19,10 +20,13 @@ public class User extends BaseModel {
   @Id
   String id;
   @Load
-  List<Ref<SignupStage>> signupStages;
+  Map<String, Ref<SignupStage>> signupStages;
+  @Load
+  Map<String, Ref<SignupStage>> mandatorySignupStages;
 
   public User() {
-    this.signupStages = new LinkedList<>();
+    this.signupStages = new HashMap<>();
+    this.mandatorySignupStages = new HashMap<>();
   }
 
   public String getId() {
@@ -33,12 +37,40 @@ public class User extends BaseModel {
     this.id = id;
   }
 
-  public List<SignupStage> getSignupStages() {
-    return ReferenceGetter.deref(this.signupStages);
+  public Map<String, Ref<SignupStage>> getSignupStages() {
+    return Collections.unmodifiableMap(this.signupStages);
+  }
+
+  public Map<String, Ref<SignupStage>> getMandatorySignupStages() {
+    return Collections.unmodifiableMap(this.mandatorySignupStages);
   }
 
   public void addSignupStage(final SignupStage stage) {
-    this.signupStages.add(Ref.create(stage));
+    this.signupStages.put(stage.getStageIdentifier(), Ref.create(stage));
+  }
+
+  public void addMandatorySignupStage(final SignupStage stage) {
+    this.mandatorySignupStages.put(stage.getStageIdentifier(), Ref.create(stage));
+  }
+
+  @ExposeMethodResult("signupDone")
+  public boolean isSignupDone() {
+
+    // mandatory signup stages take precedences over all others
+    Map<String, Ref<SignupStage>> signupStages = this.getMandatorySignupStages();
+    for (final Ref<SignupStage> signupStage : signupStages.values()) {
+      if (!signupStage.get().isDone()) {
+        return false;
+      }
+    }
+
+    signupStages = this.getSignupStages();
+    for (final Ref<SignupStage> signupStage : signupStages.values()) {
+      if (!signupStage.get().isDone()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -58,14 +90,4 @@ public class User extends BaseModel {
     return Objects.hashCode(getId());
   }
 
-  @ExposeMethodResult("signupDone")
-  public boolean isSignupDone() {
-    final List<SignupStage> signupStages = this.getSignupStages();
-    for (final SignupStage signupStage : signupStages) {
-      if (!signupStage.isDone()) {
-        return false;
-      }
-    }
-    return true;
-  }
 }
