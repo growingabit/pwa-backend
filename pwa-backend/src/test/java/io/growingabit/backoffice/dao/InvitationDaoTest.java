@@ -46,4 +46,9 @@ public class InvitationDaoTest extends BaseDatastoreTest {
   public void throwExceptionIfNotFound() {
     this.dao.findByInvitationCode("inexistent");
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void throwExceptionIfNull() {
+    this.dao.findByInvitationCode(null);
+  }
 }

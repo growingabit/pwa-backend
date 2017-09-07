@@ -2,7 +2,6 @@ package io.growingabit.common.utils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FieldsGetter {
@@ -11,8 +10,15 @@ public class FieldsGetter {
     final List<Field> result = new ArrayList<>();
 
     Class<?> i = type;
+    Field[] fields;
     while (i != null && i != Object.class) {
-      Collections.addAll(result, i.getDeclaredFields());
+      fields = i.getDeclaredFields();
+      for (final Field field : fields) {
+        // Avoid compiler-created fields
+        if (!field.isSynthetic()) {
+          result.add(field);
+        }
+      }
       i = i.getSuperclass();
     }
 

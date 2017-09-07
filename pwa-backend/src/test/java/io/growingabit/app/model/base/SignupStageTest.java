@@ -6,7 +6,9 @@ import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.User;
+import io.growingabit.app.signup.executors.SignupStageExecutor;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.DummySignupStage;
@@ -61,6 +63,29 @@ public class SignupStageTest extends BaseDatastoreTest {
     assertThat(dummySignupStage1.hashCode()).isEqualTo(dummySignupStage1.hashCode());
     assertThat(dummySignupStage1.hashCode()).isEqualTo(dummySignupStage2.hashCode());
     assertThat(dummySignupStage1.hashCode()).isNotEqualTo(dummySignupStage3.hashCode());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void throwIllegalStateIfIdentifierIsMissing() {
+    new DummyMissingIDentifierSignupStage();
+  }
+
+  private class DummyMissingIDentifierSignupStage extends SignupStage {
+
+    @Override
+    public Object getData() {
+      return null;
+    }
+
+    @Override
+    public void setData(final Object data) {
+
+    }
+
+    @Override
+    public void exec(final SignupStageExecutor executor) throws SignupStageExecutionException {
+
+    }
   }
 
 }

@@ -128,14 +128,22 @@ public class InvitationTest extends BaseDatastoreTest {
     invitation4.setInvitationCode("7654321");
     invitation4.setConfirmed();
 
+    final Invitation invitation5 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
+    invitation5.setInvitationCode("76543210");
+
+    final Invitation invitation6 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
+    invitation6.setInvitationCode("76543210");
+
     new EqualsTester()
         .addEqualityGroup(invitation1, invitation2)
         .addEqualityGroup(invitation3, invitation4)
+        .addEqualityGroup(invitation5, invitation6)
         .testEquals();
 
     assertThat(invitation1.hashCode()).isEqualTo(invitation1.hashCode());
     assertThat(invitation1.hashCode()).isEqualTo(invitation2.hashCode());
     assertThat(invitation1.hashCode()).isNotEqualTo(invitation3.hashCode());
+    assertThat(invitation1.hashCode()).isNotEqualTo(invitation5.hashCode());
   }
 
 }
