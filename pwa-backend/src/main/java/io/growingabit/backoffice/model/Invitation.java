@@ -107,8 +107,8 @@ public class Invitation extends BaseModel {
     return this.confirmed;
   }
 
-  public void setConfirmed(final boolean confirmed) {
-    this.confirmed = confirmed;
+  public void setConfirmed() {
+    this.confirmed = true;
   }
 
   @Override
