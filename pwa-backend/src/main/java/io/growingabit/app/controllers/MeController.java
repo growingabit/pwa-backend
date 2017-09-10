@@ -5,6 +5,8 @@ import com.googlecode.objectify.NotFoundException;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentData;
+import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
@@ -89,6 +91,28 @@ public class MeController {
         return Response.ok().entity(user).build();
       } catch (final NotFoundException e) {
         return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity("Invitation code not found").build();
+      } catch (final SignupStageExecutionException e) {
+        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
+      }
+    } catch (final NotFoundException e) {
+      // Should be handled this case?
+      // I mean, every method of this controller should create the user
+      // if it not exist?
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
+    }
+  }
+
+  @POST
+  @Path("/studentdata")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response studentData(@Context final SecurityContext securityContext, final StudentData data) {
+    try {
+      final User user = this.getCurrentUser(securityContext);
+      final StudentDataSignupStage stage = new StudentDataSignupStage();
+      stage.setData(data);
+      try {
+        stage.exec(new SignupStageExecutor(user));
+        return Response.ok().entity(user).build();
       } catch (final SignupStageExecutionException e) {
         return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
       }

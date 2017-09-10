@@ -82,7 +82,8 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
 
   @Test(expected = NullPointerException.class)
   public void invitationStepStageMustBeNotNull() {
-    new SignupStageExecutor(this.user).exec(null);
+    final InvitationCodeSignupStage stage = null;
+    new SignupStageExecutor(user).exec(stage);
   }
 
   @Test(expected = NullPointerException.class)

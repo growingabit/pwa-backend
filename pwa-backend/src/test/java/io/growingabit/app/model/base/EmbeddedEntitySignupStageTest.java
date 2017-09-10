@@ -36,6 +36,16 @@ public class EmbeddedEntitySignupStageTest extends BaseDatastoreTest {
   private class DummyEmbeddedSignupStage extends EmbeddedEntitySignupStage<User> {
 
     @Override
+    public User getData() {
+      return null;
+    }
+
+    @Override
+    public void setData(final User data) {
+
+    }
+
+    @Override
     public void exec(final SignupStageExecutor executor) throws SignupStageExecutionException {
 
     }
