@@ -1,5 +1,6 @@
 package io.growingabit.backoffice.model;
 
+import com.googlecode.objectify.ObjectifyService;
 import com.openpojo.random.RandomFactory;
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoClassFilter;
@@ -11,13 +12,14 @@ import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
+import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.EqualsHashCodeRule;
 import io.growingabit.testUtils.RefGenerator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class BackofficePojoTest {
+public class BackofficePojoTest extends BaseDatastoreTest {
 
   private final String packageName = "io.growingabit.backoffice.model";
   private Validator validator;
@@ -29,6 +31,7 @@ public class BackofficePojoTest {
 
   @Before
   public void setup() {
+    ObjectifyService.factory().register(Invitation.class);
     this.validator = ValidatorBuilder.create()
         .with(new SetterTester())
         .with(new GetterTester())

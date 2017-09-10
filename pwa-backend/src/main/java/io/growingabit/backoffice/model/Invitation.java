@@ -2,12 +2,13 @@ package io.growingabit.backoffice.model;
 
 import com.google.common.base.Objects;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Index;
 import io.growingabit.app.model.User;
 import io.growingabit.app.utils.SecureStringGenerator;
+import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
 import org.apache.commons.lang3.StringUtils;
@@ -17,9 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 public class Invitation extends BaseModel {
 
   @Id
-  private Long id;
-
-  @Index
   @Required
   private String invitationCode;
 
@@ -38,7 +36,9 @@ public class Invitation extends BaseModel {
 
   public Invitation() {
     super();
-    this.invitationCode = new SecureStringGenerator(7).nextString();
+    do {
+      this.invitationCode = new SecureStringGenerator(7).nextString();
+    } while (this.isDuplicateInvitation());
     this.confirmed = false;
   }
 
@@ -50,18 +50,8 @@ public class Invitation extends BaseModel {
     this.specialization = specialization;
   }
 
-  public Long getId() {
-    return this.id;
-  }
-
   public String getInvitationCode() {
     return this.invitationCode;
-  }
-
-  public void setInvitationCode(final String invitationCode) {
-    if (StringUtils.isNotEmpty(invitationCode)) {
-      this.invitationCode = invitationCode;
-    }
   }
 
   public String getSchool() {
@@ -122,6 +112,15 @@ public class Invitation extends BaseModel {
     this.confirmed = true;
   }
 
+  private boolean isDuplicateInvitation() {
+    try {
+      new InvitationDao().find(Key.create(this));
+      return true;
+    } catch (final NotFoundException e) {
+      return false;
+    }
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -132,7 +131,6 @@ public class Invitation extends BaseModel {
     }
     final Invitation that = (Invitation) o;
     return isConfirmed() == that.isConfirmed() &&
-        Objects.equal(getId(), that.getId()) &&
         Objects.equal(getInvitationCode(), that.getInvitationCode()) &&
         Objects.equal(getSchool(), that.getSchool()) &&
         Objects.equal(getSchoolClass(), that.getSchoolClass()) &&
@@ -143,7 +141,7 @@ public class Invitation extends BaseModel {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserWebSafeKey(), isConfirmed());
+    return Objects.hashCode(getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserWebSafeKey(), isConfirmed());
   }
 
 }
