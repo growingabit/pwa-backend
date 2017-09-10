@@ -22,6 +22,7 @@ public class SignupStageExecutor {
   }
 
   public void exec(final StudentDataSignupStage stage) throws SignupStageExecutionException {
+    Preconditions.checkNotNull(stage);
     final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
     final StudentDataSignupStage userSignupStage = (StudentDataSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();
     userSignupStage.setData(stage.getData());

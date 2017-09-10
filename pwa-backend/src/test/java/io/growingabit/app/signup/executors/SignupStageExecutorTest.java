@@ -4,12 +4,14 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import io.growingabit.app.dao.InvitationCodeSignupStageDao;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentData;
+import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
+import io.growingabit.app.utils.Settings;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
@@ -22,7 +24,6 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
 
   private UserDao userDao;
   private InvitationDao invitationDao;
-  private InvitationCodeSignupStageDao invitationCodeSignupStageDao;
   private User user;
 
   @Before
@@ -33,12 +34,14 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
     ObjectifyService.factory().register(Invitation.class);
     ObjectifyService.factory().register(User.class);
     ObjectifyService.factory().register(InvitationCodeSignupStage.class);
+    ObjectifyService.factory().register(StudentDataSignupStage.class);
 
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
 
+    SignupStageFactory.register(StudentDataSignupStage.class);
+
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
-    this.invitationCodeSignupStageDao = new InvitationCodeSignupStageDao();
 
     this.user = new User();
     this.user.setId("id");
@@ -53,6 +56,10 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
     this.userDao.persist(this.user);
   }
 
+  @Test(expected = NullPointerException.class)
+  public void invitationStepUserMustBeNotNull() {
+    new SignupStageExecutor(null);
+  }
 
   @Test
   public void completeInvitationStep() {
@@ -83,12 +90,31 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
   @Test(expected = NullPointerException.class)
   public void invitationStepStageMustBeNotNull() {
     final InvitationCodeSignupStage stage = null;
-    new SignupStageExecutor(user).exec(stage);
+    new SignupStageExecutor(this.user).exec(stage);
+  }
+
+  @Test
+  public void completeStudentDataStep() {
+    final StudentData studentData = new StudentData();
+    studentData.setName("Lorenzo");
+    studentData.setSurname("Bugiani");
+    studentData.setBirthdate("19/04/1985");
+
+    final StudentDataSignupStage stage = new StudentDataSignupStage();
+    stage.setData(studentData);
+    new SignupStageExecutor(this.user).exec(stage);
+
+    final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
+    final StudentDataSignupStage savedStage = (StudentDataSignupStage) this.user.getSignupStages().get(signupStageIndentifier).get();
+
+    assertThat(savedStage.isDone()).isTrue();
+    assertThat(savedStage.getData()).isEqualTo(studentData);
   }
 
   @Test(expected = NullPointerException.class)
-  public void invitationStepUserMustBeNotNull() {
-    new SignupStageExecutor(null);
+  public void userDataStepStageMustBeNotNull() {
+    final StudentDataSignupStage stage = null;
+    new SignupStageExecutor(this.user).exec(stage);
   }
 
 }

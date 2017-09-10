@@ -106,21 +106,23 @@ public class MeController {
   @Path("/studentdata")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response studentData(@Context final SecurityContext securityContext, final StudentData data) {
+    if (data == null) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
+    }
+
     try {
       final User user = this.getCurrentUser(securityContext);
       final StudentDataSignupStage stage = new StudentDataSignupStage();
       stage.setData(data);
-      try {
-        stage.exec(new SignupStageExecutor(user));
-        return Response.ok().entity(user).build();
-      } catch (final SignupStageExecutionException e) {
-        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
-      }
+      stage.exec(new SignupStageExecutor(user));
+      return Response.ok().entity(user).build();
     } catch (final NotFoundException e) {
       // Should be handled this case?
       // I mean, every method of this controller should create the user
       // if it not exist?
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
+    } catch (final SignupStageExecutionException e) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
     }
   }
 }
