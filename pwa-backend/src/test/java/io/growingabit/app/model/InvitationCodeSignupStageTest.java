@@ -7,6 +7,8 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.InvitationCodeSignupStageDao;
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.backoffice.dao.InvitationDao;
+import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import java.util.Random;
 import org.junit.Before;
@@ -16,13 +18,16 @@ public class InvitationCodeSignupStageTest extends BaseDatastoreTest {
 
   private InvitationCodeSignupStageDao invitationCodeSignupStageDao;
   private UserDao userDao;
+  private InvitationDao invitationDao;
 
   @Before
   public void setUp() {
     ObjectifyService.register(InvitationCodeSignupStage.class);
+    ObjectifyService.register(Invitation.class);
     ObjectifyService.register(User.class);
     this.invitationCodeSignupStageDao = new InvitationCodeSignupStageDao();
     this.userDao = new UserDao();
+    this.invitationDao = new InvitationDao();
   }
 
   @Test(expected = SaveException.class)
@@ -40,16 +45,19 @@ public class InvitationCodeSignupStageTest extends BaseDatastoreTest {
 
     final int n = new Random().nextInt(10) + 1;
 
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    this.invitationDao.persist(invitation);
     final InvitationCodeSignupStage dummySignupStage1 = new InvitationCodeSignupStage();
-    dummySignupStage1.setId(1L);
+    dummySignupStage1.setData(invitation);
     final InvitationCodeSignupStage dummySignupStage2 = new InvitationCodeSignupStage();
-    dummySignupStage2.setId(1L);
+    dummySignupStage2.setData(invitation);
 
+    final Invitation invitation2 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
+    this.invitationDao.persist(invitation2);
     final InvitationCodeSignupStage dummySignupStage3 = new InvitationCodeSignupStage();
-    dummySignupStage3.setId(2L);
-
+    dummySignupStage3.setData(invitation2);
     final InvitationCodeSignupStage dummySignupStage4 = new InvitationCodeSignupStage();
-    dummySignupStage4.setId(2L);
+    dummySignupStage4.setData(invitation2);
 
     new EqualsTester()
         .addEqualityGroup(dummySignupStage1, dummySignupStage2)

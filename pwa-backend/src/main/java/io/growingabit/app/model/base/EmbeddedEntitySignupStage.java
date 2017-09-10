@@ -11,7 +11,28 @@ public abstract class EmbeddedEntitySignupStage<T> extends SignupStage<T> {
 
   @Override
   public void setData(final T data) {
-    this.data = data;
+    if (data != null) {
+      this.data = data;
+    }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    final boolean superEquals = super.equals(o);
+    if (superEquals) {
+      final EmbeddedEntitySignupStage signupStage = (EmbeddedEntitySignupStage) o;
+      if (this.data == null) {
+        return signupStage.getData() == null;
+      } else {
+        return this.data.equals(signupStage.getData());
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 
 }

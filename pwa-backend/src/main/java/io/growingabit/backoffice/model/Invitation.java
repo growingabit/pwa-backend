@@ -69,7 +69,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSchool(final String school) {
-    this.school = school;
+    if (StringUtils.isNotEmpty(school)) {
+      this.school = school;
+    }
   }
 
   public String getSchoolClass() {
@@ -77,7 +79,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSchoolClass(final String schoolClass) {
-    this.schoolClass = schoolClass;
+    if (StringUtils.isNotEmpty(schoolClass)) {
+      this.schoolClass = schoolClass;
+    }
   }
 
   public String getSchoolYear() {
@@ -85,7 +89,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSchoolYear(final String schoolYear) {
-    this.schoolYear = schoolYear;
+    if (StringUtils.isNotEmpty(schoolYear)) {
+      this.schoolYear = schoolYear;
+    }
   }
 
   public String getSpecialization() {
@@ -93,7 +99,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSpecialization(final String specialization) {
-    this.specialization = specialization;
+    if (StringUtils.isNotEmpty(specialization)) {
+      this.specialization = specialization;
+    }
   }
 
   public String getRelatedUserWebSafeKey() {

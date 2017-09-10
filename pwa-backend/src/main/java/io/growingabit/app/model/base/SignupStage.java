@@ -45,10 +45,6 @@ public abstract class SignupStage<T> extends BaseModel {
     return this.id;
   }
 
-  public void setId(final Long id) {
-    this.id = id;
-  }
-
   public Key<User> getUser() {
     return this.user;
   }

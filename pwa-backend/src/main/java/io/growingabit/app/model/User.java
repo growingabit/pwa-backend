@@ -12,6 +12,7 @@ import io.gsonfire.annotations.ExposeMethodResult;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Cache
@@ -34,7 +35,9 @@ public class User extends BaseModel {
   }
 
   public void setId(final String id) {
-    this.id = id;
+    if (StringUtils.isNotEmpty(id)) {
+      this.id = id;
+    }
   }
 
   public Map<String, Ref<SignupStage>> getSignupStages() {

@@ -3,6 +3,7 @@ package io.growingabit.app.model.base;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.testing.EqualsTester;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.UserDao;
@@ -12,7 +13,6 @@ import io.growingabit.app.signup.executors.SignupStageExecutor;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.DummySignupStage;
-import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,20 +40,27 @@ public class SignupStageTest extends BaseDatastoreTest {
   }
 
   @Test
+  public void shouldNotAcceptNullUser() {
+    final DummySignupStage ref = new DummySignupStage();
+    final User u = new User();
+    u.setId("id");
+    this.userDao.persist(u);
+    ref.setUser(Key.create(u));
+    ref.setData(null);
+    final Key<User> s = ref.getUser();
+    assertThat(s).isNotNull();
+  }
+
+  @Test
   public void equalsAndHashCode() {
 
-    final int n = new Random().nextInt(10) + 1;
-
     final DummySignupStage dummySignupStage1 = new DummySignupStage();
-    dummySignupStage1.setId(1L);
+    dummySignupStage1.setDone();
     final DummySignupStage dummySignupStage2 = new DummySignupStage();
-    dummySignupStage2.setId(1L);
+    dummySignupStage2.setDone();
 
     final DummySignupStage dummySignupStage3 = new DummySignupStage();
-    dummySignupStage3.setId(2L);
-
     final DummySignupStage dummySignupStage4 = new DummySignupStage();
-    dummySignupStage4.setId(2L);
 
     new EqualsTester()
         .addEqualityGroup(dummySignupStage1, dummySignupStage2)

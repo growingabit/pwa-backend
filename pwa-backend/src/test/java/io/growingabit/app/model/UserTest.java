@@ -197,6 +197,22 @@ public class UserTest extends BaseDatastoreTest {
   }
 
   @Test
+  public void shouldNotAcceptNullId() {
+    final User model = new User();
+    model.setId("id");
+    model.setId(null);
+    assertThat(model.getId()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptyId() {
+    final User model = new User();
+    model.setId("id");
+    model.setId("");
+    assertThat(model.getId()).isNotEmpty();
+  }
+
+  @Test
   public void equalsAndHashCode() {
 
     final int n = new Random().nextInt(10) + 1;

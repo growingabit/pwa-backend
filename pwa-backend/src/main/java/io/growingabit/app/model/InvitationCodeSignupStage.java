@@ -17,6 +17,11 @@ public class InvitationCodeSignupStage extends ReferenceSignupStage<Invitation> 
   }
 
   @Override
+  public Invitation getData() {
+    return super.getData();
+  }
+
+  @Override
   public boolean equals(final Object o) {
     return super.equals(o);
   }
@@ -25,5 +30,4 @@ public class InvitationCodeSignupStage extends ReferenceSignupStage<Invitation> 
   public int hashCode() {
     return super.hashCode();
   }
-
 }
