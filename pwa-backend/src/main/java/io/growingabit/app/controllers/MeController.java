@@ -2,8 +2,6 @@ package io.growingabit.app.controllers;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
-import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.VoidWork;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
@@ -85,28 +83,14 @@ public class MeController {
       final InvitationDao invitationDao = new InvitationDao();
       try {
         final Invitation invitation = invitationDao.findByInvitationCode(invitationCode);
-        final String signupStageKey = MeController.this.config.getString(InvitationCodeSignupStage.class.getCanonicalName());
-        final InvitationCodeSignupStage signupStage = (InvitationCodeSignupStage) user.getMandatorySignupStages().get(signupStageKey).get();
-        try {
-          ObjectifyService.ofy().transact(new VoidWork() {
-            @Override
-            public void vrun() {
-              signupStage.setData(invitation);
-              signupStage.exec(new SignupStageExecutor(user));
-            }
-          });
-          return Response.ok().entity(user).build();
-        } catch (final RuntimeException e) {
-          if (e instanceof SignupStageExecutionException) {
-            throw e;
-          } else {
-            throw new SignupStageExecutionException(e);
-          }
-        }
+        final InvitationCodeSignupStage signupStage = new InvitationCodeSignupStage();
+        signupStage.setData(invitation);
+        signupStage.exec(new SignupStageExecutor(user));
+        return Response.ok().entity(user).build();
       } catch (final NotFoundException e) {
         return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity("Invitation code not found").build();
       } catch (final SignupStageExecutionException e) {
-        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity("Invitation code already used").build();
+        return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
       }
     } catch (final NotFoundException e) {
       // Should be handled this case?
@@ -115,5 +99,4 @@ public class MeController {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
   }
-
 }

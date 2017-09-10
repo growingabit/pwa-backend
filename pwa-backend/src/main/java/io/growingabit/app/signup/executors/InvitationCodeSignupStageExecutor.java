@@ -8,6 +8,7 @@ import io.growingabit.app.dao.InvitationCodeSignupStageDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.User;
+import io.growingabit.app.utils.Settings;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 
@@ -37,9 +38,12 @@ class InvitationCodeSignupStageExecutor {
             invitation.setConfirmed();
             invitation.setRelatedUserWebSafeKey(Key.create(user));
             InvitationCodeSignupStageExecutor.this.invitationDao.persist(invitation);
+            final String signupStageIndentifier = Settings.getConfig().getString(InvitationCodeSignupStage.class.getCanonicalName());
+            final InvitationCodeSignupStage userSignupStage = (InvitationCodeSignupStage) user.getMandatorySignupStages().get(signupStageIndentifier).get();
 
-            stage.setDone();
-            InvitationCodeSignupStageExecutor.this.invitationCodeSignupStageDao.persist(stage);
+            userSignupStage.setData(invitation);
+            userSignupStage.setDone();
+            InvitationCodeSignupStageExecutor.this.invitationCodeSignupStageDao.persist(userSignupStage);
           }
         }
       });

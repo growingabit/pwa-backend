@@ -9,8 +9,10 @@ import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.User;
+import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
+import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,37 +22,44 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
   private UserDao userDao;
   private InvitationDao invitationDao;
   private InvitationCodeSignupStageDao invitationCodeSignupStageDao;
+  private User user;
 
   @Before
-  public void setup() {
+  public void setup() throws InstantiationException, IllegalAccessException {
     ObjectifyService.factory().register(Invitation.class);
     ObjectifyService.factory().register(User.class);
     ObjectifyService.factory().register(InvitationCodeSignupStage.class);
+
+    SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
+
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
     this.invitationCodeSignupStageDao = new InvitationCodeSignupStageDao();
+
+    this.user = new User();
+    this.user.setId("id");
+    this.userDao.persist(this.user);
+    final Key<User> userKey = Key.create(this.user);
+    for (final SignupStage signupStage : SignupStageFactory.getMandatorySignupStages(userKey)) {
+      this.user.addMandatorySignupStage(signupStage);
+    }
+    for (final SignupStage signupStage : SignupStageFactory.getSignupStages(userKey)) {
+      this.user.addSignupStage(signupStage);
+    }
+    this.userDao.persist(this.user);
   }
+
 
   @Test
   public void completeInvitationStep() {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
 
-    final User user = new User();
-    user.setId("id");
-
-    final Key<User> userKey = Key.create(user);
     final InvitationCodeSignupStage stage = new InvitationCodeSignupStage();
-    stage.setUser(userKey);
     stage.setData(invitation);
-    this.invitationCodeSignupStageDao.persist(stage);
+    new SignupStageExecutor(this.user).exec(stage);
 
-    user.addMandatorySignupStage(stage);
-    this.userDao.persist(user);
-
-    new SignupStageExecutor(user).exec(stage);
-
-    final InvitationCodeSignupStage savedStage = (InvitationCodeSignupStage) user.getMandatorySignupStages().values().iterator().next().get();
+    final InvitationCodeSignupStage savedStage = (InvitationCodeSignupStage) this.user.getMandatorySignupStages().values().iterator().next().get();
 
     assertThat(savedStage.getData().isConfirmed()).isTrue();
     assertThat(savedStage.isDone()).isTrue();
@@ -62,36 +71,18 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
 
-    final User user = new User();
-    user.setId("id");
-
-    final Key<User> userKey = Key.create(user);
     final InvitationCodeSignupStage stage = new InvitationCodeSignupStage();
-    stage.setUser(userKey);
     stage.setData(invitation);
-    this.invitationCodeSignupStageDao.persist(stage);
-
-    user.addMandatorySignupStage(stage);
-    this.userDao.persist(user);
-
-    new SignupStageExecutor(user).exec(stage);
+    new SignupStageExecutor(this.user).exec(stage);
   }
 
   @Test(expected = NullPointerException.class)
   public void invitationStepStageMustBeNotNull() {
-    final User user = new User();
-    user.setId("id");
-    this.userDao.persist(user);
-
-    new SignupStageExecutor(user).exec(null);
+    new SignupStageExecutor(this.user).exec(null);
   }
 
   @Test(expected = NullPointerException.class)
   public void invitationStepUserMustBeNotNull() {
-    final InvitationCodeSignupStage stage = new InvitationCodeSignupStage();
-    stage.setUser(Key.create(User.class, '3'));
-    this.invitationCodeSignupStageDao.persist(stage);
-
     new SignupStageExecutor(null);
   }
 

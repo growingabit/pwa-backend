@@ -10,7 +10,6 @@ import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
-import io.growingabit.app.utils.Settings;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
@@ -36,19 +35,24 @@ public class MeControllerTest extends BaseDatastoreTest {
 
   @Before
   public void setUp() {
+    ObjectifyService.register(User.class);
+    ObjectifyService.register(DummySignupStage.class);
+    ObjectifyService.register(User.class);
+    ObjectifyService.register(Invitation.class);
+    ObjectifyService.register(InvitationCodeSignupStage.class);
+
+    SignupStageFactory.register(DummySignupStage.class);
+
+    SignupStageFactory.registerMandatory(DummySignupStage.class);
+    SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
+
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
     this.invitationCodeSignupStageDao = new InvitationCodeSignupStageDao();
   }
 
-
   @Test
   public void returnCurrentUser() {
-    ObjectifyService.register(User.class);
-    ObjectifyService.register(DummySignupStage.class);
-    SignupStageFactory.register(DummySignupStage.class);
-    SignupStageFactory.registerMandatory(DummySignupStage.class);
-
     final User user = new User();
     user.setId("id");
     this.userDao.persist(user);
@@ -65,11 +69,6 @@ public class MeControllerTest extends BaseDatastoreTest {
 
   @Test
   public void createUserIfNotExist() {
-    ObjectifyService.register(User.class);
-    ObjectifyService.register(DummySignupStage.class);
-    SignupStageFactory.register(DummySignupStage.class);
-    SignupStageFactory.registerMandatory(DummySignupStage.class);
-
     final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
@@ -83,11 +82,6 @@ public class MeControllerTest extends BaseDatastoreTest {
 
   @Test
   public void signupStageAreSetted() {
-    ObjectifyService.register(User.class);
-    ObjectifyService.register(DummySignupStage.class);
-    SignupStageFactory.register(DummySignupStage.class);
-    SignupStageFactory.registerMandatory(DummySignupStage.class);
-
     final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
@@ -99,21 +93,10 @@ public class MeControllerTest extends BaseDatastoreTest {
     final Map<String, Ref<SignupStage>> signupStages = returnedUser.getSignupStages();
 
     assertThat(signupStages).hasSize(1);
-
-    final String stageIdentifier = Settings.getConfig().getString(DummySignupStage.class.getCanonicalName());
-    assertThat(signupStages).containsKey(stageIdentifier);
-
-    assertThat(signupStages.get(stageIdentifier).get()).isInstanceOf(DummySignupStage.class);
-
   }
 
   @Test
   public void mandatorySignupStageAreSetted() {
-    ObjectifyService.register(User.class);
-    ObjectifyService.register(DummySignupStage.class);
-    SignupStageFactory.register(DummySignupStage.class);
-    SignupStageFactory.registerMandatory(DummySignupStage.class);
-
     final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
@@ -124,39 +107,20 @@ public class MeControllerTest extends BaseDatastoreTest {
     final User returnedUser = (User) response.getEntity();
     final Map<String, Ref<SignupStage>> mandatorySignupStages = returnedUser.getMandatorySignupStages();
 
-    assertThat(mandatorySignupStages).hasSize(1);
-
-    final String stageIdentifier = Settings.getConfig().getString(DummySignupStage.class.getCanonicalName());
-    assertThat(mandatorySignupStages).containsKey(stageIdentifier);
-
-    assertThat(mandatorySignupStages.get(stageIdentifier).get()).isInstanceOf(DummySignupStage.class);
-
+    assertThat(mandatorySignupStages).hasSize(2);
   }
 
   @Test
   public void confirmInvitationCode() {
-    ObjectifyService.factory().register(Invitation.class);
-    ObjectifyService.factory().register(User.class);
-    ObjectifyService.factory().register(InvitationCodeSignupStage.class);
-
     final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
+    //to create the user
+    new MeController().getCurrenUserInfo(context).getEntity();
+
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
-
-    final User user = new User();
-    user.setId("id");
-
-    final Key<User> userKey = Key.create(user);
-    final InvitationCodeSignupStage stage = new InvitationCodeSignupStage();
-    stage.setUser(userKey);
-    stage.setData(invitation);
-    this.invitationCodeSignupStageDao.persist(stage);
-
-    user.addMandatorySignupStage(stage);
-    this.userDao.persist(user);
 
     final Response response = new MeController().confirmInvitationCode(context, invitation.getInvitationCode());
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
@@ -170,29 +134,16 @@ public class MeControllerTest extends BaseDatastoreTest {
 
   @Test
   public void invitationCodeAlreadyUsed() {
-    ObjectifyService.factory().register(Invitation.class);
-    ObjectifyService.factory().register(User.class);
-    ObjectifyService.factory().register(InvitationCodeSignupStage.class);
-
     final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
+    //to create the user
+    new MeController().getCurrenUserInfo(context).getEntity();
+
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
-
-    final User user = new User();
-    user.setId("id");
-
-    final Key<User> userKey = Key.create(user);
-    final InvitationCodeSignupStage stage = new InvitationCodeSignupStage();
-    stage.setUser(userKey);
-    stage.setData(invitation);
-    this.invitationCodeSignupStageDao.persist(stage);
-
-    user.addMandatorySignupStage(stage);
-    this.userDao.persist(user);
 
     final Response response = new MeController().confirmInvitationCode(context, invitation.getInvitationCode());
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -200,16 +151,12 @@ public class MeControllerTest extends BaseDatastoreTest {
 
   @Test
   public void invitationCodeNotFound() {
-    ObjectifyService.factory().register(Invitation.class);
-    ObjectifyService.factory().register(User.class);
-    ObjectifyService.factory().register(InvitationCodeSignupStage.class);
-    final User user = new User();
-    user.setId("id");
-    this.userDao.persist(user);
-
-    final Auth0UserProfile userProfile = new Auth0UserProfile(user.getId(), "name");
+    final Auth0UserProfile userProfile = new Auth0UserProfile("id", "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    //to create the user
+    new MeController().getCurrenUserInfo(context).getEntity();
 
     final Response response = new MeController().confirmInvitationCode(context, "inexintent code");
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
