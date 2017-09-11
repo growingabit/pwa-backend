@@ -12,7 +12,6 @@ import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
-import io.growingabit.app.signup.executors.SignupStageExecutor;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.backoffice.dao.InvitationDao;
@@ -194,25 +193,23 @@ public class MeControllerTest extends BaseDatastoreTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    final Response response = new MeController().getCurrenUserInfo(context);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-
-    final User user = (User) response.getEntity();
+    Response response = new MeController().getCurrenUserInfo(context);
+    final User returnedUser = (User) response.getEntity();
 
     final StudentData studentData = new StudentData();
     studentData.setName("Lorenzo");
     studentData.setSurname("Bugiani");
     studentData.setBirthdate("19/04/1985");
 
-    final StudentDataSignupStage stage = new StudentDataSignupStage();
-    stage.setData(studentData);
-    new SignupStageExecutor(user).exec(stage);
+    response = new MeController().studentData(context, studentData);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
-    final StudentDataSignupStage savedStage = (StudentDataSignupStage) user.getSignupStages().get(signupStageIndentifier).get();
+    final StudentDataSignupStage savedStage = (StudentDataSignupStage) returnedUser.getSignupStages().get(signupStageIndentifier).get();
 
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData()).isEqualTo(studentData);
+
   }
 
   @Test
