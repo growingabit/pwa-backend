@@ -108,7 +108,9 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
     final StudentDataSignupStage savedStage = (StudentDataSignupStage) this.user.getSignupStages().get(signupStageIndentifier).get();
 
     assertThat(savedStage.isDone()).isTrue();
-    assertThat(savedStage.getData()).isEqualTo(studentData);
+    assertThat(savedStage.getData().getName()).isEqualTo(studentData.getName());
+    assertThat(savedStage.getData().getSurname()).isEqualTo(studentData.getSurname());
+    assertThat(savedStage.getData().getBirthdate()).isEqualTo(studentData.getBirthdate());
   }
 
   @Test(expected = NullPointerException.class)

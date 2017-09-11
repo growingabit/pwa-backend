@@ -16,6 +16,16 @@ public class StudentData {
   private String surname;
   private String birthdate;
 
+  public StudentData() {
+
+  }
+
+  public StudentData(final StudentData data) {
+    this.setName(data.getName());
+    this.setSurname(data.getSurname());
+    this.setBirthdate(data.getBirthdate());
+  }
+
   public String getName() {
     return this.name;
   }

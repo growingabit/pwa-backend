@@ -14,6 +14,7 @@ import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
+import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
@@ -208,7 +209,10 @@ public class MeControllerTest extends BaseDatastoreTest {
     final StudentDataSignupStage savedStage = (StudentDataSignupStage) returnedUser.getSignupStages().get(signupStageIndentifier).get();
 
     assertThat(savedStage.isDone()).isTrue();
-    assertThat(savedStage.getData()).isEqualTo(studentData);
+    assertThat(savedStage.isDone()).isTrue();
+    assertThat(savedStage.getData().getName()).isEqualTo(studentData.getName());
+    assertThat(savedStage.getData().getSurname()).isEqualTo(studentData.getSurname());
+    assertThat(savedStage.getData().getBirthdate()).isEqualTo(studentData.getBirthdate());
 
   }
 
@@ -237,6 +241,24 @@ public class MeControllerTest extends BaseDatastoreTest {
     new MeController().getCurrenUserInfo(context).getEntity();
 
     final Response response = new MeController().studentData(context, null);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void badRequestIfBirthdateIsInvalid() {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    Response response = new MeController().getCurrenUserInfo(context);
+    final User returnedUser = (User) response.getEntity();
+
+    //simulate GSON, becase it do not use setter
+    final String studentDataJson = "{name: 'lorenzo', surname: 'bugiani', birthdate: 'an invalid date'}";
+
+    final StudentData studentData = GsonFactory.getGsonInstance().fromJson(studentDataJson, StudentData.class);
+
+    response = new MeController().studentData(context, studentData);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 }
