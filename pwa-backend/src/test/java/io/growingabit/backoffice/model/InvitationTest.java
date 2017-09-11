@@ -2,7 +2,6 @@ package io.growingabit.backoffice.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
@@ -10,7 +9,6 @@ import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
-import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -89,25 +87,6 @@ public class InvitationTest extends BaseDatastoreTest {
     invitation.setRelatedUserWebSafeKey(null);
     final String s = invitation.getRelatedUserWebSafeKey();
     assertThat(s).isNotNull();
-  }
-
-
-  @Test
-  public void equalsAndHashCode() {
-
-    final int n = new Random().nextInt(10) + 1;
-
-    final Invitation invitation1 = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
-    invitation1.setConfirmed();
-    final Invitation invitation2 = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
-    invitation2.setConfirmed();
-
-    new EqualsTester()
-        .addEqualityGroup(invitation1)
-        .addEqualityGroup(invitation2)
-        .testEquals();
-
-    assertThat(invitation1.hashCode()).isEqualTo(invitation1.hashCode());
   }
 
   @Test

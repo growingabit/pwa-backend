@@ -2,7 +2,6 @@ package io.growingabit.app.model.base;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
@@ -49,27 +48,6 @@ public class SignupStageTest extends BaseDatastoreTest {
     ref.setData(null);
     final Key<User> s = ref.getUser();
     assertThat(s).isNotNull();
-  }
-
-  @Test
-  public void equalsAndHashCode() {
-
-    final DummySignupStage dummySignupStage1 = new DummySignupStage();
-    dummySignupStage1.setDone();
-    final DummySignupStage dummySignupStage2 = new DummySignupStage();
-    dummySignupStage2.setDone();
-
-    final DummySignupStage dummySignupStage3 = new DummySignupStage();
-    final DummySignupStage dummySignupStage4 = new DummySignupStage();
-
-    new EqualsTester()
-        .addEqualityGroup(dummySignupStage1, dummySignupStage2)
-        .addEqualityGroup(dummySignupStage3, dummySignupStage4)
-        .testEquals();
-
-    assertThat(dummySignupStage1.hashCode()).isEqualTo(dummySignupStage1.hashCode());
-    assertThat(dummySignupStage1.hashCode()).isEqualTo(dummySignupStage2.hashCode());
-    assertThat(dummySignupStage1.hashCode()).isNotEqualTo(dummySignupStage3.hashCode());
   }
 
   @Test(expected = IllegalStateException.class)

@@ -2,7 +2,6 @@ package io.growingabit.app.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
@@ -210,57 +209,6 @@ public class UserTest extends BaseDatastoreTest {
     model.setId("id");
     model.setId("");
     assertThat(model.getId()).isNotEmpty();
-  }
-
-  @Test
-  public void equalsAndHashCode() {
-
-    final int n = new Random().nextInt(10) + 1;
-
-    final User user1 = new User();
-    final User user2 = new User();
-    final User user3 = new User();
-    final User user4 = new User();
-
-    user1.setId("id1");
-    user2.setId("id1");
-    user3.setId("id2");
-    user4.setId("id2");
-    boolean b;
-    DummySignupStage completedStage;
-    for (int i = 1; i < n; i++) {
-      b = Math.random() > 0.5;
-      completedStage = new DummySignupStage();
-      completedStage.setDone();
-      completedStage.setUser(Key.create(user1));
-      this.baseDao.persist(completedStage);
-      user1.addSignupStage(completedStage);
-
-      completedStage = new DummySignupStage();
-      completedStage.setUser(Key.create(user2));
-      completedStage.setDone();
-      this.baseDao.persist(completedStage);
-      user2.addSignupStage(completedStage);
-
-      completedStage = new DummySignupStage();
-      completedStage.setUser(Key.create(user3));
-      this.baseDao.persist(completedStage);
-      user3.addSignupStage(completedStage);
-
-      completedStage = new DummySignupStage();
-      completedStage.setUser(Key.create(user4));
-      this.baseDao.persist(completedStage);
-      user4.addSignupStage(completedStage);
-    }
-
-    new EqualsTester()
-        .addEqualityGroup(user1, user2)
-        .addEqualityGroup(user3, user4)
-        .testEquals();
-
-    assertThat(user1.hashCode()).isEqualTo(user1.hashCode());
-    assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
-    assertThat(user1.hashCode()).isNotEqualTo(user3.hashCode());
   }
 
 }

@@ -3,13 +3,26 @@ package io.growingabit.app.model;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
-import io.growingabit.app.model.base.ReferenceSignupStage;
+import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
-import io.growingabit.backoffice.model.Invitation;
 
 @Entity
 @Cache
-public class InvitationCodeSignupStage extends ReferenceSignupStage<Invitation> {
+public class StudentDataSignupStage extends SignupStage<StudentData> {
+
+  private StudentData data;
+
+  @Override
+  public StudentData getData() {
+    return this.data;
+  }
+
+  @Override
+  public void setData(final StudentData data) {
+    if (data != null) {
+      this.data = data;
+    }
+  }
 
   @Override
   public void exec(final SignupStageExecutor executor) throws SignupStageExecutionException {
