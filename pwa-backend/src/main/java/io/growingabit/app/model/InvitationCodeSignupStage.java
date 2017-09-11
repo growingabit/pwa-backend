@@ -16,18 +16,4 @@ public class InvitationCodeSignupStage extends ReferenceSignupStage<Invitation> 
     executor.exec(this);
   }
 
-  @Override
-  public Invitation getData() {
-    return super.getData();
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
 }

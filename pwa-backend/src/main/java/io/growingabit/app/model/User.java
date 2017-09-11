@@ -1,6 +1,5 @@
 package io.growingabit.app.model;
 
-import com.google.common.base.Objects;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
@@ -74,23 +73,6 @@ public class User extends BaseModel {
       }
     }
     return true;
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    final User user = (User) o;
-    return Objects.equal(getId(), user.getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(getId());
   }
 
 }

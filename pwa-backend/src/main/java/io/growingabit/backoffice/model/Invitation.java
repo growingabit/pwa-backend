@@ -1,6 +1,5 @@
 package io.growingabit.backoffice.model;
 
-import com.google.common.base.Objects;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.annotation.Cache;
@@ -119,29 +118,6 @@ public class Invitation extends BaseModel {
     } catch (final NotFoundException e) {
       return false;
     }
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    final Invitation that = (Invitation) o;
-    return isConfirmed() == that.isConfirmed() &&
-        Objects.equal(getInvitationCode(), that.getInvitationCode()) &&
-        Objects.equal(getSchool(), that.getSchool()) &&
-        Objects.equal(getSchoolClass(), that.getSchoolClass()) &&
-        Objects.equal(getSchoolYear(), that.getSchoolYear()) &&
-        Objects.equal(getSpecialization(), that.getSpecialization()) &&
-        Objects.equal(getRelatedUserWebSafeKey(), that.getRelatedUserWebSafeKey());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserWebSafeKey(), isConfirmed());
   }
 
 }

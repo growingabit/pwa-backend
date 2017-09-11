@@ -26,6 +26,7 @@ public class SignupStageExecutor {
     final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
     final StudentDataSignupStage userSignupStage = (StudentDataSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();
     userSignupStage.setData(stage.getData());
+    userSignupStage.setDone();
     new StudentDataSignupStageDao().persist(userSignupStage);
   }
 
