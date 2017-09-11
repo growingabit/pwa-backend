@@ -5,7 +5,9 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.testing.EqualsTester;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Ref;
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.DummySignupStage;
@@ -15,14 +17,14 @@ import org.junit.Test;
 
 public class UserTest extends BaseDatastoreTest {
 
-  private BaseDao<DummySignupStage> baseDao;
+  private BaseDao<SignupStage> baseDao;
   private UserDao userDao;
 
   @Before
   public void setUp() {
     ObjectifyService.register(DummySignupStage.class);
     ObjectifyService.register(User.class);
-    this.baseDao = new BaseDao<>(DummySignupStage.class);
+    this.baseDao = new BaseDao<>(SignupStage.class);
     this.userDao = new UserDao();
   }
 
@@ -63,14 +65,30 @@ public class UserTest extends BaseDatastoreTest {
     this.userDao.persist(model);
     final Key<User> userKey = Key.create(model);
 
-    final DummySignupStage addedStage = new DummySignupStage();
+    final SignupStage addedStage = new DummySignupStage();
     addedStage.setUser(userKey);
     this.baseDao.persist(addedStage);
 
     final User user = new User();
     user.addSignupStage(addedStage);
+    user.getSignupStages().put("1", Ref.create(addedStage));
+  }
 
-    user.getSignupStages().add(new DummySignupStage());
+  @Test(expected = UnsupportedOperationException.class)
+  public void mandatotySignupStageListShouldBeImmutable() {
+
+    final User model = new User();
+    model.setId("id");
+    this.userDao.persist(model);
+    final Key<User> userKey = Key.create(model);
+
+    final SignupStage addedStage = new DummySignupStage();
+    addedStage.setUser(userKey);
+    this.baseDao.persist(addedStage);
+
+    final User user = new User();
+    user.addMandatorySignupStage(addedStage);
+    user.getMandatorySignupStages().put("1", Ref.create(addedStage));
   }
 
   @Test
@@ -84,10 +102,20 @@ public class UserTest extends BaseDatastoreTest {
 
     final User user = new User();
     DummySignupStage completedStage;
+
     for (int i = 1; i < n; i++) {
       completedStage = new DummySignupStage();
       completedStage.setUser(userKey);
-      completedStage.setDone(true);
+      completedStage.setDone();
+
+      this.baseDao.persist(completedStage);
+      user.addMandatorySignupStage(completedStage);
+    }
+
+    for (int i = 1; i < n; i++) {
+      completedStage = new DummySignupStage();
+      completedStage.setUser(userKey);
+      completedStage.setDone();
 
       this.baseDao.persist(completedStage);
       user.addSignupStage(completedStage);
@@ -97,7 +125,7 @@ public class UserTest extends BaseDatastoreTest {
   }
 
   @Test
-  public void signupIsNotDone() {
+  public void signupIsNotDoneIfAtLeatOneMandatorySignupStageIsNotDone() {
     final User model = new User();
     model.setId("id");
     this.userDao.persist(model);
@@ -107,9 +135,54 @@ public class UserTest extends BaseDatastoreTest {
 
     final User user = new User();
     DummySignupStage completedStage;
+
     for (int i = 1; i < n; i++) {
       completedStage = new DummySignupStage();
-      completedStage.setDone(true);
+      completedStage.setDone();
+      completedStage.setUser(userKey);
+      this.baseDao.persist(completedStage);
+      user.addMandatorySignupStage(completedStage);
+    }
+
+    for (int i = 1; i < n; i++) {
+      completedStage = new DummySignupStage();
+      completedStage.setDone();
+      completedStage.setUser(userKey);
+      this.baseDao.persist(completedStage);
+      user.addSignupStage(completedStage);
+    }
+
+    final DummySignupStage uncompletedStage = new DummySignupStage();
+    uncompletedStage.setUser(userKey);
+    this.baseDao.persist(uncompletedStage);
+    user.addMandatorySignupStage(uncompletedStage);
+
+    assertThat(user.isSignupDone()).isFalse();
+  }
+
+  @Test
+  public void signupIsNotDoneIfAtLeatOneSignupStageIsNotDone() {
+    final User model = new User();
+    model.setId("id");
+    this.userDao.persist(model);
+    final Key<User> userKey = Key.create(model);
+
+    final int n = new Random().nextInt(10) + 1;
+
+    final User user = new User();
+    DummySignupStage completedStage;
+
+    for (int i = 1; i < n; i++) {
+      completedStage = new DummySignupStage();
+      completedStage.setDone();
+      completedStage.setUser(userKey);
+      this.baseDao.persist(completedStage);
+      user.addMandatorySignupStage(completedStage);
+    }
+
+    for (int i = 1; i < n; i++) {
+      completedStage = new DummySignupStage();
+      completedStage.setDone();
       completedStage.setUser(userKey);
       this.baseDao.persist(completedStage);
       user.addSignupStage(completedStage);
@@ -121,6 +194,22 @@ public class UserTest extends BaseDatastoreTest {
     user.addSignupStage(uncompletedStage);
 
     assertThat(user.isSignupDone()).isFalse();
+  }
+
+  @Test
+  public void shouldNotAcceptNullId() {
+    final User model = new User();
+    model.setId("id");
+    model.setId(null);
+    assertThat(model.getId()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptyId() {
+    final User model = new User();
+    model.setId("id");
+    model.setId("");
+    assertThat(model.getId()).isNotEmpty();
   }
 
   @Test
@@ -142,27 +231,24 @@ public class UserTest extends BaseDatastoreTest {
     for (int i = 1; i < n; i++) {
       b = Math.random() > 0.5;
       completedStage = new DummySignupStage();
-      completedStage.setDone(b);
+      completedStage.setDone();
       completedStage.setUser(Key.create(user1));
       this.baseDao.persist(completedStage);
       user1.addSignupStage(completedStage);
 
       completedStage = new DummySignupStage();
       completedStage.setUser(Key.create(user2));
-      completedStage.setDone(b);
+      completedStage.setDone();
       this.baseDao.persist(completedStage);
       user2.addSignupStage(completedStage);
 
-      b = !b;
       completedStage = new DummySignupStage();
-      completedStage.setDone(b);
       completedStage.setUser(Key.create(user3));
       this.baseDao.persist(completedStage);
       user3.addSignupStage(completedStage);
 
       completedStage = new DummySignupStage();
       completedStage.setUser(Key.create(user4));
-      completedStage.setDone(b);
       this.baseDao.persist(completedStage);
       user4.addSignupStage(completedStage);
     }

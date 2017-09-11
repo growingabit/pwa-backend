@@ -9,7 +9,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.google.common.collect.ImmutableSet;
-import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.app.utils.auth.Authorizer;
 import io.growingabit.jersey.annotations.Secured;
@@ -33,7 +32,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 @Priority(Priorities.AUTHENTICATION)
 public class SecurityFilter implements ContainerRequestFilter {
 
-  private static final Configuration config = new Settings(new ResourceFetcher()).getConfig();
+  private static final Configuration config = Settings.getConfig();
   private static final String OAUTH2_ISSUER = config.getString("oauth2.issuer");
   private static final String CUSTOM_CLAIMS_NAMESPACE = "https://growbit.io/";
   private static final String ROLES_CLAIM = CUSTOM_CLAIMS_NAMESPACE + "roles";

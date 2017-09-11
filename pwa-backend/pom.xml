@@ -519,18 +519,6 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.7.9</version>
-        <configuration>
-          <excludes>
-            <!--
-              Some class may be safely excluded from coverage report,
-              as for example StartupServlet and Application, that are only
-              for configuration purpose
-              (note that errors on these classes prevents application to start)
-            -->
-            <exclude>**/io/growingabit/common/utils/StartupServlet.*</exclude>
-            <exclude>**/io/growingabit/jersey/Application.*</exclude>
-          </excludes>
-        </configuration>
         <executions>
           <!--
             Prepares the property pointing to the JaCoCo runtime agent which

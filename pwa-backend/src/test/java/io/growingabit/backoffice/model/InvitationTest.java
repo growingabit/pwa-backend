@@ -3,8 +3,11 @@ package io.growingabit.backoffice.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.testing.EqualsTester;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
+import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import java.util.Random;
@@ -14,11 +17,14 @@ import org.junit.Test;
 public class InvitationTest extends BaseDatastoreTest {
 
   private InvitationDao dao;
+  private UserDao userDao;
 
   @Before
   public void setUp() {
     ObjectifyService.register(Invitation.class);
+    ObjectifyService.register(User.class);
     this.dao = new InvitationDao();
+    this.userDao = new UserDao();
   }
 
   @Test
@@ -67,21 +73,24 @@ public class InvitationTest extends BaseDatastoreTest {
   }
 
   @Test
-  public void checkEmpyInvitationCode() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
-    invitation.setInvitationCode("");
-    this.dao.persist(invitation);
-    assertThat(invitation.getInvitationCode().length()).isEqualTo(7);
+  public void getUserShouldReturnNull() {
+    final Invitation invitation = new Invitation();
+    final String s = invitation.getRelatedUserWebSafeKey();
+    assertThat(s).isNull();
   }
 
   @Test
-  public void doesNotModifyAlreadyDefinedInvitationCode() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
-    final String invitationCode = "1234567";
-    invitation.setInvitationCode(invitationCode);
-    this.dao.persist(invitation);
-    assertThat(invitation.getInvitationCode()).isEqualTo(invitationCode);
+  public void setUserShouldNotAcceptNull() {
+    final Invitation invitation = new Invitation();
+    final User u = new User();
+    u.setId("id");
+    this.userDao.persist(u);
+    invitation.setRelatedUserWebSafeKey(Key.create(u));
+    invitation.setRelatedUserWebSafeKey(null);
+    final String s = invitation.getRelatedUserWebSafeKey();
+    assertThat(s).isNotNull();
   }
+
 
   @Test
   public void equalsAndHashCode() {
@@ -89,27 +98,96 @@ public class InvitationTest extends BaseDatastoreTest {
     final int n = new Random().nextInt(10) + 1;
 
     final Invitation invitation1 = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
-    invitation1.setInvitationCode("1234567");
-    invitation1.setConfirmed(true);
+    invitation1.setConfirmed();
     final Invitation invitation2 = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
-    invitation2.setInvitationCode("1234567");
-    invitation2.setConfirmed(true);
-
-    final Invitation invitation3 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
-    invitation3.setInvitationCode("7654321");
-    invitation3.setConfirmed(true);
-    final Invitation invitation4 = new Invitation("My school2", "My class2", "This Year2", "My Spec2");
-    invitation4.setInvitationCode("7654321");
-    invitation4.setConfirmed(true);
+    invitation2.setConfirmed();
 
     new EqualsTester()
-        .addEqualityGroup(invitation1, invitation2)
-        .addEqualityGroup(invitation3, invitation4)
+        .addEqualityGroup(invitation1)
+        .addEqualityGroup(invitation2)
         .testEquals();
 
     assertThat(invitation1.hashCode()).isEqualTo(invitation1.hashCode());
-    assertThat(invitation1.hashCode()).isEqualTo(invitation2.hashCode());
-    assertThat(invitation1.hashCode()).isNotEqualTo(invitation3.hashCode());
+  }
+
+  @Test
+  public void shouldNotAcceptNullSchool() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSchool(null);
+    assertThat(invitation.getSchool()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptNullSchoolClass() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSchoolClass(null);
+    assertThat(invitation.getSchoolClass()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptNullYear() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSchoolYear(null);
+    assertThat(invitation.getSchoolYear()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptNullSpecialization() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSpecialization(null);
+    assertThat(invitation.getSpecialization()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptNullRelatedUserWebSafeKey() {
+    final User user = new User();
+    user.setId("Id");
+    this.userDao.persist(user);
+
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setRelatedUserWebSafeKey(Key.create(user));
+    invitation.setSpecialization(null);
+    assertThat(invitation.getSpecialization()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptySchool() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSchool("");
+    assertThat(invitation.getSchool()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptySchoolClass() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSchoolClass("");
+    assertThat(invitation.getSchoolClass()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptyYear() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSchoolYear("");
+    assertThat(invitation.getSchoolYear()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptySpecialization() {
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setSpecialization("");
+    assertThat(invitation.getSpecialization()).isNotEmpty();
+  }
+
+  @Test
+  public void shouldNotAcceptEmptyRelatedUserWebSafeKey() {
+    final User user = new User();
+    user.setId("Id");
+    this.userDao.persist(user);
+
+    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    invitation.setRelatedUserWebSafeKey(Key.create(user));
+    invitation.setSpecialization("");
+    assertThat(invitation.getSpecialization()).isNotEmpty();
   }
 
 }

@@ -1,11 +1,14 @@
 package io.growingabit.backoffice.model;
 
 import com.google.common.base.Objects;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Index;
+import io.growingabit.app.model.User;
 import io.growingabit.app.utils.SecureStringGenerator;
+import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 public class Invitation extends BaseModel {
 
   @Id
-  private Long id;
-
-  @Index
   @Required
   private String invitationCode;
 
@@ -30,14 +30,15 @@ public class Invitation extends BaseModel {
   @Required
   private String specialization;
 
-  @Index
-  private String relatedUserId;
+  private String relatedUserWebSafeKey;
 
   private boolean confirmed;
 
   public Invitation() {
     super();
-    this.invitationCode = new SecureStringGenerator(7).nextString();
+    do {
+      this.invitationCode = new SecureStringGenerator(7).nextString();
+    } while (this.isDuplicateInvitation());
     this.confirmed = false;
   }
 
@@ -49,18 +50,8 @@ public class Invitation extends BaseModel {
     this.specialization = specialization;
   }
 
-  public Long getId() {
-    return this.id;
-  }
-
   public String getInvitationCode() {
     return this.invitationCode;
-  }
-
-  public void setInvitationCode(final String invitationCode) {
-    if (StringUtils.isNotEmpty(invitationCode)) {
-      this.invitationCode = invitationCode;
-    }
   }
 
   public String getSchool() {
@@ -68,7 +59,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSchool(final String school) {
-    this.school = school;
+    if (StringUtils.isNotEmpty(school)) {
+      this.school = school;
+    }
   }
 
   public String getSchoolClass() {
@@ -76,7 +69,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSchoolClass(final String schoolClass) {
-    this.schoolClass = schoolClass;
+    if (StringUtils.isNotEmpty(schoolClass)) {
+      this.schoolClass = schoolClass;
+    }
   }
 
   public String getSchoolYear() {
@@ -84,7 +79,9 @@ public class Invitation extends BaseModel {
   }
 
   public void setSchoolYear(final String schoolYear) {
-    this.schoolYear = schoolYear;
+    if (StringUtils.isNotEmpty(schoolYear)) {
+      this.schoolYear = schoolYear;
+    }
   }
 
   public String getSpecialization() {
@@ -92,23 +89,36 @@ public class Invitation extends BaseModel {
   }
 
   public void setSpecialization(final String specialization) {
-    this.specialization = specialization;
+    if (StringUtils.isNotEmpty(specialization)) {
+      this.specialization = specialization;
+    }
   }
 
-  public String getRelatedUserId() {
-    return this.relatedUserId;
+  public String getRelatedUserWebSafeKey() {
+    return this.relatedUserWebSafeKey;
   }
 
-  public void setRelatedUserId(final String relatedUserId) {
-    this.relatedUserId = relatedUserId;
+  public void setRelatedUserWebSafeKey(final Key<User> relatedUserWebSafeKey) {
+    if (relatedUserWebSafeKey != null) {
+      this.relatedUserWebSafeKey = relatedUserWebSafeKey.toWebSafeString();
+    }
   }
 
   public boolean isConfirmed() {
     return this.confirmed;
   }
 
-  public void setConfirmed(final boolean confirmed) {
-    this.confirmed = confirmed;
+  public void setConfirmed() {
+    this.confirmed = true;
+  }
+
+  private boolean isDuplicateInvitation() {
+    try {
+      new InvitationDao().find(Key.create(this));
+      return true;
+    } catch (final NotFoundException e) {
+      return false;
+    }
   }
 
   @Override
@@ -121,18 +131,17 @@ public class Invitation extends BaseModel {
     }
     final Invitation that = (Invitation) o;
     return isConfirmed() == that.isConfirmed() &&
-        Objects.equal(getId(), that.getId()) &&
         Objects.equal(getInvitationCode(), that.getInvitationCode()) &&
         Objects.equal(getSchool(), that.getSchool()) &&
         Objects.equal(getSchoolClass(), that.getSchoolClass()) &&
         Objects.equal(getSchoolYear(), that.getSchoolYear()) &&
         Objects.equal(getSpecialization(), that.getSpecialization()) &&
-        Objects.equal(getRelatedUserId(), that.getRelatedUserId());
+        Objects.equal(getRelatedUserWebSafeKey(), that.getRelatedUserWebSafeKey());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getId(), getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserId(), isConfirmed());
+    return Objects.hashCode(getInvitationCode(), getSchool(), getSchoolClass(), getSchoolYear(), getSpecialization(), getRelatedUserWebSafeKey(), isConfirmed());
   }
 
 }

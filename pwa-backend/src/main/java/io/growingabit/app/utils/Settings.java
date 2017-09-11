@@ -22,14 +22,18 @@ public class Settings {
 
   private final ResourceFetcher resourceFetcher;
   private final Parameters paramsInitiator;
-  private CombinedConfiguration config = null;
+  private static CombinedConfiguration config = null;
 
   public Settings(final ResourceFetcher resourceFetcher) {
     this.resourceFetcher = resourceFetcher;
     this.paramsInitiator = new Parameters();
   }
 
-  public final Configuration getConfig() {
+  public static Configuration getConfig() {
+    return new Settings(new ResourceFetcher()).getConfiguration();
+  }
+
+  public final Configuration getConfiguration() {
 
     try {
       final URL defaultPropertiesFile = this.resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME);
