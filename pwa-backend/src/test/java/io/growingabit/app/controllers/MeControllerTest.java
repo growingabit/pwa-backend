@@ -139,7 +139,10 @@ public class MeControllerTest extends BaseDatastoreTest {
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
-    final InvitationCodeSignupStage savedStage = (InvitationCodeSignupStage) returnedUser.getMandatorySignupStages().values().iterator().next().get();
+
+    final String signupStageIndentifier = Settings.getConfig().getString(InvitationCodeSignupStage.class.getCanonicalName());
+
+    final InvitationCodeSignupStage savedStage = (InvitationCodeSignupStage) returnedUser.getMandatorySignupStages().get(signupStageIndentifier).get();
 
     assertThat(savedStage.getData().isConfirmed()).isTrue();
     assertThat(savedStage.isDone()).isTrue();
@@ -192,6 +195,8 @@ public class MeControllerTest extends BaseDatastoreTest {
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
     final Response response = new MeController().getCurrenUserInfo(context);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+
     final User user = (User) response.getEntity();
 
     final StudentData studentData = new StudentData();
