@@ -14,6 +14,7 @@ import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +26,10 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
   private User user;
 
   @Before
-  public void setup() throws InstantiationException, IllegalAccessException {
+  public void setup() throws InstantiationException, IllegalAccessException, NoSuchFieldException {
+
+    Utils.clearSignupStageFactory();
+
     ObjectifyService.factory().register(Invitation.class);
     ObjectifyService.factory().register(User.class);
     ObjectifyService.factory().register(InvitationCodeSignupStage.class);

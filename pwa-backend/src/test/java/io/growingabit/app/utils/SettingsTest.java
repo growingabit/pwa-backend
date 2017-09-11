@@ -2,7 +2,7 @@ package io.growingabit.app.utils;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import java.lang.reflect.Field;
+import io.growingabit.testUtils.Utils;
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.configuration2.Configuration;
 import org.junit.Before;
@@ -16,9 +16,7 @@ public class SettingsTest {
 
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
-    final Field config = Settings.class.getDeclaredField("config");
-    config.setAccessible(true);
-    config.set(null, null);
+    Utils.clearSettings();
   }
 
   @Test

@@ -16,6 +16,7 @@ import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.DummySignupStage;
+import io.growingabit.testUtils.Utils;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
@@ -34,7 +35,10 @@ public class MeControllerTest extends BaseDatastoreTest {
   private InvitationCodeSignupStageDao invitationCodeSignupStageDao;
 
   @Before
-  public void setUp() {
+  public void setUp() throws NoSuchFieldException, IllegalAccessException {
+
+    Utils.clearSignupStageFactory();
+
     ObjectifyService.register(User.class);
     ObjectifyService.register(DummySignupStage.class);
     ObjectifyService.register(User.class);
