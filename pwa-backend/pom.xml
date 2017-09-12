@@ -46,7 +46,9 @@
             <version>1.3.1</version>
             <configuration>
               <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
-              <project>growbit-0</project>
+              <project>
+                growbit-0
+              </project>
               <version>${appengineVersion}</version>
               <devserver.host>0.0.0.0</devserver.host>
               <devserver.port>8080</devserver.port>
@@ -54,10 +56,8 @@
             <executions>
               <execution>
                 <id>start-gae</id>
-                <!--
-                  The appengine start is done during to integration-test phase
-                  to ensure that appengineArgLine is correctly populated
-                -->
+                <!-- The appengine start is done during to integration-test 
+                  phase to ensure that appengineArgLine is correctly populated -->
                 <phase>integration-test</phase>
                 <configuration>
                   <jvmFlags>
@@ -95,7 +95,9 @@
             <version>1.3.1</version>
             <configuration>
               <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
-              <project>growbit-0</project>
+              <project>
+                growbit-0
+              </project>
               <version>${appengineVersion}</version>
               <devserver.host>0.0.0.0</devserver.host>
               <devserver.port>8080</devserver.port>
@@ -103,10 +105,8 @@
             <executions>
               <execution>
                 <id>start-gae</id>
-                <!--
-                  The appengine start is done during to integration-test phase
-                  to ensure that appengineArgLine is correctly populated
-                -->
+                <!-- The appengine start is done during to integration-test 
+                  phase to ensure that appengineArgLine is correctly populated -->
                 <phase>integration-test</phase>
                 <configuration>
                   <jvmFlags>
@@ -247,6 +247,12 @@
       <artifactId>joda-time</artifactId>
       <version>2.9.9</version>
     </dependency>
+    <dependency>
+      <groupId>com.mailjet</groupId>
+      <artifactId>mailjet-client</artifactId>
+      <version>4.1.1</version>
+    </dependency>
+
 
     <!-- Test Dependencies -->
     <dependency>
@@ -342,7 +348,7 @@
   </dependencies>
 
   <build>
-    <!--for hot reload of the web application-->
+    <!--for hot reload of the web application -->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 
     <plugins>
@@ -413,7 +419,8 @@
         </executions>
       </plugin>
 
-      <!-- modify content of a maven property and save it into a new property via Groovy Maven Plugin ... -->
+      <!-- modify content of a maven property and save it into a new property 
+        via Groovy Maven Plugin ... -->
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
@@ -426,7 +433,8 @@
             </goals>
             <configuration>
               <source>
-                System.setProperty("appengineVersion", "${project.version}".replace('.', '-'))
+                System.setProperty("appengineVersion",
+                "${project.version}".replace('.', '-'))
               </source>
             </configuration>
           </execution>
@@ -456,7 +464,9 @@
         <version>1.3.1</version>
         <configuration>
           <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
-          <project>growbit-0</project>
+          <project>
+            growbit-0
+          </project>
           <version>${appengineVersion}</version>
           <enableJarClasses>false</enableJarClasses>
           <devserver.host>0.0.0.0</devserver.host>
@@ -495,7 +505,8 @@
           </systemPropertyVariables>
           <!-- Sets the VM argument line used when unit tests are run. -->
           <argLine>${surefireArgLine}</argLine>
-          <!-- Skips unit tests if the value of skip.unit.tests property is true -->
+          <!-- Skips unit tests if the value of skip.unit.tests property 
+            is true -->
           <skip>${skip.unit.tests}</skip>
         </configuration>
       </plugin>
@@ -506,10 +517,8 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.20</version>
         <executions>
-          <!--
-            Ensures that both integration-test and verify goals of the Failsafe Maven
-            plugin are executed.
-          -->
+          <!-- Ensures that both integration-test and verify goals of the 
+            Failsafe Maven plugin are executed. -->
           <execution>
             <id>integration-tests</id>
             <goals>
@@ -517,10 +526,8 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <!--
-                Skips integration tests if the value of skip.integration.tests property
-                is true
-              -->
+              <!-- Skips integration tests if the value of skip.integration.tests 
+                property is true -->
               <skip>${skip.integration.tests}</skip>
             </configuration>
           </execution>
@@ -533,30 +540,25 @@
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.7.9</version>
         <executions>
-          <!--
-            Prepares the property pointing to the JaCoCo runtime agent which
-            is passed as VM argument when Maven the Surefire plugin is executed.
-          -->
+          <!-- Prepares the property pointing to the JaCoCo runtime agent 
+            which is passed as VM argument when Maven the Surefire plugin is executed. -->
           <execution>
             <id>pre-unit-test</id>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
             <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
+              <!-- Sets the path to the file which contains the execution 
+                data. -->
               <destFile>${jacoco.ut.execution.data.file}</destFile>
-              <!--
-                Sets the name of the property containing the settings
-                for JaCoCo runtime agent.
-              -->
+              <!-- Sets the name of the property containing the settings 
+                for JaCoCo runtime agent. -->
               <propertyName>surefireArgLine</propertyName>
               <skip>${skip.unit.tests}</skip>
             </configuration>
           </execution>
-          <!--
-            Ensures that the code coverage report for unit tests is created after
-            unit tests have been run.
-          -->
+          <!-- Ensures that the code coverage report for unit tests is created 
+            after unit tests have been run. -->
           <execution>
             <id>post-unit-test</id>
             <phase>test</phase>
@@ -564,17 +566,16 @@
               <goal>report</goal>
             </goals>
             <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
+              <!-- Sets the path to the file which contains the execution 
+                data. -->
               <dataFile>${jacoco.ut.execution.data.file}</dataFile>
               <!-- Sets the output directory for the code coverage report. -->
               <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
               <skip>${skip.unit.tests}</skip>
             </configuration>
           </execution>
-          <!--
-            Prepares the property pointing to the JaCoCo runtime agent which
-            is passed as VM argument when Maven the Failsafe plugin is executed.
-          -->
+          <!-- Prepares the property pointing to the JaCoCo runtime agent 
+            which is passed as VM argument when Maven the Failsafe plugin is executed. -->
           <execution>
             <id>pre-integration-test</id>
             <phase>pre-integration-test</phase>
@@ -582,12 +583,11 @@
               <goal>prepare-agent-integration</goal>
             </goals>
             <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
+              <!-- Sets the path to the file which contains the execution 
+                data. -->
               <destFile>${jacoco.it.execution.data.file}</destFile>
-              <!--
-                Sets the name of the property containing the settings
-                for JaCoCo runtime agent.
-              -->
+              <!-- Sets the name of the property containing the settings 
+                for JaCoCo runtime agent. -->
               <address>127.0.0.1</address>
               <port>8181</port>
               <output>tcpserver</output>
@@ -595,10 +595,8 @@
               <skip>${skip.integration.tests}</skip>
             </configuration>
           </execution>
-          <!--
-            Ensures that the code coverage report for integration tests after
-            integration tests have been run.
-          -->
+          <!-- Ensures that the code coverage report for integration tests 
+            after integration tests have been run. -->
           <execution>
             <id>post-integration-test</id>
             <phase>post-integration-test</phase>
@@ -607,7 +605,8 @@
               <goal>report-integration</goal>
             </goals>
             <configuration>
-              <!-- Sets the path to the file which contains the execution data. -->
+              <!-- Sets the path to the file which contains the execution 
+                data. -->
               <dataFile>${jacoco.it.execution.data.file}</dataFile>
               <!-- Sets the output directory for the code coverage report. -->
               <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
@@ -669,7 +668,8 @@
                   <version>1.7</version>
                 </requireJavaVersion>
                 <requirePluginVersions>
-                  <message>Best Practice is to always define plugin versions!</message>
+                  <message>Best Practice is to always define plugin
+                    versions!</message>
                   <banLatest>true</banLatest>
                   <banRelease>true</banRelease>
                   <phases>clean,deploy,verify,appengine:run,appengine:deploy,appengine:update,appengine:devappaserver,site</phases>
