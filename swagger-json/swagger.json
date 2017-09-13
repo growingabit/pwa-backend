@@ -69,12 +69,10 @@
         } ],
         "responses" : {
           "200" : {
+            "description" : "ciccialculo",
             "schema" : {
               "$ref" : "#/definitions/User"
             }
-          },
-          "400" : {
-            "description" : "bad input parameter"
           }
         }
       }
