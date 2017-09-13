@@ -11,17 +11,17 @@ import io.growingabit.app.signup.executors.SignupStageExecutor;
 @Cache
 public class StudentEmailSignupStage extends SignupStage<StudentConfirmationEmail> {
 
-  private StudentConfirmationEmail studentConfirmationEmail;
+  private StudentConfirmationEmail data;
 
   @Override
   public StudentConfirmationEmail getData() {
-    return this.studentConfirmationEmail;
+    return this.data;
   }
 
   @Override
   public void setData(StudentConfirmationEmail data) {
     if (data != null) {
-      this.studentConfirmationEmail = data;
+      this.data = data;
     }
   }
 

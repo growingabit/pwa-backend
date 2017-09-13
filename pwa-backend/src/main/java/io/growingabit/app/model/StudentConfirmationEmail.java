@@ -9,12 +9,12 @@ public class StudentConfirmationEmail {
   private static final int VERIFICATION_CODE_LENGTH = 30;
 
   private String email;
-  private transient String verificatinCode;
-  private transient Long tsExpiration;
+  private String verificationCode;
+  private Long tsExpiration;
 
   public StudentConfirmationEmail(String email) {
-    this.verificatinCode = new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
-    this.tsExpiration = new DateTime().plusDays(1).getMillis();
+    this.verificationCode = new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
+    this.tsExpiration = new DateTime().plusDays(7).getMillis();
     this.email = email;
   }
 
@@ -27,8 +27,8 @@ public class StudentConfirmationEmail {
     return email;
   }
 
-  public String getVerificatinCode() {
-    return verificatinCode;
+  public String getVerificationCode() {
+    return verificationCode;
   }
 
   public Long getTsExpiration() {

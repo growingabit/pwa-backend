@@ -2,9 +2,23 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.gson.JsonObject;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
+
 import io.growingabit.app.dao.InvitationCodeSignupStageDao;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
@@ -21,15 +35,6 @@ import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
-import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeControllerTest extends BaseDatastoreTest {
@@ -129,13 +134,16 @@ public class MeControllerTest extends BaseDatastoreTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    //to create the user
+    // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
 
-    final Response response = new MeController().confirmInvitationCode(context, invitation.getInvitationCode());
+    JsonObject json = new JsonObject();
+    json.addProperty("invitationCode", invitation.getInvitationCode());
+
+    final Response response = new MeController().confirmInvitationCode(context, json);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
@@ -154,14 +162,17 @@ public class MeControllerTest extends BaseDatastoreTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    //to create the user
+    // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
 
-    final Response response = new MeController().confirmInvitationCode(context, invitation.getInvitationCode());
+    JsonObject json = new JsonObject();
+    json.addProperty("invitationCode", invitation.getInvitationCode());
+
+    final Response response = new MeController().confirmInvitationCode(context, json);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
@@ -171,10 +182,13 @@ public class MeControllerTest extends BaseDatastoreTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    //to create the user
+    // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
-    final Response response = new MeController().confirmInvitationCode(context, "inexintent code");
+    JsonObject json = new JsonObject();
+    json.addProperty("invitationCode", "inexintent code");
+
+    final Response response = new MeController().confirmInvitationCode(context, json);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
@@ -184,7 +198,10 @@ public class MeControllerTest extends BaseDatastoreTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    final Response response = new MeController().confirmInvitationCode(context, "a code");
+    JsonObject json = new JsonObject();
+    json.addProperty("invitationCode", "a code");
+
+    final Response response = new MeController().confirmInvitationCode(context, json);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
@@ -237,7 +254,7 @@ public class MeControllerTest extends BaseDatastoreTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    //to create the user
+    // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
     final Response response = new MeController().studentData(context, null);
@@ -253,7 +270,7 @@ public class MeControllerTest extends BaseDatastoreTest {
     Response response = new MeController().getCurrenUserInfo(context);
     final User returnedUser = (User) response.getEntity();
 
-    //simulate GSON, becase it do not use setter
+    // simulate GSON, becase it do not use setter
     final String studentDataJson = "{name: 'lorenzo', surname: 'bugiani', birthdate: 'an invalid date'}";
 
     final StudentData studentData = GsonFactory.getGsonInstance().fromJson(studentDataJson, StudentData.class);

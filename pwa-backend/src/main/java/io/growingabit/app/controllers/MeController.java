@@ -1,7 +1,5 @@
 package io.growingabit.app.controllers;
 
-import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,7 +11,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
@@ -34,11 +33,11 @@ import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.jersey.annotations.Secured;
 
-@Path("/me")
 @Secured
+@Path("api/v1/me")
 public class MeController {
 
-  private final Logger logger = Logger.getLogger(MeController.class.getName());
+  private static final XLogger log = XLoggerFactory.getXLogger(MeController.class);
 
   private final UserDao userDao;
 
@@ -46,15 +45,11 @@ public class MeController {
     this.userDao = new UserDao();
   }
 
-  private User getCurrentUser(final SecurityContext securityContext) {
-    final Auth0UserProfile auth0User = (Auth0UserProfile) securityContext.getUserPrincipal();
-    return this.userDao.find(Key.create(User.class, auth0User.getUserID()));
-  }
-
   @GET
   @Path("")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getCurrenUserInfo(@Context final SecurityContext securityContext) {
+
     User user = null;
     try {
       user = this.getCurrentUser(securityContext);
@@ -73,7 +68,7 @@ public class MeController {
         }
         this.userDao.persist(user);
       } catch (final IllegalAccessException | InstantiationException ex) {
-        this.logger.severe(ExceptionUtils.getStackTrace(e));
+        log.catching(ex);
         return Response.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
       }
     }
@@ -82,14 +77,15 @@ public class MeController {
 
   @POST
   @Path("/invitationcode")
-  @Consumes(MediaType.TEXT_PLAIN)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response confirmInvitationCode(@Context final SecurityContext securityContext, final String invitationCode) {
+  public Response confirmInvitationCode(@Context final SecurityContext securityContext, final Invitation i) {
+
     try {
       final User user = this.getCurrentUser(securityContext);
       final InvitationDao invitationDao = new InvitationDao();
       try {
-        final Invitation invitation = invitationDao.findByInvitationCode(invitationCode);
+        final Invitation invitation = invitationDao.findByInvitationCode(i.getInvitationCode());
         final InvitationCodeSignupStage signupStage = new InvitationCodeSignupStage();
         signupStage.setData(invitation);
         signupStage.exec(new SignupStageExecutor(user));
@@ -110,6 +106,7 @@ public class MeController {
   @POST
   @Path("/studentdata")
   @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
   public Response studentData(@Context final SecurityContext securityContext, final StudentData data) {
     if (data == null) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
@@ -131,19 +128,20 @@ public class MeController {
     }
   }
 
+  @POST
   @Path("/studentemail")
-  @Consumes(MediaType.TEXT_PLAIN)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response studentemail(@Context final SecurityContext securityContext, final String studentEmail) {
+  public Response studentemail(@Context final SecurityContext securityContext, final StudentConfirmationEmail studentConfirmationEmail) {
 
-    if (studentEmail == null) {
+    if (studentConfirmationEmail == null || studentConfirmationEmail.getEmail() == null) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
 
     try {
       final User user = this.getCurrentUser(securityContext);
       StudentEmailSignupStage stage = new StudentEmailSignupStage();
-      stage.setData(new StudentConfirmationEmail(studentEmail));
+      stage.setData(new StudentConfirmationEmail(studentConfirmationEmail.getEmail()));
       stage.exec(new SignupStageExecutor(user));
 
       return Response.ok().entity(user).build();
@@ -158,6 +156,12 @@ public class MeController {
     }
 
   }
+
+  private User getCurrentUser(final SecurityContext securityContext) {
+    final Auth0UserProfile auth0User = (Auth0UserProfile) securityContext.getUserPrincipal();
+    return this.userDao.find(Key.create(User.class, auth0User.getUserID()));
+  }
+
 
 
 }
