@@ -61,10 +61,70 @@
           "default" : "Bearer <JWT here>"
         }, {
           "in" : "body",
-          "name" : "invitationCodePostObject",
+          "name" : "InvitationCodePostObject",
           "required" : false,
           "schema" : {
             "$ref" : "#/definitions/InvitationCodePostObject"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "risponde con un userobject intero",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/me/studentdata" : {
+      "post" : {
+        "summary" : "post student data",
+        "operationId" : "postStudentData",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer <JWT here>"
+        }, {
+          "in" : "body",
+          "name" : "StudentDataPostObject",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/StudentDataPostObject"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "risponde con un userobject intero",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/me/studentemail" : {
+      "post" : {
+        "summary" : "post email",
+        "operationId" : "postEmail",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer <JWT here>"
+        }, {
+          "in" : "body",
+          "name" : "StudentEmailPostObject",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/StudentEmailPostObject"
           }
         } ],
         "responses" : {
@@ -139,6 +199,28 @@
       "type" : "object",
       "properties" : {
         "invitationCode" : {
+          "type" : "string"
+        }
+      }
+    },
+    "StudentEmailPostObject" : {
+      "type" : "object",
+      "properties" : {
+        "invitationCode" : {
+          "type" : "string"
+        }
+      }
+    },
+    "StudentDataPostObject" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "surname" : {
+          "type" : "string"
+        },
+        "birthdate" : {
           "type" : "string"
         }
       }
