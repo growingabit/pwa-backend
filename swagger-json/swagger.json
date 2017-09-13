@@ -69,7 +69,7 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "ciccialculo",
+            "description" : "risponde con un userobject intero",
             "schema" : {
               "$ref" : "#/definitions/User"
             }
