@@ -46,6 +46,38 @@
           }
         }
       }
+    },
+    "/me/invitationcode" : {
+      "post" : {
+        "summary" : "post invitation code",
+        "operationId" : "postInvitationCode",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer <JWT here>"
+        }, {
+          "in" : "body",
+          "name" : "invitationCodePostObject",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/InvitationCodePostObject"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      }
     }
   },
   "definitions" : {
@@ -54,6 +86,9 @@
       "properties" : {
         "id" : {
           "type" : "string"
+        },
+        "mandatory_signup_stages" : {
+          "$ref" : "#/definitions/User_mandatory_signup_stages"
         },
         "signup_stages" : {
           "$ref" : "#/definitions/User_signup_stages"
@@ -97,16 +132,28 @@
         "is_done" : {
           "type" : "boolean"
         },
-        "student_confirmation_email" : {
-          "$ref" : "#/definitions/StudentEmailSignupStage_student_confirmation_email"
+        "data" : {
+          "$ref" : "#/definitions/StudentEmailSignupStage_data"
+        }
+      }
+    },
+    "InvitationCodePostObject" : {
+      "type" : "object",
+      "properties" : {
+        "invitationCode" : {
+          "type" : "string"
+        }
+      }
+    },
+    "User_mandatory_signup_stages" : {
+      "properties" : {
+        "0" : {
+          "$ref" : "#/definitions/InvitationCodeSignupStage"
         }
       }
     },
     "User_signup_stages" : {
       "properties" : {
-        "0" : {
-          "$ref" : "#/definitions/InvitationCodeSignupStage"
-        },
         "1" : {
           "$ref" : "#/definitions/StudentDataSignupStage"
         },
@@ -153,7 +200,7 @@
         }
       }
     },
-    "StudentEmailSignupStage_student_confirmation_email" : {
+    "StudentEmailSignupStage_data" : {
       "properties" : {
         "email" : {
           "type" : "string"
