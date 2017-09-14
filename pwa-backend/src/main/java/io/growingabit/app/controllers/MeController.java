@@ -151,7 +151,7 @@ public class MeController {
       // I mean, every method of this controller should create the user
       // if it not exist?
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
-    } catch (final SignupStageExecutionException e) {
+    } catch (final SignupStageExecutionException | IllegalArgumentException e) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
     }
 
