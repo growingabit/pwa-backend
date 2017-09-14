@@ -19,7 +19,6 @@ public class StudentDataTest {
   public void setup() {
     this.studentData = new StudentData();
     this.random = new Random();
-
   }
 
   @Test

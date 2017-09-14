@@ -2,6 +2,9 @@ package io.growingabit.mail;
 
 import java.io.UnsupportedEncodingException;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.appengine.api.utils.SystemProperty;
@@ -11,7 +14,7 @@ import io.growingabit.app.utils.Settings;
 
 public class MailService {
 
-  public static void sendVerificationEmail(final StudentEmailSignupStage studentEmailSignupStage) throws UnsupportedEncodingException {
+  public static Message sendVerificationEmail(final StudentEmailSignupStage studentEmailSignupStage) throws UnsupportedEncodingException, MessagingException {
 
     String verificationLink = "";
     if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
@@ -31,7 +34,7 @@ public class MailService {
 
     MailObject mailObject = new MailObject.Builder(studentEmailSignupStage.getData().getEmail(), subject).addBcc(Settings.getConfig().getString("io.growingabit.mail.bcc")).withHtmlBody(htmlBody).build();
 
-    MailGaeApi.sendEmail(mailObject);
+    return MailGaeApi.sendEmail(mailObject);
   }
 
 }

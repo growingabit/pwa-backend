@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
+import com.google.common.base.Preconditions;
+
 public class MailObject {
 
   private Set<String> to;
@@ -60,6 +64,7 @@ public class MailObject {
       this.cc = new LinkedHashSet<String>();
       this.bcc = new LinkedHashSet<String>();
 
+      Preconditions.checkArgument(EmailValidator.getInstance().isValid(to));
       this.to.add(to);
       this.subject = subject;
     }
@@ -77,36 +82,46 @@ public class MailObject {
     }
 
     public Builder addTo(String address) {
+      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
       this.to.add(address);
       return this;
     }
 
     public Builder addTo(Collection<String> address) {
-      this.to.addAll(address);
+      for (String a : address) {
+        this.addTo(a);
+      }
       return this;
     }
 
     public Builder addCc(String address) {
+      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
       this.cc.add(address);
       return this;
     }
 
     public Builder addCc(Collection<String> address) {
-      this.cc.addAll(address);
+      for (String a : address) {
+        this.addCc(a);
+      }
       return this;
     }
 
     public Builder addBcc(String address) {
+      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
       this.bcc.add(address);
       return this;
     }
 
     public Builder addBcc(Collection<String> address) {
-      this.bcc.addAll(address);
+      for (String a : address) {
+        this.addBcc(a);
+      }
       return this;
     }
 
     public MailObject build() {
+      Preconditions.checkArgument(body != null && !body.isEmpty());
       return new MailObject(to, cc, bcc, subject, body, bodyType);
     }
   }

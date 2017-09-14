@@ -19,7 +19,6 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
 
-import io.growingabit.app.dao.InvitationCodeSignupStageDao;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentData;
@@ -41,7 +40,6 @@ public class MeControllerTest extends BaseDatastoreTest {
 
   private UserDao userDao;
   private InvitationDao invitationDao;
-  private InvitationCodeSignupStageDao invitationCodeSignupStageDao;
   private String userId;
 
   @Before
@@ -51,7 +49,6 @@ public class MeControllerTest extends BaseDatastoreTest {
 
     ObjectifyService.register(User.class);
     ObjectifyService.register(DummySignupStage.class);
-    ObjectifyService.register(User.class);
     ObjectifyService.register(Invitation.class);
     ObjectifyService.register(InvitationCodeSignupStage.class);
     ObjectifyService.register(StudentDataSignupStage.class);
@@ -64,7 +61,6 @@ public class MeControllerTest extends BaseDatastoreTest {
 
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
-    this.invitationCodeSignupStageDao = new InvitationCodeSignupStageDao();
 
     this.userId = "id";
   }
@@ -276,7 +272,6 @@ public class MeControllerTest extends BaseDatastoreTest {
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
     Response response = new MeController().getCurrenUserInfo(context);
-    final User returnedUser = (User) response.getEntity();
 
     // simulate GSON, becase it do not use setter
     final String studentDataJson = "{name: 'lorenzo', surname: 'bugiani', birthdate: 'an invalid date'}";

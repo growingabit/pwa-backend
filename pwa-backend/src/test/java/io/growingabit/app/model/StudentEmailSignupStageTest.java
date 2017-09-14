@@ -2,8 +2,6 @@ package io.growingabit.app.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import javax.mail.internet.AddressException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +22,7 @@ public class StudentEmailSignupStageTest extends BaseDatastoreTest {
   }
 
   @Test
-  public void setShouldNotAcceptNull() throws AddressException {
+  public void setShouldNotAcceptNull() {
     final StudentEmailSignupStage stage = new StudentEmailSignupStage();
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
 

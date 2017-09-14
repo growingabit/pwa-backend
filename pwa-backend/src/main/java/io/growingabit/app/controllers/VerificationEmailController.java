@@ -30,25 +30,21 @@ public class VerificationEmailController {
 
   private final static XLogger log = XLoggerFactory.getXLogger(VerificationEmailController.class);
 
-  @Context
-  private SecurityContext securityContext;
-
   private User getCurrentUser(final SecurityContext securityContext) {
     final Auth0UserProfile auth0User = (Auth0UserProfile) securityContext.getUserPrincipal();
     return new UserDao().find(Key.create(User.class, auth0User.getUserID()));
   }
 
-
   @Secured
   @Path("{verificationCode}")
   @GET
-  public Response verifyEmail(@PathParam("verificationCode") String verificationCode) {
+  public Response verifyEmail(@Context SecurityContext securityContext, @PathParam("verificationCode") String verificationCode) {
 
     log.entry(verificationCode);
 
     try {
       verificationCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
-      User user = this.getCurrentUser(securityContext);
+      User user = getCurrentUser(securityContext);
 
       final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
       final StudentEmailSignupStage stage = (StudentEmailSignupStage) user.getSignupStages().get(signupStageIndentifier).get();

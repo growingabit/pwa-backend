@@ -18,7 +18,7 @@ public class StudentConfirmationEmail {
   public StudentConfirmationEmail(String email) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
     this.email = email;
-    this.verificationCode = new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
+    this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
   }
 
@@ -37,5 +37,9 @@ public class StudentConfirmationEmail {
 
   public Long getTsExpiration() {
     return tsExpiration;
+  }
+
+  public static String generateVerificationCode() {
+    return new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
   }
 }
