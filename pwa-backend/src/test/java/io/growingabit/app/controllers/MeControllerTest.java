@@ -4,26 +4,26 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.Ref;
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
-import io.growingabit.app.model.base.SignupStage;
-import io.growingabit.app.utils.Settings;
+import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
-import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
+import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
-import java.util.Map;
+import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import org.joda.time.DateTime;
@@ -36,13 +36,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class MeControllerTest extends BaseGaeTest {
 
-  private UserDao userDao;
   private InvitationDao invitationDao;
-  private String userId;
+  private User currentUser;
 
   @Before
-  public void setUp() throws NoSuchFieldException, IllegalAccessException {
-
+  public void setUp() throws NoSuchFieldException, IllegalAccessException, IOException {
     Utils.clearSignupStageFactory();
 
     ObjectifyService.register(User.class);
@@ -51,116 +49,61 @@ public class MeControllerTest extends BaseGaeTest {
     ObjectifyService.register(InvitationCodeSignupStage.class);
     ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(StudentEmailSignupStage.class);
-
-    SignupStageFactory.register(DummySignupStage.class);
-    SignupStageFactory.register(StudentDataSignupStage.class);
-    SignupStageFactory.register(StudentEmailSignupStage.class);
+    ObjectifyService.register(WalletSetupSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
 
-    this.userDao = new UserDao();
-    this.invitationDao = new InvitationDao();
+    SignupStageFactory.register(DummySignupStage.class);
+    SignupStageFactory.register(StudentDataSignupStage.class);
+    SignupStageFactory.register(StudentEmailSignupStage.class);
+    SignupStageFactory.register(WalletSetupSignupStage.class);
 
-    this.userId = "id";
+    this.invitationDao = new InvitationDao();
+    final String userId = "id";
+
+    final Auth0UserProfile userProfile = new Auth0UserProfile(userId, "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+    Mockito.when(requestContext.getSecurityContext()).thenReturn(context);
+
+    //to create the user
+    new UserCreationFilter().filter(requestContext);
+    this.currentUser = new UserDao().find(Key.create(User.class, userId));
   }
 
   @Test
   public void returnCurrentUser() {
-    final User user = new User();
-    user.setId(this.userId);
-    this.userDao.persist(user);
-    final Auth0UserProfile userProfile = new Auth0UserProfile(user.getId(), "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final Response response = new MeController().getCurrenUserInfo(context);
+    final Response response = new MeController().getCurrenUserInfo(this.currentUser);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
-    assertThat(returnedUser).isEqualTo(user);
+    assertThat(returnedUser).isEqualTo(this.currentUser);
   }
 
   @Test
-  public void createUserIfNotExist() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final Response response = new MeController().getCurrenUserInfo(context);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-
-    final User returnedUser = (User) response.getEntity();
-    assertThat(this.userDao.find(Key.create(User.class, this.userId))).isEqualTo(returnedUser);
-  }
-
-  @Test
-  public void signupStageAreSetted() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final Response response = new MeController().getCurrenUserInfo(context);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-
-    final User returnedUser = (User) response.getEntity();
-    final Map<String, Ref<SignupStage>> signupStages = returnedUser.getSignupStages();
-
-    assertThat(signupStages).hasSize(3);
-  }
-
-  @Test
-  public void mandatorySignupStageAreSetted() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final Response response = new MeController().getCurrenUserInfo(context);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
-
-    final User returnedUser = (User) response.getEntity();
-    final Map<String, Ref<SignupStage>> mandatorySignupStages = returnedUser.getMandatorySignupStages();
-
-    assertThat(mandatorySignupStages).hasSize(2);
-  }
-
-  @Test
-  public void confirmInvitationCode() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
+  public void confirmInvitationCode() {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
 
     final Invitation i = Mockito.mock(Invitation.class);
     Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
-    final Response response = new MeController().confirmInvitationCode(context, i);
+    final Response response = new MeController().confirmInvitationCode(this.currentUser, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
 
-    final String signupStageIndentifier = Settings.getConfig().getString(InvitationCodeSignupStage.class.getCanonicalName());
-
-    final InvitationCodeSignupStage savedStage = (InvitationCodeSignupStage) returnedUser.getMandatorySignupStages().get(signupStageIndentifier).get();
+    final InvitationCodeSignupStage savedStage = returnedUser.getMandatorySignupStage(InvitationCodeSignupStage.class);
 
     assertThat(savedStage.getData().isConfirmed()).isTrue();
     assertThat(savedStage.isDone()).isTrue();
   }
 
   @Test
-  public void invitationCodeAlreadyUsed() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
+  public void invitationCodeAlreadyUsed() {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
@@ -168,59 +111,33 @@ public class MeControllerTest extends BaseGaeTest {
     final Invitation i = Mockito.mock(Invitation.class);
     Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
-    final Response response = new MeController().confirmInvitationCode(context, i);
+    final Response response = new MeController().confirmInvitationCode(this.currentUser, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
-  public void invitationCodeNotFound() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
+  public void invitationCodeNotFound() {
     final Invitation i = Mockito.mock(Invitation.class);
     Mockito.when(i.getInvitationCode()).thenReturn("inexintent code");
 
-    final Response response = new MeController().confirmInvitationCode(context, i);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
-  }
-
-  @Test
-  public void userNotFoundDringConfirmationCode() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final Invitation i = Mockito.mock(Invitation.class);
-
-    final Response response = new MeController().confirmInvitationCode(context, i);
+    final Response response = new MeController().confirmInvitationCode(this.currentUser, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void completeStudentDataStep() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    Response response = new MeController().getCurrenUserInfo(context);
-    final User returnedUser = (User) response.getEntity();
-
     final StudentData studentData = new StudentData();
     studentData.setName("Lorenzo");
     studentData.setSurname("Bugiani");
     studentData.setBirthdate("19/04/1985");
 
-    response = new MeController().studentData(context, studentData);
+    final Response response = new MeController().studentData(this.currentUser, studentData);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
-    final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
-    final StudentDataSignupStage savedStage = (StudentDataSignupStage) returnedUser.getSignupStages().get(signupStageIndentifier).get();
+    final User returnedUser = (User) response.getEntity();
 
-    assertThat(savedStage.isDone()).isTrue();
+    final StudentDataSignupStage savedStage = returnedUser.getSignupStage(StudentDataSignupStage.class);
+
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData().getName()).isEqualTo(studentData.getName());
     assertThat(savedStage.getData().getSurname()).isEqualTo(studentData.getSurname());
@@ -229,117 +146,102 @@ public class MeControllerTest extends BaseGaeTest {
   }
 
   @Test
-  public void userNotFoundDuringStudentData() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    final StudentData studentData = new StudentData();
-    studentData.setName("Lorenzo");
-    studentData.setSurname("Bugiani");
-    studentData.setBirthdate("19/04/1985");
-
-    final Response response = new MeController().studentData(context, studentData);
-    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
-  }
-
-  @Test
   public void studentDataNull() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
-    final Response response = new MeController().studentData(context, null);
+    final Response response = new MeController().studentData(this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void badRequestIfBirthdateIsInvalid() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+    Response response = new MeController().getCurrenUserInfo(this.currentUser);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
-    Response response = new MeController().getCurrenUserInfo(context);
+    final StudentData studentData = Mockito.mock(StudentData.class);
+    Mockito.when(studentData.getBirthdate()).thenReturn(null);
 
-    // simulate GSON, because it does not use setter
-    final String studentDataJson = "{name: 'lorenzo', surname: 'bugiani', birthdate: 'an invalid date'}";
-
-    final StudentData studentData = GsonFactory.getGsonInstance().fromJson(studentDataJson, StudentData.class);
-
-    response = new MeController().studentData(context, studentData);
+    response = new MeController().studentData(this.currentUser, studentData);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void studentEmailDataNull() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
-    final Response response = new MeController().studentemail(context, null);
+    final Response response = new MeController().studentemail(this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void studentEmailDataHasEmailFieldEmpty() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
     final StudentConfirmationEmail data = Mockito.mock(StudentConfirmationEmail.class);
     Mockito.when(data.getEmail()).thenReturn("");
 
-    final Response response = new MeController().studentemail(context, data);
+    final Response response = new MeController().studentemail(this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void studentEmailDataHasEmailFieldNull() {
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    // to create the user
-    new MeController().getCurrenUserInfo(context).getEntity();
-
     final StudentConfirmationEmail data = Mockito.mock(StudentConfirmationEmail.class);
     Mockito.when(data.getEmail()).thenReturn(null);
 
-    final Response response = new MeController().studentemail(context, data);
+    final Response response = new MeController().studentemail(this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void completeStudentEmailStage() {
-
-    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
-    final SecurityContext context = Mockito.mock(SecurityContext.class);
-    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
-
-    Response response = new MeController().getCurrenUserInfo(context);
-    final User returnedUser = (User) response.getEntity();
-
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
-    response = new MeController().studentemail(context, data);
+    final Response response = new MeController().studentemail(this.currentUser, data);
 
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
-    final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
-    final StudentEmailSignupStage savedStage = (StudentEmailSignupStage) returnedUser.getSignupStages().get(signupStageIndentifier).get();
+    final User returnedUser = (User) response.getEntity();
+    final StudentEmailSignupStage savedStage = returnedUser.getSignupStage(StudentEmailSignupStage.class);
 
     assertThat(savedStage.isDone()).isFalse();
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
     assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
     assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
+  }
+
+  @Test
+  public void completeWalletDataSignupStage() {
+    final String validAddress = "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i";
+    final BitcoinAddress address = new BitcoinAddress(validAddress);
+
+    final Response response = new MeController().walletSetup(this.currentUser, address);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+
+    final User returnedUser = (User) response.getEntity();
+
+    final WalletSetupSignupStage savedStage = returnedUser.getSignupStage(WalletSetupSignupStage.class);
+
+    assertThat(savedStage.isDone()).isTrue();
+    assertThat(savedStage.isDone()).isTrue();
+    assertThat(savedStage.getData().getAddress()).isEqualTo(address.getAddress());
+  }
+
+  @Test
+  public void doNotcompleteWalletDataSignupStageIfAddressIsInvalid() {
+    final String invalidAddress = "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62j";
+    final BitcoinAddress address = new BitcoinAddress(invalidAddress);
+
+    final Response response = new MeController().walletSetup(this.currentUser, address);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void walletAddressMustBeNotNull() {
+    final BitcoinAddress address = Mockito.mock(BitcoinAddress.class);
+    Mockito.when(address.getAddress()).thenReturn("");
+
+    final Response response = new MeController().walletSetup(this.currentUser, address);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void walletSetupSignupStageMustBeNotNull() {
+    final Response response = new MeController().walletSetup(this.currentUser, null);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
 }

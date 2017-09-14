@@ -1,55 +1,39 @@
 package io.growingabit.app.controllers;
 
+import io.growingabit.app.dao.StudentEmailSignupStageDao;
+import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.User;
+import io.growingabit.jersey.annotations.Secured;
 import java.io.UnsupportedEncodingException;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-
 import org.apache.commons.codec.binary.Base64;
 import org.joda.time.DateTime;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
-
-import com.googlecode.objectify.Key;
-
-import io.growingabit.app.dao.StudentEmailSignupStageDao;
-import io.growingabit.app.dao.UserDao;
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.app.model.User;
-import io.growingabit.app.utils.Settings;
-import io.growingabit.app.utils.auth.Auth0UserProfile;
-import io.growingabit.jersey.annotations.Secured;
 
 @Path("api/v1/verificationemail")
 public class VerificationEmailController {
 
   private final static XLogger log = XLoggerFactory.getXLogger(VerificationEmailController.class);
 
-  private User getCurrentUser(final SecurityContext securityContext) {
-    final Auth0UserProfile auth0User = (Auth0UserProfile) securityContext.getUserPrincipal();
-    return new UserDao().find(Key.create(User.class, auth0User.getUserID()));
-  }
-
   @Secured
   @Path("{verificationCode}")
   @GET
-  public Response verifyEmail(@Context SecurityContext securityContext, @PathParam("verificationCode") String verificationCode) {
+  public Response verifyEmail(@Context final User currentUser, @PathParam("verificationCode") String verificationCode) {
 
     log.entry(verificationCode);
 
     try {
       verificationCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
-      User user = this.getCurrentUser(securityContext);
 
-      final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
-      final StudentEmailSignupStage stage = (StudentEmailSignupStage) user.getSignupStages().get(signupStageIndentifier).get();
+      final StudentEmailSignupStage stage = currentUser.getSignupStage(StudentEmailSignupStage.class);
 
-      DateTime dateTime = new DateTime();
+      final DateTime dateTime = new DateTime();
       if (!stage.getData().getVerificationCode().equals(verificationCode) || stage.getData().getTsExpiration() > dateTime.plusDays(7).getMillis()) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
       }
@@ -59,7 +43,7 @@ public class VerificationEmailController {
 
       return Response.ok().build();
 
-    } catch (UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       log.catching(e);
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }

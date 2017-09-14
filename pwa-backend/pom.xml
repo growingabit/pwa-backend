@@ -45,9 +45,7 @@
             <version>1.3.1</version>
             <configuration>
               <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
-              <project>
-                growbit-0
-              </project>
+              <project>growbit-0</project>
               <version>${appengineVersion}</version>
               <devserver.host>0.0.0.0</devserver.host>
               <devserver.port>8080</devserver.port>
@@ -93,9 +91,7 @@
             <version>1.3.1</version>
             <configuration>
               <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
-              <project>
-                growbit-0
-              </project>
+              <project>growbit-0</project>
               <version>${appengineVersion}</version>
               <devserver.host>0.0.0.0</devserver.host>
               <devserver.port>8080</devserver.port>
@@ -250,11 +246,6 @@
       <version>1.9.3</version>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.9.9</version>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-ext</artifactId>
       <version>1.7.25</version>
@@ -359,7 +350,7 @@
   </dependencies>
 
   <build>
-    <!--for hot reload of the web application -->
+    <!--for hot reload of the web application-->
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 
     <plugins>
@@ -429,7 +420,6 @@
           </execution>
         </executions>
       </plugin>
-
       <!-- modify content of a maven property and save it into a new property via Groovy Maven Plugin ... -->
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
@@ -443,8 +433,7 @@
             </goals>
             <configuration>
               <source>
-                System.setProperty("appengineVersion",
-                  "${project.version}".replace('.', '-'))
+                System.setProperty("appengineVersion", "${project.version}".replace('.', '-'))
               </source>
             </configuration>
           </execution>
@@ -474,9 +463,7 @@
         <version>1.3.1</version>
         <configuration>
           <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
-          <project>
-            growbit-0
-          </project>
+          <project>growbit-0</project>
           <version>${appengineVersion}</version>
           <enableJarClasses>false</enableJarClasses>
           <devserver.host>0.0.0.0</devserver.host>
@@ -665,9 +652,7 @@
                   <version>1.7</version>
                 </requireJavaVersion>
                 <requirePluginVersions>
-                  <message>Best Practice is to always define plugin
-                    versions!
-                  </message>
+                  <message>Best Practice is to always define plugin versions!</message>
                   <banLatest>true</banLatest>
                   <banRelease>true</banRelease>
                   <phases>clean,deploy,verify,appengine:run,appengine:deploy,appengine:update,appengine:devappaserver,site</phases>

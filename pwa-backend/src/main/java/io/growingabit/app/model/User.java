@@ -6,6 +6,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Load;
 import io.growingabit.app.model.base.SignupStage;
+import io.growingabit.app.utils.Settings;
 import io.growingabit.common.model.BaseModel;
 import io.gsonfire.annotations.ExposeMethodResult;
 import java.util.Collections;
@@ -74,5 +75,25 @@ public class User extends BaseModel {
     }
     return true;
   }
+
+  public <T extends SignupStage> T getMandatorySignupStage(final Class<T> signupStageClass) {
+    return this.getStage(signupStageClass, this.mandatorySignupStages);
+  }
+
+  public <T extends SignupStage> T getSignupStage(final Class<T> signupStageClass) {
+    return this.getStage(signupStageClass, this.signupStages);
+  }
+
+  private <T extends SignupStage> T getStage(final Class<T> signupStageClass, final Map<String, Ref<SignupStage>> stages) {
+    final String signupStageIdentifier = Settings.getConfig().getString(signupStageClass.getCanonicalName());
+    if (StringUtils.isNotEmpty(signupStageIdentifier)) {
+      final Ref<SignupStage> stage = stages.get(signupStageIdentifier);
+      if (stage != null) {
+        return (T) stage.get();
+      }
+    }
+    return null;
+  }
+
 
 }

@@ -10,14 +10,15 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
+import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
+import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.model.base.SignupStage;
-import io.growingabit.app.utils.Settings;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
@@ -45,10 +46,12 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     ObjectifyService.factory().register(InvitationCodeSignupStage.class);
     ObjectifyService.factory().register(StudentDataSignupStage.class);
     ObjectifyService.factory().register(StudentEmailSignupStage.class);
+    ObjectifyService.factory().register(WalletSetupSignupStage.class);
 
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
     SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentEmailSignupStage.class);
+    SignupStageFactory.register(WalletSetupSignupStage.class);
 
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
@@ -114,8 +117,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     stage.setData(studentData);
     new SignupStageExecutor(this.user).exec(stage);
 
-    final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
-    final StudentDataSignupStage savedStage = (StudentDataSignupStage) this.user.getSignupStages().get(signupStageIndentifier).get();
+    final StudentDataSignupStage savedStage = this.user.getSignupStage(StudentDataSignupStage.class);
 
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData().getName()).isEqualTo(studentData.getName());
@@ -138,8 +140,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     stage.setData(data);
     new SignupStageExecutor(this.user).exec(stage);
 
-    final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
-    final StudentEmailSignupStage savedStage = (StudentEmailSignupStage) this.user.getSignupStages().get(signupStageIndentifier).get();
+    final StudentEmailSignupStage savedStage = this.user.getSignupStage(StudentEmailSignupStage.class);
 
     assertThat(savedStage.isDone()).isFalse();
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
@@ -158,6 +159,36 @@ public class SignupStageExecutorTest extends BaseGaeTest {
   @Test(expected = NullPointerException.class)
   public void userEmailStepStageMustBeNotNull() {
     final StudentEmailSignupStage stage = null;
+    new SignupStageExecutor(this.user).exec(stage);
+  }
+
+  public void completeWalletDataSignupStage() {
+    final String validAddress = "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i";
+    final BitcoinAddress address = new BitcoinAddress(validAddress);
+    final WalletSetupSignupStage stage = new WalletSetupSignupStage();
+    stage.setData(address);
+
+    new SignupStageExecutor(this.user).exec(stage);
+
+    final WalletSetupSignupStage savedStage = this.user.getSignupStage(WalletSetupSignupStage.class);
+
+    assertThat(savedStage.isDone()).isTrue();
+    assertThat(savedStage.getData().getAddress()).isEqualTo(address.getAddress());
+  }
+
+  @Test(expected = SignupStageExecutionException.class)
+  public void doNotcompleteWalletDataSignupStageIfAddressIsInvalid() {
+    final String invalidAddress = "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62j";
+    final BitcoinAddress address = new BitcoinAddress(invalidAddress);
+    final WalletSetupSignupStage stage = new WalletSetupSignupStage();
+    stage.setData(address);
+
+    new SignupStageExecutor(this.user).exec(stage);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void walletSetupSignupStageMustBeNotNull() {
+    final WalletSetupSignupStage stage = null;
     new SignupStageExecutor(this.user).exec(stage);
   }
 
