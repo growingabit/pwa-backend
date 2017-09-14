@@ -2,6 +2,7 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.google.gson.JsonObject;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
@@ -129,7 +129,7 @@ public class MeControllerTest extends BaseDatastoreTest {
   }
 
   @Test
-  public void confirmInvitationCode() {
+  public void confirmInvitationCode() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
@@ -140,10 +140,12 @@ public class MeControllerTest extends BaseDatastoreTest {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
 
-    JsonObject json = new JsonObject();
-    json.addProperty("invitationCode", invitation.getInvitationCode());
+    Invitation i = new Invitation();
+    Field field = Invitation.class.getDeclaredField("invitationCode");
+    field.setAccessible(true);
+    field.set(i, invitation.getInvitationCode());
 
-    final Response response = new MeController().confirmInvitationCode(context, json);
+    final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
@@ -157,7 +159,7 @@ public class MeControllerTest extends BaseDatastoreTest {
   }
 
   @Test
-  public void invitationCodeAlreadyUsed() {
+  public void invitationCodeAlreadyUsed() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
@@ -169,15 +171,17 @@ public class MeControllerTest extends BaseDatastoreTest {
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
 
-    JsonObject json = new JsonObject();
-    json.addProperty("invitationCode", invitation.getInvitationCode());
+    Invitation i = new Invitation();
+    Field field = Invitation.class.getDeclaredField("invitationCode");
+    field.setAccessible(true);
+    field.set(i, invitation.getInvitationCode());
 
-    final Response response = new MeController().confirmInvitationCode(context, json);
+    final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
-  public void invitationCodeNotFound() {
+  public void invitationCodeNotFound() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
@@ -185,23 +189,27 @@ public class MeControllerTest extends BaseDatastoreTest {
     // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
-    JsonObject json = new JsonObject();
-    json.addProperty("invitationCode", "inexintent code");
+    Invitation i = new Invitation();
+    Field field = Invitation.class.getDeclaredField("invitationCode");
+    field.setAccessible(true);
+    field.set(i, "inexintent code");
 
-    final Response response = new MeController().confirmInvitationCode(context, json);
+    final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
-  public void userNotFoundDringConfirmationCode() {
+  public void userNotFoundDringConfirmationCode() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
     final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    JsonObject json = new JsonObject();
-    json.addProperty("invitationCode", "a code");
+    Invitation i = new Invitation();
+    Field field = Invitation.class.getDeclaredField("invitationCode");
+    field.setAccessible(true);
+    field.set(i, "a code");
 
-    final Response response = new MeController().confirmInvitationCode(context, json);
+    final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
