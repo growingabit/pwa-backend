@@ -3,6 +3,7 @@ package io.growingabit.app.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Random;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -44,13 +45,11 @@ public class StudentDataTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void notAcceptNullDate() {
-    final String birthDate = (this.random.nextInt(28) + 1) + "/" + (this.random.nextInt(12) + 1) + "/" + (this.random.nextInt(100) + 1900);
     this.studentData.setBirthdate(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void notAcceptEmptyDate() {
-    final String birthDate = (this.random.nextInt(28) + 1) + "/" + (this.random.nextInt(12) + 1) + "/" + (this.random.nextInt(100) + 1900);
     this.studentData.setBirthdate("");
   }
 
