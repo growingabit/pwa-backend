@@ -98,4 +98,28 @@ public class User extends BaseModel {
     return null;
   }
 
+  // leave private, this method is used
+  // only by Gson by reflection
+  @ExposeMethodResult("signupStages")
+  private SignupStage[] signupStages() {
+    return convertToArray(this.signupStages);
+  }
+
+  // leave private, this method is used
+  // only by Gson by reflection
+  @ExposeMethodResult("mandatorySignupStages")
+  private SignupStage[] mandatorySignupStages() {
+    return convertToArray(this.mandatorySignupStages);
+  }
+
+  private SignupStage[] convertToArray(final Map<String, Ref<SignupStage>> stages) {
+    final SignupStage[] returnedStages = new SignupStage[stages.size()];
+    int i = 0;
+    for (final Ref<SignupStage> stage : stages.values()) {
+      returnedStages[i] = stage.get();
+      i++;
+    }
+    return returnedStages;
+  }
+
 }
