@@ -2,13 +2,24 @@ package io.growingabit.app.signup.executors;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
+import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
+import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.Settings;
@@ -17,8 +28,6 @@ import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseDatastoreTest;
 import io.growingabit.testUtils.Utils;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SignupStageExecutorTest extends BaseDatastoreTest {
 
@@ -33,12 +42,14 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
 
     ObjectifyService.factory().register(Invitation.class);
     ObjectifyService.factory().register(User.class);
+
     ObjectifyService.factory().register(InvitationCodeSignupStage.class);
     ObjectifyService.factory().register(StudentDataSignupStage.class);
+    ObjectifyService.factory().register(StudentEmailSignupStage.class);
 
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
-
     SignupStageFactory.register(StudentDataSignupStage.class);
+    SignupStageFactory.register(StudentEmailSignupStage.class);
 
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
@@ -116,6 +127,35 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
   @Test(expected = NullPointerException.class)
   public void userDataStepStageMustBeNotNull() {
     final StudentDataSignupStage stage = null;
+    new SignupStageExecutor(this.user).exec(stage);
+  }
+
+  @Test
+  public void completeStudentEmailConfirmationStep() throws InterruptedException {
+
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("test@example.com");
+
+    final StudentEmailSignupStage stage = new StudentEmailSignupStage();
+    stage.setData(data);
+    new SignupStageExecutor(this.user).exec(stage);
+
+    final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
+    final StudentEmailSignupStage savedStage = (StudentEmailSignupStage) this.user.getSignupStages().get(signupStageIndentifier).get();
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
+    assertThat(savedStage.getData().getTsExpiration()).isEqualTo(data.getTsExpiration());
+    assertThat(savedStage.getData().getVerificationCode()).isEqualTo(data.getVerificationCode());
+
+    Thread.sleep(1000);
+    LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+    QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+    Assert.assertEquals(1, qsi.getTaskInfo().size());
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void userEmailStepStageMustBeNotNull() {
+    final StudentEmailSignupStage stage = null;
     new SignupStageExecutor(this.user).exec(stage);
   }
 

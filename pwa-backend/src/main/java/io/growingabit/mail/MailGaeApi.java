@@ -22,7 +22,7 @@ import io.growingabit.app.utils.Settings;
 
 public class MailGaeApi {
 
-  private static final XLogger log = XLoggerFactory.getXLogger(MailGaeApi.class);
+  private static final XLogger log = XLoggerFactory.getXLogger(MailGaeApiTest.class);
 
   public static Message sendEmail(final MailObject mailObject) throws UnsupportedEncodingException, MessagingException {
 

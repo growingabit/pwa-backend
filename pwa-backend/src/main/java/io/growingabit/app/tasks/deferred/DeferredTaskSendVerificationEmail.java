@@ -11,7 +11,7 @@ import com.google.appengine.api.taskqueue.DeferredTask;
 
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.utils.gson.GsonFactory;
-import io.growingabit.mail.MailService;
+import io.growingabit.mail.MailServiceTest;
 
 public class DeferredTaskSendVerificationEmail implements DeferredTask {
 
@@ -29,7 +29,7 @@ public class DeferredTaskSendVerificationEmail implements DeferredTask {
 
     try {
       StudentEmailSignupStage stage = GsonFactory.getGsonInstance().fromJson(studentEmailSignupStageJson, StudentEmailSignupStage.class);
-      MailService.sendVerificationEmail(stage);
+      MailServiceTest.sendVerificationEmail(stage);
     } catch (UnsupportedEncodingException | MessagingException e) {
       log.catching(e);
     }
