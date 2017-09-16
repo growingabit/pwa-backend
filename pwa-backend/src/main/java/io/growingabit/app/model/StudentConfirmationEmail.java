@@ -17,10 +17,10 @@ public class StudentConfirmationEmail {
 
   public StudentConfirmationEmail(final String email, final String originHost) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
+    this.setOriginHost(originHost);
     this.email = email;
     this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
-    this.setOriginHost(originHost);
   }
 
   @SuppressWarnings("unused")

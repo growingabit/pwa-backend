@@ -7,7 +7,6 @@ import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
-import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
@@ -68,7 +67,7 @@ public class SignupStageFactoryTest extends BaseGaeTest {
       this.userDao.persist(u);
       final List<SignupStage> list = SignupStageFactory.getSignupStages(Key.create(u));
 
-      final String stageIdentifier = new Settings(new ResourceFetcher()).getConfig().getString(DummySignupStage.class.getCanonicalName());
+      final String stageIdentifier = Settings.getConfig().getString(DummySignupStage.class.getCanonicalName());
       assertThat(list.get(0).getStageIdentifier()).isEqualTo(stageIdentifier);
       assertThat(list.get(0)).isInstanceOf(DummySignupStage.class);
     } catch (final Exception e) {
@@ -143,7 +142,7 @@ public class SignupStageFactoryTest extends BaseGaeTest {
       this.userDao.persist(u);
       final List<SignupStage> list = SignupStageFactory.getMandatorySignupStages(Key.create(u));
 
-      final String stageIdentifier = new Settings(new ResourceFetcher()).getConfig().getString(DummySignupStage.class.getCanonicalName());
+      final String stageIdentifier = Settings.getConfig().getString(DummySignupStage.class.getCanonicalName());
       assertThat(list.get(0).getStageIdentifier()).isEqualTo(stageIdentifier);
       assertThat(list.get(0)).isInstanceOf(DummySignupStage.class);
     } catch (final Exception e) {

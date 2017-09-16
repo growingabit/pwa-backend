@@ -33,6 +33,8 @@ import org.junit.Test;
 
 public class SignupStageExecutorTest extends BaseGaeTest {
 
+  private static final String HOST = "http://www.example.com";
+
   private UserDao userDao;
   private InvitationDao invitationDao;
   private User user;
@@ -199,7 +201,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
   @Test
   public void completeStudentPhoneConfirmationStep() throws InterruptedException {
 
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
 
     final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
     stage.setData(data);

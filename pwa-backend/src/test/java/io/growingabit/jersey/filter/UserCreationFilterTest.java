@@ -13,6 +13,7 @@ import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.jersey.filters.UserCreationFilter;
+import io.growingabit.jersey.utils.JerseyContextUserFactory;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
@@ -79,7 +80,7 @@ public class UserCreationFilterTest extends BaseGaeTest {
     Mockito.when(requestContext.getSecurityContext()).thenReturn(context);
 
     assertThat(this.userDao.exist(Key.create(User.class, this.userId))).isFalse();
-    
+
     new UserCreationFilter().filter(requestContext);
 
     assertThat(this.userDao.exist(Key.create(User.class, this.userId))).isTrue();
@@ -119,6 +120,22 @@ public class UserCreationFilterTest extends BaseGaeTest {
     final Map<String, Ref<SignupStage>> mandatorySignupStages = user.getMandatorySignupStages();
 
     assertThat(mandatorySignupStages).hasSize(2);
+  }
+
+  @Test
+  public void setUserIntoRequestContext() throws IOException {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+    Mockito.when(requestContext.getSecurityContext()).thenReturn(context);
+
+    new UserCreationFilter().filter(requestContext);
+
+    final User createdUser = this.userDao.find(Key.create(User.class, this.userId));
+    Mockito.verify(requestContext, Mockito.times(1)).setProperty(JerseyContextUserFactory.CONTEXT_USER_PROPERTY_NAME, createdUser);
   }
 
 }

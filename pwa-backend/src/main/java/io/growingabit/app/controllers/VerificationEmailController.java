@@ -16,13 +16,12 @@ import org.joda.time.DateTime;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
-@Path("api/v1/verificationemail")
+@Path("api/v1/verify/email/{verificationCode}")
 public class VerificationEmailController {
 
   private final static XLogger log = XLoggerFactory.getXLogger(VerificationEmailController.class);
 
   @Secured
-  @Path("{verificationCode}")
   @GET
   public Response verifyEmail(@Context final User currentUser, @PathParam("verificationCode") String verificationCode) {
 

@@ -5,8 +5,8 @@ import static com.google.common.truth.Truth.assertThat;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
-import io.growingabit.app.model.StudentConfirmationEmail;
-import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.StudentConfirmationPhone;
+import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.common.utils.SignupStageFactory;
@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
@@ -32,7 +31,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class VerificationEmailControllerTest extends BaseGaeTest {
+public class VerificationPhoneControllerTest extends BaseGaeTest {
 
   private static final String HOST = "http://localhost";
   private User currentUser;
@@ -43,9 +42,9 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     Utils.clearSignupStageFactory();
 
     ObjectifyService.register(User.class);
-    ObjectifyService.register(StudentEmailSignupStage.class);
+    ObjectifyService.register(StudentPhoneSignupStage.class);
 
-    SignupStageFactory.register(StudentEmailSignupStage.class);
+    SignupStageFactory.register(StudentPhoneSignupStage.class);
 
     final String userId = "id";
 
@@ -66,15 +65,15 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
       Mockito.when(req.getHeader("Host")).thenReturn(HOST);
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
-      Response response = new MeController().studentemail(req, this.currentUser, data);
+      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+      Response response = new MeController().studentphone(req, this.currentUser, data);
       final User user = (User) response.getEntity();
 
-      final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
+      final StudentPhoneSignupStage stage = user.getStage(StudentPhoneSignupStage.class);
 
-      final String verificationCode = Base64.encodeBase64URLSafeString(stage.getData().getVerificationCode().getBytes("utf-8"));
+      final String verificationCode = stage.getData().getVerificationCode();
 
-      response = new VerificationEmailController().verifyEmail(this.currentUser, verificationCode);
+      response = new VerificationPhoneController().verifyPhone(this.currentUser, verificationCode);
 
       assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
@@ -88,37 +87,14 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
       Mockito.when(req.getHeader("Host")).thenReturn(HOST);
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
-      Response response = new MeController().studentemail(req, this.currentUser, data);
+      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+      Response response = new MeController().studentphone(req, this.currentUser, data);
 
       response.getEntity();
 
-      final String verificationCode = Base64.encodeBase64URLSafeString("an invalid code".getBytes("utf-8"));
+      final String verificationCode = "an invalid code";
 
-      response = new VerificationEmailController().verifyEmail(this.currentUser, verificationCode);
-
-      assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
-
-    } catch (final Exception e) {
-      Assert.fail(ExceptionUtils.getStackTrace(e));
-    }
-  }
-
-  @Test
-  public void rigthCodeButNotEncoded() {
-    try {
-      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
-      Response response = new MeController().studentemail(req, this.currentUser, data);
-
-      final User user = (User) response.getEntity();
-
-      final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
-
-      final String verificationCode = stage.getData().getVerificationCode();
-
-      response = new VerificationEmailController().verifyEmail(this.currentUser, verificationCode);
+      response = new VerificationPhoneController().verifyPhone(this.currentUser, verificationCode);
 
       assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
 
@@ -133,18 +109,18 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
       Mockito.when(req.getHeader("Host")).thenReturn(HOST);
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
-      Response response = new MeController().studentemail(req, this.currentUser, data);
+      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+      Response response = new MeController().studentphone(req, this.currentUser, data);
 
       final User user = (User) response.getEntity();
 
-      final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
+      final StudentPhoneSignupStage stage = user.getStage(StudentPhoneSignupStage.class);
 
-      final String verificationCode = Base64.encodeBase64URLSafeString(stage.getData().getVerificationCode().getBytes("utf-8"));
+      final String verificationCode = stage.getData().getVerificationCode();
 
       DateTimeUtils.setCurrentMillisFixed(new DateTime().plusDays(8).getMillis());
 
-      response = new VerificationEmailController().verifyEmail(this.currentUser, verificationCode);
+      response = new VerificationPhoneController().verifyPhone(this.currentUser, verificationCode);
       assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
 
       DateTimeUtils.setCurrentMillisSystem();

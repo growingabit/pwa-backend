@@ -3,6 +3,7 @@ package io.growingabit.jersey;
 import com.google.common.collect.ImmutableMap;
 import io.growingabit.app.controllers.MeController;
 import io.growingabit.app.controllers.VerificationEmailController;
+import io.growingabit.app.controllers.VerificationPhoneController;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.controllers.InvitationController;
 import io.growingabit.jersey.controllers.HealthCheckController;
@@ -44,6 +45,7 @@ public class Application extends ResourceConfig {
     this.register(InvitationController.class);
     this.register(MeController.class);
     this.register(VerificationEmailController.class);
+    this.register(VerificationPhoneController.class);
 
     this.register(new AbstractBinder() {
       @Override
@@ -51,7 +53,6 @@ public class Application extends ResourceConfig {
         this.bindFactory(JerseyContextUserFactory.class).to(User.class).in(RequestScoped.class);
       }
     });
-
 
     /* @formatter:off */
     final Map<String, Object> params = new ImmutableMap.Builder<String, Object>().put(ServletProperties.FILTER_FORWARD_ON_404, true).build();

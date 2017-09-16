@@ -85,17 +85,15 @@ public class MeController {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
 
-    studentConfirmationEmail.setOriginHost(req.getHeader("Host"));
-
     try {
       final StudentEmailSignupStage stage = new StudentEmailSignupStage();
-      stage.setData(studentConfirmationEmail);
+      stage.setData(new StudentConfirmationEmail(studentConfirmationEmail.getEmail(), req.getHeader("Host")));
       stage.exec(new SignupStageExecutor(currentUser));
+
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
     }
-
   }
 
   @POST
@@ -121,14 +119,14 @@ public class MeController {
   @Path("/studentphone")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response studentphone(@Context final User currentUser, final StudentConfirmationPhone studentConfirmationPhone) {
+  public Response studentphone(@Context final HttpServletRequest request, @Context final User currentUser, final StudentConfirmationPhone studentConfirmationPhone) {
     if (studentConfirmationPhone == null || StringUtils.isEmpty(studentConfirmationPhone.getPhoneNumber())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
 
     try {
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber()));
+      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), request.getHeader("Host")));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {

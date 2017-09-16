@@ -3,7 +3,6 @@ package io.growingabit.app.signup.executors;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Preconditions;
-
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
@@ -21,7 +20,6 @@ import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.tasks.deferred.DeferredTaskSendVerificationEmail;
 import io.growingabit.app.tasks.deferred.DeferredTaskSendVerificationSMS;
 import io.growingabit.app.utils.BitcoinAddressValidator;
-import io.growingabit.app.utils.Settings;
 
 public class SignupStageExecutor {
 
@@ -40,7 +38,6 @@ public class SignupStageExecutor {
     try {
       Preconditions.checkNotNull(stage);
       final StudentDataSignupStage userSignupStage = this.currentuser.getStage(StudentDataSignupStage.class);
-
       final StudentData data = new StudentData(stage.getData());
       userSignupStage.setData(data);
       userSignupStage.setDone();
@@ -80,8 +77,7 @@ public class SignupStageExecutor {
   public void exec(final StudentPhoneSignupStage stage) throws SignupStageExecutionException {
     Preconditions.checkNotNull(stage);
 
-    final String signupStageIndentifier = Settings.getConfig().getString(StudentPhoneSignupStage.class.getCanonicalName());
-    final StudentPhoneSignupStage userSignupStage = (StudentPhoneSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();
+    final StudentPhoneSignupStage userSignupStage = this.currentuser.getStage(StudentPhoneSignupStage.class);
     userSignupStage.setData(stage.getData());
     new StudentPhoneSignupStageDao().persist(userSignupStage);
 

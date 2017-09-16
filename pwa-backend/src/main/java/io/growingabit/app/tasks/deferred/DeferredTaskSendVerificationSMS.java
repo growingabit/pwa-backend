@@ -38,10 +38,12 @@ public class DeferredTaskSendVerificationSMS implements DeferredTask {
 
         Twilio.init(accountSid, authToken);
 
+        final String verificationLink = "https://" + stage.getData().getOriginHost() + "/verificationemail/" + data.getVerificationCode();
+
         final Message message = Message.creator(
             new PhoneNumber(data.getPhoneNumber()),  // to
             new PhoneNumber(from),                   // from
-            text + " " + data.getVerificationCode())
+            text + " " + verificationLink)
             .create();
       } catch (final NotFoundException e) {
         log.error("Signup stage not found " + this.studentPhoneSignupStageKey);

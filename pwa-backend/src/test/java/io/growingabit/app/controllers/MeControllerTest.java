@@ -39,6 +39,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class MeControllerTest extends BaseGaeTest {
 
+  private static final String HOST = "http://www.example.com";
+
   private InvitationDao invitationDao;
   private User currentUser;
 
@@ -198,9 +200,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentEmailStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    final String host = "http://localhost";
-    Mockito.when(req.getHeader("Host")).thenReturn(host);
-    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", host);
+    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
     final Response response = new MeController().studentemail(req, this.currentUser, data);
 
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
@@ -217,7 +218,8 @@ public class MeControllerTest extends BaseGaeTest {
 
   @Test
   public void studentPhoneDataNull() {
-    final Response response = new MeController().studentphone(this.currentUser, null);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    final Response response = new MeController().studentphone(req, this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
@@ -226,7 +228,9 @@ public class MeControllerTest extends BaseGaeTest {
     final StudentConfirmationPhone data = Mockito.mock(StudentConfirmationPhone.class);
     Mockito.when(data.getPhoneNumber()).thenReturn("");
 
-    final Response response = new MeController().studentphone(this.currentUser, data);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().studentphone(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
@@ -234,15 +238,19 @@ public class MeControllerTest extends BaseGaeTest {
   public void studentPhoneDataHasPhoneFieldNull() {
     final StudentConfirmationPhone data = Mockito.mock(StudentConfirmationPhone.class);
     Mockito.when(data.getPhoneNumber()).thenReturn(null);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
-    final Response response = new MeController().studentphone(this.currentUser, data);
+    final Response response = new MeController().studentphone(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
 
   @Test
   public void completeStudentPhoneStage() {
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
-    final Response response = new MeController().studentphone(this.currentUser, data);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+    final Response response = new MeController().studentphone(req, this.currentUser, data);
 
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 

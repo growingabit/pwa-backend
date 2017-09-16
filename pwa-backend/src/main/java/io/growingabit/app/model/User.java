@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 public class User extends BaseModel {
 
   @Id
-  String id;
+  transient String id;
   @Load
   Map<String, Ref<SignupStage>> signupStages;
   @Load

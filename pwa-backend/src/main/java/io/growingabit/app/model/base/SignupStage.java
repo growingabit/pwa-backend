@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class SignupStage<T> extends BaseModel {
 
   @Id
-  private Long id;
+  private transient Long id;
 
   // we can safely void serialize userKey into json
   // because this class is subclass of BaseMode
@@ -24,7 +24,7 @@ public abstract class SignupStage<T> extends BaseModel {
   // websafestring, as the user is the parent
   @Parent
   @Required
-  transient Key<User> user;
+  private transient Key<User> user;
 
   private boolean isDone;
 
