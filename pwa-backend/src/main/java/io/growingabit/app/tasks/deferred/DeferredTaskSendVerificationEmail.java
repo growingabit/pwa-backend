@@ -9,8 +9,8 @@ import org.slf4j.ext.XLoggerFactory;
 
 import com.google.appengine.api.taskqueue.DeferredTask;
 
+import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.mail.MailService;
 
 public class DeferredTaskSendVerificationEmail implements DeferredTask {
@@ -18,17 +18,17 @@ public class DeferredTaskSendVerificationEmail implements DeferredTask {
   private static final long serialVersionUID = 6444282313293774192L;
   private static final XLogger log = XLoggerFactory.getXLogger(DeferredTaskSendVerificationEmail.class);
 
-  private String studentEmailSignupStageJson;
+  private String studentEmailSignupStageWebsafeString;
 
-  public DeferredTaskSendVerificationEmail(String studentEmailSignupStageJson) {
-    this.studentEmailSignupStageJson = studentEmailSignupStageJson;
+  public DeferredTaskSendVerificationEmail(String studentEmailSignupStageWebsafeString) {
+    this.studentEmailSignupStageWebsafeString = studentEmailSignupStageWebsafeString;
   }
 
   @Override
   public void run() {
 
     try {
-      StudentEmailSignupStage stage = GsonFactory.getGsonInstance().fromJson(this.studentEmailSignupStageJson, StudentEmailSignupStage.class);
+      StudentEmailSignupStage stage = new StudentEmailSignupStageDao().find(this.studentEmailSignupStageWebsafeString);
       MailService.sendVerificationEmail(stage);
     } catch (UnsupportedEncodingException | MessagingException e) {
       log.catching(e);

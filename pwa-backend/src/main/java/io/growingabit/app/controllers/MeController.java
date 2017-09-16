@@ -141,7 +141,7 @@ public class MeController {
     try {
       final User user = this.getCurrentUser(securityContext);
       StudentEmailSignupStage stage = new StudentEmailSignupStage();
-      stage.setData(new StudentConfirmationEmail(studentConfirmationEmail.getEmail()));
+      stage.setData(studentConfirmationEmail);
       stage.exec(new SignupStageExecutor(user));
 
       return Response.ok().entity(user).build();
