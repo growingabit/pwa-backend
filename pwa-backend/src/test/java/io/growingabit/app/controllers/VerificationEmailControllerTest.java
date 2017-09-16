@@ -69,7 +69,7 @@ public class VerificationEmailControllerTest extends BaseDatastoreTest {
       user = (User) response.getEntity();
 
       final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
-      StudentEmailSignupStage stage = (StudentEmailSignupStage) user.getSignupStages().get(signupStageIndentifier).get();;
+      StudentEmailSignupStage stage = (StudentEmailSignupStage) user.getSignupStages().get(signupStageIndentifier).get();
 
       Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
       method.setAccessible(true);
