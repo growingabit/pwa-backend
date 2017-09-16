@@ -12,8 +12,8 @@ public class StudentConfirmationEmail {
   private static final int VERIFICATION_CODE_LENGTH = 30;
 
   private String email;
-  private String verificationCode;
-  private Long tsExpiration;
+  transient String verificationCode;
+  transient Long tsExpiration;
 
   public StudentConfirmationEmail(String email) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
@@ -28,15 +28,15 @@ public class StudentConfirmationEmail {
   }
 
   public String getEmail() {
-    return email;
+    return this.email;
   }
 
   public String getVerificationCode() {
-    return verificationCode;
+    return this.verificationCode;
   }
 
   public Long getTsExpiration() {
-    return tsExpiration;
+    return this.tsExpiration;
   }
 
   public static String generateVerificationCode() {
