@@ -144,8 +144,10 @@ public class SignupStageExecutorTest extends BaseDatastoreTest {
 
     assertThat(savedStage.isDone()).isFalse();
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
-    assertThat(savedStage.getData().getTsExpiration()).isEqualTo(data.getTsExpiration());
-    assertThat(savedStage.getData().getVerificationCode()).isEqualTo(data.getVerificationCode());
+    assertThat(savedStage.getData().getTsExpiration()).isNotNull();
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(0l);
+    assertThat(savedStage.getData().getVerificationCode()).isNotNull();
+    assertThat(savedStage.getData().getVerificationCode()).isNotEmpty();
 
     Thread.sleep(1000);
     LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
