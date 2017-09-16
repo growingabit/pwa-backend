@@ -1,9 +1,8 @@
 package io.growingabit.jersey.controllers;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
-import static com.google.common.truth.Truth.assertThat;
-import javax.ws.rs.core.Response;
+import static io.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.containsString;
+
 import org.junit.Test;
 
 public class HealthCheckControllerIT {

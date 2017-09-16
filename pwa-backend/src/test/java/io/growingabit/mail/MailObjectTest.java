@@ -1,4 +1,4 @@
-package it.growbit.mail;
+package io.growingabit.mail;
 
 import java.util.Arrays;
 
@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import io.growingabit.mail.MailObject;
 
-public class MailServiceTest {
+public class MailObjectTest {
 
   private MailObject mailObject;
 
