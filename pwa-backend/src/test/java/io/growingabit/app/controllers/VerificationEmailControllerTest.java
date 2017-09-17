@@ -7,6 +7,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.codec.binary.Base64;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -145,8 +147,41 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     }
   }
 
-  // TODO: fare un test che controlla che il tsExpiratin sia scaduto
+  @Test
+  public void tsExpirationExpired() {
 
+    try {
+
+      User user = new User();
+      user.setId(this.userId);
+
+      final Auth0UserProfile userProfile = new Auth0UserProfile(user.getId(), "name");
+      final SecurityContext context = Mockito.mock(SecurityContext.class);
+      Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+      user = (User) new MeController().getCurrenUserInfo(context).getEntity();
+
+      StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
+      Response response = new MeController().studentemail(context, data);
+
+      user = (User) response.getEntity();
+
+      final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
+      StudentEmailSignupStage stage = (StudentEmailSignupStage) user.getSignupStages().get(signupStageIndentifier).get();
+
+      String verificationCode = stage.getData().getVerificationCode();
+
+      DateTimeUtils.setCurrentMillisFixed(new DateTime().plusDays(8).getMillis());
+
+      response = new VerificationEmailController().verifyEmail(context, verificationCode);
+      assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+
+      DateTimeUtils.setCurrentMillisSystem();
+
+    } catch (Exception e) {
+      Assert.fail();
+    }
+  }
 
 
 }
