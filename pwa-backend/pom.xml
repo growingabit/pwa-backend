@@ -48,6 +48,8 @@
               <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
               <project>growbit-0</project>
               <version>${appengineVersion}</version>
+              <devserver.host>0.0.0.0</devserver.host>
+              <devserver.port>8080</devserver.port>
             </configuration>
             <executions>
               <execution>
@@ -95,6 +97,8 @@
               <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
               <project>growbit-0</project>
               <version>${appengineVersion}</version>
+              <devserver.host>0.0.0.0</devserver.host>
+              <devserver.port>8080</devserver.port>
             </configuration>
             <executions>
               <execution>
@@ -454,8 +458,12 @@
           <!-- https://cloud.google.com/appengine/docs/standard/java/tools/maven-reference -->
           <project>growbit-0</project>
           <version>${appengineVersion}</version>
+          <enableJarClasses>false</enableJarClasses>
+          <devserver.host>0.0.0.0</devserver.host>
+          <devserver.port>8080</devserver.port>
         </configuration>
       </plugin>
+
 
       <!-- Code style checks -->
       <plugin>
