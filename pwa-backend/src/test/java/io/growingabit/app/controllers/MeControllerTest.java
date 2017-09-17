@@ -2,23 +2,9 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
-
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
@@ -36,6 +22,16 @@ import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeControllerTest extends BaseGaeTest {
@@ -140,7 +136,7 @@ public class MeControllerTest extends BaseGaeTest {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
 
-    Invitation i = Mockito.mock(Invitation.class);
+    final Invitation i = Mockito.mock(Invitation.class);
     Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
     final Response response = new MeController().confirmInvitationCode(context, i);
@@ -169,7 +165,7 @@ public class MeControllerTest extends BaseGaeTest {
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
 
-    Invitation i = Mockito.mock(Invitation.class);
+    final Invitation i = Mockito.mock(Invitation.class);
     Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
     final Response response = new MeController().confirmInvitationCode(context, i);
@@ -185,7 +181,7 @@ public class MeControllerTest extends BaseGaeTest {
     // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
-    Invitation i = Mockito.mock(Invitation.class);
+    final Invitation i = Mockito.mock(Invitation.class);
     Mockito.when(i.getInvitationCode()).thenReturn("inexintent code");
 
     final Response response = new MeController().confirmInvitationCode(context, i);
@@ -198,7 +194,7 @@ public class MeControllerTest extends BaseGaeTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    Invitation i = Mockito.mock(Invitation.class);
+    final Invitation i = Mockito.mock(Invitation.class);
 
     final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -299,9 +295,8 @@ public class MeControllerTest extends BaseGaeTest {
     // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
-    // used Gson because the object's constructor has Preconditions so I could not force this value
-    final String StudentConfirmationEmail = "{email: ''}";
-    final StudentConfirmationEmail data = GsonFactory.getGsonInstance().fromJson(StudentConfirmationEmail, StudentConfirmationEmail.class);
+    final StudentConfirmationEmail data = Mockito.mock(StudentConfirmationEmail.class);
+    Mockito.when(data.getEmail()).thenReturn("");
 
     final Response response = new MeController().studentemail(context, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -316,9 +311,8 @@ public class MeControllerTest extends BaseGaeTest {
     // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
-    // used Gson because the object's constructor has Preconditions so I could not force this value
-    final String StudentConfirmationEmail = "{email: null}";
-    final StudentConfirmationEmail data = GsonFactory.getGsonInstance().fromJson(StudentConfirmationEmail, StudentConfirmationEmail.class);
+    final StudentConfirmationEmail data = Mockito.mock(StudentConfirmationEmail.class);
+    Mockito.when(data.getEmail()).thenReturn(null);
 
     final Response response = new MeController().studentemail(context, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -332,9 +326,9 @@ public class MeControllerTest extends BaseGaeTest {
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
     Response response = new MeController().getCurrenUserInfo(context);
-    User returnedUser = (User) response.getEntity();
+    final User returnedUser = (User) response.getEntity();
 
-    StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
     response = new MeController().studentemail(context, data);
 
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);

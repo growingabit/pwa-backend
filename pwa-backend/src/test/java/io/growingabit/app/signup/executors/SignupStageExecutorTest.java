@@ -2,17 +2,12 @@ package io.growingabit.app.signup.executors;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.InvitationCodeSignupStage;
@@ -28,6 +23,10 @@ import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.Utils;
+import org.joda.time.DateTime;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SignupStageExecutorTest extends BaseGaeTest {
 
@@ -145,13 +144,14 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     assertThat(savedStage.isDone()).isFalse();
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
     assertThat(savedStage.getData().getTsExpiration()).isNotNull();
-    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(0l);
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
     assertThat(savedStage.getData().getVerificationCode()).isNotNull();
     assertThat(savedStage.getData().getVerificationCode()).isNotEmpty();
 
+    // TODO: try to avoid this magic number here
     Thread.sleep(1000);
-    LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
-    QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+    final LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+    final QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
     Assert.assertEquals(1, qsi.getTaskInfo().size());
   }
 

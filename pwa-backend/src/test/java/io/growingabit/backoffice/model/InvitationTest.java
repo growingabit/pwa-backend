@@ -91,28 +91,32 @@ public class InvitationTest extends BaseGaeTest {
 
   @Test
   public void shouldNotAcceptNullSchool() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSchool("school");
     invitation.setSchool(null);
     assertThat(invitation.getSchool()).isNotEmpty();
   }
 
   @Test
   public void shouldNotAcceptNullSchoolClass() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSchoolClass("Schoolclass");
     invitation.setSchoolClass(null);
     assertThat(invitation.getSchoolClass()).isNotEmpty();
   }
 
   @Test
   public void shouldNotAcceptNullYear() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSchoolYear("2000");
     invitation.setSchoolYear(null);
     assertThat(invitation.getSchoolYear()).isNotEmpty();
   }
 
   @Test
   public void shouldNotAcceptNullSpecialization() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSpecialization("specialization");
     invitation.setSpecialization(null);
     assertThat(invitation.getSpecialization()).isNotEmpty();
   }

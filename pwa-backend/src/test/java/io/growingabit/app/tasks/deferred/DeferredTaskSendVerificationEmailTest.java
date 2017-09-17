@@ -1,23 +1,16 @@
 package io.growingabit.app.tasks.deferred;
 
-import static com.google.common.truth.Truth.assertThat;
-
-import java.lang.reflect.Field;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.testUtils.BaseGaeTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
 
@@ -29,87 +22,70 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
 
   @Test
   public void keyNull() {
-    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(null);
+    final DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(null);
     try {
       d.run();
       assert true;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       Assert.fail("Should not throws exception");
     }
   }
 
   @Test
   public void keyEmpty() {
-    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail("");
+    final DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail("");
     try {
       d.run();
       assert true;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       Assert.fail("Should not throws exception");
     }
   }
 
   @Test
   public void notAKey() {
-    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail("foo");
+    final DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail("foo");
     try {
       d.run();
       assert true;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       Assert.fail("Should not throws exception");
     }
-
   }
 
   @Test
   public void wrongKey() {
-    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(Key.create(StudentEmailSignupStage.class, 1L).toWebSafeString());
+    final DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(Key.create(StudentEmailSignupStage.class, 1L).toWebSafeString());
     try {
       d.run();
       assert true;
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       Assert.fail("Should not throws exception");
     }
   }
 
-
   @Test
-  @Ignore
-  public void checkEquals() {
+  public void correctParams() {
 
     try {
-      StudentEmailSignupStage s = new StudentEmailSignupStage();
-      s.setData(new StudentConfirmationEmail("test@example.com"));
-
-      User user = new User();
+      final User user = new User();
       user.setId("id");
       new UserDao().persist(user);
-      s.setUser(Key.create(User.class, user.getId()));
 
-      StudentEmailSignupStageDao dao = new StudentEmailSignupStageDao();
-      dao.persist(s);
+      final StudentEmailSignupStage stage = new StudentEmailSignupStage();
+      stage.setData(new StudentConfirmationEmail("test@example.com"));
+      stage.setUser(Key.create(User.class, user.getId()));
+      new StudentEmailSignupStageDao().persist(stage);
 
-      DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(s.getWebSafeKey());
+      final DeferredTaskSendVerificationEmail task = new DeferredTaskSendVerificationEmail(stage.getWebSafeKey());
+      task.run();
 
-      Field f = DeferredTaskSendVerificationEmail.class.getDeclaredField("studentEmailSignupStageWebsafeString");
-      f.setAccessible(true);
-      String studentEmailSignupStageWebsafeString = (String) f.get(d);
-      StudentEmailSignupStage stage = dao.find(studentEmailSignupStageWebsafeString);
+      assert true;
 
-      assertThat(stage.getData().getEmail()).isNotNull();
-      assertThat(stage.getData().getVerificationCode()).isNotNull();
-      assertThat(stage.getData().getTsExpiration()).isNotNull();
-
-      assertThat(stage.getData().getEmail()).isEqualTo(s.getData().getEmail());
-      assertThat(stage.getData().getVerificationCode()).isEqualTo(s.getData().getVerificationCode());
-      assertThat(stage.getData().getTsExpiration()).isEqualTo(s.getData().getTsExpiration());
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assert.fail();
+    } catch (final Exception e) {
+      Assert.fail("Should not throws exception");
     }
 
   }
-
 
 }

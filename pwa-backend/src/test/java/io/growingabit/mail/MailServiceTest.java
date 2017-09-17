@@ -2,29 +2,26 @@ package io.growingabit.mail;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.testUtils.BaseGaeTest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.growingabit.app.model.StudentConfirmationEmail;
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.testUtils.BaseGaeTest;
-
 public class MailServiceTest extends BaseGaeTest {
 
-  private static StudentEmailSignupStage stage = new StudentEmailSignupStage();
+  private static final StudentEmailSignupStage stage = new StudentEmailSignupStage();
 
   @BeforeClass
   public static void setUp() {
@@ -33,11 +30,11 @@ public class MailServiceTest extends BaseGaeTest {
   }
 
   @Test
-  public void isVerificationCodeNotEmpty() {
+  public void verificationCodeNotEmpty() {
     try {
-      Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
+      final Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
       method.setAccessible(true);
-      String verificationCode = (String) method.invoke(null, stage);
+      final String verificationCode = (String) method.invoke(null, stage);
 
       assertThat(verificationCode).isNotEmpty();
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -46,11 +43,11 @@ public class MailServiceTest extends BaseGaeTest {
   }
 
   @Test
-  public void isVerificationCodeUsesTheRigthEndpoint() {
+  public void verificationCodeUsesTheRigthEndpoint() {
     try {
-      Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
+      final Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
       method.setAccessible(true);
-      String verificationCode = (String) method.invoke(null, stage);
+      final String verificationCode = (String) method.invoke(null, stage);
 
       assertThat(verificationCode).contains("/verificationemail/");
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -59,13 +56,13 @@ public class MailServiceTest extends BaseGaeTest {
   }
 
   @Test
-  public void isVerificationCodeHasCodeEncoded() {
+  public void verificationCodeHasCodeEncoded() {
     try {
-      Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
+      final Method method = MailService.class.getDeclaredMethod("createVerificationCode", StudentEmailSignupStage.class);
       method.setAccessible(true);
-      String verificationCode = (String) method.invoke(null, stage);
+      final String verificationCode = (String) method.invoke(null, stage);
 
-      String code = new String(Base64.decodeBase64(verificationCode.replace("/verificationemail/", "")), "utf-8");
+      final String code = new String(Base64.decodeBase64(verificationCode.replace("/verificationemail/", "")), "utf-8");
       assertThat(stage.getData().getVerificationCode()).isEqualTo(code);
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | UnsupportedEncodingException e) {
       Assert.fail();
@@ -73,11 +70,11 @@ public class MailServiceTest extends BaseGaeTest {
   }
 
   @Test
-  public void isVerificationLinkIsValid() {
+  public void verificationLinkIsValid() {
     try {
-      Method method = MailService.class.getDeclaredMethod("createVerificationLink", StudentEmailSignupStage.class);
+      final Method method = MailService.class.getDeclaredMethod("createVerificationLink", StudentEmailSignupStage.class);
       method.setAccessible(true);
-      String verificationLink = (String) method.invoke(null, stage);
+      final String verificationLink = (String) method.invoke(null, stage);
       assertThat(verificationLink).contains("http");
       assertThat(verificationLink.contains("localhost") || verificationLink.contains("appspot.com")).isTrue();
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -88,10 +85,10 @@ public class MailServiceTest extends BaseGaeTest {
   @Test
   public void checkRecipient() {
     try {
-      Message message = MailService.sendVerificationEmail(stage);
-      List<Address> to = Arrays.asList(message.getRecipients(RecipientType.TO));
+      final Message message = MailService.sendVerificationEmail(stage);
+      final List<Address> to = Arrays.asList(message.getRecipients(RecipientType.TO));
       Boolean found = false;
-      for (Address address : to) {
+      for (final Address address : to) {
         if (address.toString().contains(stage.getData().getEmail())) {
           found = true;
         }
