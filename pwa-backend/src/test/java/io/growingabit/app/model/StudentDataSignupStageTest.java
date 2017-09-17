@@ -5,11 +5,11 @@ import static com.google.common.truth.Truth.assertThat;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.StudentDataSignupStageDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class StudentDataSignupStageTest extends BaseDatastoreTest {
+public class StudentDataSignupStageTest extends BaseGaeTest {
 
   private StudentDataSignupStageDao studentDataSignupStageDao;
 

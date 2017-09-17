@@ -26,10 +26,10 @@ import io.growingabit.app.utils.Settings;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.Utils;
 
-public class SignupStageExecutorTest extends BaseDatastoreTest {
+public class SignupStageExecutorTest extends BaseGaeTest {
 
   private UserDao userDao;
   private InvitationDao invitationDao;

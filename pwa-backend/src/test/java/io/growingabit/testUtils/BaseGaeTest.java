@@ -13,7 +13,7 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
 import com.googlecode.objectify.util.Closeable;
 
-public class BaseDatastoreTest {
+public class BaseGaeTest {
 
   private LocalServiceTestHelper helper;
   private Closeable session;

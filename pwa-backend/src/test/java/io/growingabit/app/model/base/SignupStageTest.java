@@ -10,12 +10,12 @@ import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.User;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
 import io.growingabit.common.dao.BaseDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SignupStageTest extends BaseDatastoreTest {
+public class SignupStageTest extends BaseGaeTest {
 
   private BaseDao<DummySignupStage> baseDao;
   private UserDao userDao;

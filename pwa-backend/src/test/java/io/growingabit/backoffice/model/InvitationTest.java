@@ -8,11 +8,11 @@ import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InvitationTest extends BaseDatastoreTest {
+public class InvitationTest extends BaseGaeTest {
 
   private InvitationDao dao;
   private UserDao userDao;

@@ -9,7 +9,7 @@ import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.ResourceFetcher;
 import io.growingabit.app.utils.Settings;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SignupStageFactoryTest extends BaseDatastoreTest {
+public class SignupStageFactoryTest extends BaseGaeTest {
 
   private UserDao userDao;
 

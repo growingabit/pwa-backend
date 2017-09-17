@@ -6,12 +6,12 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import io.growingabit.common.dao.BaseDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
 
-public class BaseModelTest extends BaseDatastoreTest {
+public class BaseModelTest extends BaseGaeTest {
 
   private BaseDao<DummyModel> baseDao;
   private DummyModel dummyModel4;

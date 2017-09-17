@@ -6,8 +6,10 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.text.StrSubstitutor;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.common.collect.ImmutableMap;
 
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.utils.Settings;
@@ -19,16 +21,11 @@ public class MailService {
     String verificationLink = createVerificationLink(studentEmailSignupStage);
 
     String subject = "[Growbit] Verifiy your email";
-    String htmlBody = "<p>Welcome to Growbit!</p>";
-    htmlBody += "<p>Please verify your email address by clicking this link:</p>";
-    htmlBody += "<p><a href='" + verificationLink + "'></p>";
-    htmlBody += "<p>This link will expire in seven days</p>";
-    htmlBody += "<p></p>";
-    htmlBody += "<p><i>Growbit team</i></p>";
+    String htmlBody = new StrSubstitutor(ImmutableMap.of("verificationLink", verificationLink)).replace(Settings.getConfig().getString("io.growingabit.mail.verifyemail.template"));
 
-    MailObject mailObject = new MailObject.Builder(studentEmailSignupStage.getData().getEmail(), subject).addBcc(Settings.getConfig().getString("io.growingabit.mail.bcc")).withHtmlBody(htmlBody).build();
+    Message message = new EmailMessageBuilder(studentEmailSignupStage.getData().getEmail(), subject).addBcc(Settings.getConfig().getString("io.growingabit.mail.bcc")).withHtmlBody(htmlBody).build();
 
-    return MailGaeApi.sendEmail(mailObject);
+    return MailGaeApi.sendEmail(message);
   }
 
   private static String createVerificationLink(final StudentEmailSignupStage studentEmailSignupStage) throws UnsupportedEncodingException {

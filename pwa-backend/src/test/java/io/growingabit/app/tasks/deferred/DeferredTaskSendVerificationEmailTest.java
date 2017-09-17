@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.googlecode.objectify.Key;
@@ -15,9 +16,9 @@ import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.utils.gson.GsonFactory;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 
-public class DeferredTaskSendVerificationEmailTest extends BaseDatastoreTest {
+public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
 
   @Before
   public void setUp() {
@@ -26,6 +27,53 @@ public class DeferredTaskSendVerificationEmailTest extends BaseDatastoreTest {
   }
 
   @Test
+  public void keyNull() {
+    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(null);
+    try {
+      d.run();
+      assert true;
+    } catch (Throwable t) {
+      Assert.fail("Should not throws exception");
+    }
+  }
+
+  @Test
+  public void keyEmpty() {
+    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail("");
+    try {
+      d.run();
+      assert true;
+    } catch (Throwable t) {
+      Assert.fail("Should not throws exception");
+    }
+  }
+
+  @Test
+  public void notAKey() {
+    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail("foo");
+    try {
+      d.run();
+      assert true;
+    } catch (Throwable t) {
+      Assert.fail("Should not throws exception");
+    }
+
+  }
+
+  @Test
+  public void wrongKey() {
+    DeferredTaskSendVerificationEmail d = new DeferredTaskSendVerificationEmail(Key.create(StudentEmailSignupStage.class, 1L).toWebSafeString());
+    try {
+      d.run();
+      assert true;
+    } catch (Throwable t) {
+      Assert.fail("Should not throws exception");
+    }
+  }
+
+
+  @Test
+  @Ignore
   public void checkEquals() {
 
     try {

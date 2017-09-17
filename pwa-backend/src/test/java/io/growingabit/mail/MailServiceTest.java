@@ -1,5 +1,7 @@
 package io.growingabit.mail;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,9 +20,9 @@ import org.junit.Test;
 
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 
-public class MailServiceTest extends BaseDatastoreTest {
+public class MailServiceTest extends BaseGaeTest {
 
   private static StudentEmailSignupStage stage = new StudentEmailSignupStage();
 
@@ -37,7 +39,7 @@ public class MailServiceTest extends BaseDatastoreTest {
       method.setAccessible(true);
       String verificationCode = (String) method.invoke(null, stage);
 
-      Assert.assertTrue(!verificationCode.isEmpty());
+      assertThat(verificationCode).isNotEmpty();
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }
@@ -50,7 +52,7 @@ public class MailServiceTest extends BaseDatastoreTest {
       method.setAccessible(true);
       String verificationCode = (String) method.invoke(null, stage);
 
-      Assert.assertTrue(verificationCode.contains("/verificationemail/"));
+      assertThat(verificationCode).contains("/verificationemail/");
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }
@@ -64,7 +66,7 @@ public class MailServiceTest extends BaseDatastoreTest {
       String verificationCode = (String) method.invoke(null, stage);
 
       String code = new String(Base64.decodeBase64(verificationCode.replace("/verificationemail/", "")), "utf-8");
-      Assert.assertEquals(stage.getData().getVerificationCode(), code);
+      assertThat(stage.getData().getVerificationCode()).isEqualTo(code);
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | UnsupportedEncodingException e) {
       Assert.fail();
     }
@@ -76,7 +78,8 @@ public class MailServiceTest extends BaseDatastoreTest {
       Method method = MailService.class.getDeclaredMethod("createVerificationLink", StudentEmailSignupStage.class);
       method.setAccessible(true);
       String verificationLink = (String) method.invoke(null, stage);
-      Assert.assertTrue(verificationLink.contains("http") && (verificationLink.contains("localhost") || verificationLink.contains("appspot.com")));
+      assertThat(verificationLink).contains("http");
+      assertThat(verificationLink.contains("localhost") || verificationLink.contains("appspot.com")).isTrue();
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }
@@ -93,7 +96,8 @@ public class MailServiceTest extends BaseDatastoreTest {
           found = true;
         }
       }
-      Assert.assertTrue(found);
+
+      assertThat(found).isTrue();
 
     } catch (UnsupportedEncodingException | MessagingException e) {
       Assert.fail();

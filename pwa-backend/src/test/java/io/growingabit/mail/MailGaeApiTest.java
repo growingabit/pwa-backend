@@ -1,5 +1,7 @@
 package io.growingabit.mail;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import java.io.IOException;
 
 import javax.mail.BodyPart;
@@ -12,23 +14,24 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 
-public class MailGaeApiTest extends BaseDatastoreTest {
+public class MailGaeApiTest extends BaseGaeTest {
 
   @Test
   public void bodyHtmlMessageIsEqualThenTheOriginal() {
-    MailObject mailObject = new MailObject.Builder("test@example.com", "subject").withHtmlBody("htmlBody").build();
+    String htmlBody = "htmlBody";
 
     try {
-      Message msg = MailGaeApi.sendEmail(mailObject);
+      Message message = new EmailMessageBuilder("test@example.com", "subject").withHtmlBody(htmlBody).build();
+      Message msg = MailGaeApi.sendEmail(message);
       MimeMultipart content = (MimeMultipart) msg.getContent();
 
       for (int i = 0; i < content.getCount(); i++) {
         BodyPart bodyPart = content.getBodyPart(i);
         if (bodyPart.isMimeType(MediaType.TEXT_HTML)) {
           String body = IOUtils.toString(bodyPart.getInputStream(), "utf-8");
-          Assert.assertEquals(mailObject.getBody(), body);
+          assertThat(htmlBody).isEqualTo(body);
         }
       }
 
@@ -39,11 +42,11 @@ public class MailGaeApiTest extends BaseDatastoreTest {
 
   @Test
   public void bodyTextMessageIsEqualThenTheOriginal() {
-    MailObject mailObject = new MailObject.Builder("test@example.com", "subject").withTextBody("text plain").build();
-
     try {
-      Message msg = MailGaeApi.sendEmail(mailObject);
-      Assert.assertEquals(mailObject.getBody(), msg.getContent().toString());
+      String textBody = "textBody";
+      Message message = new EmailMessageBuilder("test@example.com", "subject").withTextBody(textBody).build();
+      Message msg = MailGaeApi.sendEmail(message);
+      assertThat(textBody).isEqualTo(msg.getContent().toString());
     } catch (MessagingException | IOException e) {
       Assert.fail();
     }

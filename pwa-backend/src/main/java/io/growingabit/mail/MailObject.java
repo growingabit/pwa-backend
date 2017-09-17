@@ -27,27 +27,27 @@ public class MailObject {
   }
 
   public Set<String> getTo() {
-    return to;
+    return this.to;
   }
 
   public Set<String> getCc() {
-    return cc;
+    return this.cc;
   }
 
   public Set<String> getBcc() {
-    return bcc;
+    return this.bcc;
   }
 
   public String getSubject() {
-    return subject;
+    return this.subject;
   }
 
   public String getBody() {
-    return body;
+    return this.body;
   }
 
   public BodyType getBodyType() {
-    return bodyType;
+    return this.bodyType;
   }
 
   public static class Builder {
@@ -60,11 +60,12 @@ public class MailObject {
     private Set<String> bcc;
 
     public Builder(String to, String subject) {
+      Preconditions.checkArgument(EmailValidator.getInstance().isValid(to));
+
       this.to = new LinkedHashSet<String>();
       this.cc = new LinkedHashSet<String>();
       this.bcc = new LinkedHashSet<String>();
 
-      Preconditions.checkArgument(EmailValidator.getInstance().isValid(to));
       this.to.add(to);
       this.subject = subject;
     }
@@ -82,47 +83,45 @@ public class MailObject {
     }
 
     public Builder addTo(String address) {
-      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
-      this.to.add(address);
-      return this;
+      return this.addRecipient(address, this.to);
     }
 
     public Builder addTo(Collection<String> address) {
-      for (String a : address) {
-        this.addTo(a);
-      }
-      return this;
+      return this.addRecipients(address, this.to);
     }
 
     public Builder addCc(String address) {
-      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
-      this.cc.add(address);
-      return this;
+      return this.addRecipient(address, this.cc);
     }
 
     public Builder addCc(Collection<String> address) {
-      for (String a : address) {
-        this.addCc(a);
-      }
-      return this;
+      return this.addRecipients(address, this.cc);
     }
 
     public Builder addBcc(String address) {
-      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
-      this.bcc.add(address);
-      return this;
+      return this.addRecipient(address, this.bcc);
     }
 
     public Builder addBcc(Collection<String> address) {
-      for (String a : address) {
-        this.addBcc(a);
+      return this.addRecipients(address, this.bcc);
+    }
+
+    private Builder addRecipient(String address, Set<String> recipientsList) {
+      Preconditions.checkArgument(EmailValidator.getInstance().isValid(address));
+      recipientsList.add(address);
+      return this;
+    }
+
+    private Builder addRecipients(Collection<String> addressList, Set<String> recipientsList) {
+      for (String a : addressList) {
+        this.addRecipient(a, recipientsList);
       }
       return this;
     }
 
     public MailObject build() {
-      Preconditions.checkArgument(body != null && !body.isEmpty());
-      return new MailObject(to, cc, bcc, subject, body, bodyType);
+      Preconditions.checkArgument(this.body != null && !this.body.isEmpty());
+      return new MailObject(this.to, this.cc, this.bcc, this.subject, this.body, this.bodyType);
     }
   }
 

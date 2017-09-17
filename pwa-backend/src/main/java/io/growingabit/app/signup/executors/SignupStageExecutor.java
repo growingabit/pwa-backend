@@ -45,7 +45,6 @@ public class SignupStageExecutor {
 
   public void exec(StudentEmailSignupStage stage) throws SignupStageExecutionException {
     Preconditions.checkNotNull(stage);
-    Preconditions.checkNotNull(this.currentuser);
 
     final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
     final StudentEmailSignupStage userSignupStage = (StudentEmailSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();

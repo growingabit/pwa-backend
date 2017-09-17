@@ -7,11 +7,11 @@ import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.User;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReferenceSignupStageTest extends BaseDatastoreTest {
+public class ReferenceSignupStageTest extends BaseGaeTest {
 
   private UserDao userDao;
 

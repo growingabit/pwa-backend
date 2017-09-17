@@ -9,9 +9,9 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
 
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 
-public class StudentEmailSignupStageTest extends BaseDatastoreTest {
+public class StudentEmailSignupStageTest extends BaseGaeTest {
 
   private StudentEmailSignupStageDao studentEmailSignupStageDao;
 

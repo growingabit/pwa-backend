@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -134,7 +135,7 @@ public class MeController {
   @Produces(MediaType.APPLICATION_JSON)
   public Response studentemail(@Context final SecurityContext securityContext, final StudentConfirmationEmail studentConfirmationEmail) {
 
-    if (studentConfirmationEmail == null || studentConfirmationEmail.getEmail() == null) {
+    if (studentConfirmationEmail == null || StringUtils.isEmpty(studentConfirmationEmail.getEmail())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
 

@@ -44,12 +44,12 @@ public class VerificationEmailController {
 
     try {
       verificationCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
-      User user = getCurrentUser(securityContext);
+      User user = this.getCurrentUser(securityContext);
 
       final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
       final StudentEmailSignupStage stage = (StudentEmailSignupStage) user.getSignupStages().get(signupStageIndentifier).get();
 
-      if (!stage.getData().getVerificationCode().equalsIgnoreCase(verificationCode) || stage.getData().getTsExpiration() > new DateTime().plusDays(7).getMillis()) {
+      if (!stage.getData().getVerificationCode().equals(verificationCode) || stage.getData().getTsExpiration() > new DateTime().plusDays(7).getMillis()) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
       }
 

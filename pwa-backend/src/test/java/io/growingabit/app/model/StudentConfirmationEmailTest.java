@@ -1,7 +1,8 @@
 package io.growingabit.app.model;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,17 +22,17 @@ public class StudentConfirmationEmailTest {
 
   @Test
   public void tsExpirationIsFuture() {
-    Assert.assertTrue(this.s.getTsExpiration() > new DateTime().getMillis());
+    assertThat(this.s.getTsExpiration()).isGreaterThan(new DateTime().getMillis());
   }
 
   @Test
   public void verificationCodeIsNotNull() {
-    Assert.assertTrue(this.s.getVerificationCode() != null);
+    assertThat(this.s.getVerificationCode()).isNotNull();
   }
 
   @Test
   public void verificationCodeIsNotEmpty() {
-    Assert.assertTrue(this.s.getVerificationCode().length() > 0);
+    assertThat(this.s.getVerificationCode()).isNotEmpty();
   }
 
 

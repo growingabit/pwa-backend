@@ -31,12 +31,12 @@ import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MeControllerTest extends BaseDatastoreTest {
+public class MeControllerTest extends BaseGaeTest {
 
   private UserDao userDao;
   private InvitationDao invitationDao;
@@ -136,10 +136,8 @@ public class MeControllerTest extends BaseDatastoreTest {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     this.invitationDao.persist(invitation);
 
-    Invitation i = new Invitation();
-    Field field = Invitation.class.getDeclaredField("invitationCode");
-    field.setAccessible(true);
-    field.set(i, invitation.getInvitationCode());
+    Invitation i = Mockito.mock(Invitation.class);
+    Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
     final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);

@@ -1,9 +1,5 @@
 package io.growingabit.app.tasks.deferred;
 
-import java.io.UnsupportedEncodingException;
-
-import javax.mail.MessagingException;
-
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -30,8 +26,8 @@ public class DeferredTaskSendVerificationEmail implements DeferredTask {
     try {
       StudentEmailSignupStage stage = new StudentEmailSignupStageDao().find(this.studentEmailSignupStageWebsafeString);
       MailService.sendVerificationEmail(stage);
-    } catch (UnsupportedEncodingException | MessagingException e) {
-      log.catching(e);
+    } catch (Throwable e) {
+      log.error("During execute task for " + this.studentEmailSignupStageWebsafeString, e);
     }
   }
 
