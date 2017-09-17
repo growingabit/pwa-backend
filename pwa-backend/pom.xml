@@ -259,7 +259,11 @@
       <artifactId>slf4j-ext</artifactId>
       <version>1.7.25</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.25</version>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
@@ -440,7 +444,7 @@
             <configuration>
               <source>
                 System.setProperty("appengineVersion",
-                "${project.version}".replace('.', '-'))
+                  "${project.version}".replace('.', '-'))
               </source>
             </configuration>
           </execution>
@@ -662,7 +666,8 @@
                 </requireJavaVersion>
                 <requirePluginVersions>
                   <message>Best Practice is to always define plugin
-                    versions!</message>
+                    versions!
+                  </message>
                   <banLatest>true</banLatest>
                   <banRelease>true</banRelease>
                   <phases>clean,deploy,verify,appengine:run,appengine:deploy,appengine:update,appengine:devappaserver,site</phases>
