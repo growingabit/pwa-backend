@@ -18,7 +18,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.googlecode.objectify.ObjectifyService;
 
-import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
@@ -31,7 +30,6 @@ import io.growingabit.testUtils.Utils;
 @RunWith(MockitoJUnitRunner.class)
 public class VerificationEmailControllerTest extends BaseGaeTest {
 
-  private UserDao userDao;
   private String userId;
 
   @Before
@@ -43,8 +41,6 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     ObjectifyService.register(StudentEmailSignupStage.class);
 
     SignupStageFactory.register(StudentEmailSignupStage.class);
-
-    this.userDao = new UserDao();
 
     this.userId = "id";
   }
