@@ -2,13 +2,13 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +21,10 @@ import com.googlecode.objectify.Ref;
 
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
+import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.Settings;
@@ -52,9 +54,11 @@ public class MeControllerTest extends BaseGaeTest {
     ObjectifyService.register(Invitation.class);
     ObjectifyService.register(InvitationCodeSignupStage.class);
     ObjectifyService.register(StudentDataSignupStage.class);
+    ObjectifyService.register(StudentEmailSignupStage.class);
 
-    SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(DummySignupStage.class);
+    SignupStageFactory.register(StudentDataSignupStage.class);
+    SignupStageFactory.register(StudentEmailSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
@@ -106,7 +110,7 @@ public class MeControllerTest extends BaseGaeTest {
     final User returnedUser = (User) response.getEntity();
     final Map<String, Ref<SignupStage>> signupStages = returnedUser.getSignupStages();
 
-    assertThat(signupStages).hasSize(2);
+    assertThat(signupStages).hasSize(3);
   }
 
   @Test
@@ -165,10 +169,8 @@ public class MeControllerTest extends BaseGaeTest {
     invitation.setConfirmed();
     this.invitationDao.persist(invitation);
 
-    Invitation i = new Invitation();
-    Field field = Invitation.class.getDeclaredField("invitationCode");
-    field.setAccessible(true);
-    field.set(i, invitation.getInvitationCode());
+    Invitation i = Mockito.mock(Invitation.class);
+    Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
     final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -183,10 +185,8 @@ public class MeControllerTest extends BaseGaeTest {
     // to create the user
     new MeController().getCurrenUserInfo(context).getEntity();
 
-    Invitation i = new Invitation();
-    Field field = Invitation.class.getDeclaredField("invitationCode");
-    field.setAccessible(true);
-    field.set(i, "inexintent code");
+    Invitation i = Mockito.mock(Invitation.class);
+    Mockito.when(i.getInvitationCode()).thenReturn("inexintent code");
 
     final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -198,10 +198,7 @@ public class MeControllerTest extends BaseGaeTest {
     final SecurityContext context = Mockito.mock(SecurityContext.class);
     Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
 
-    Invitation i = new Invitation();
-    Field field = Invitation.class.getDeclaredField("invitationCode");
-    field.setAccessible(true);
-    field.set(i, "a code");
+    Invitation i = Mockito.mock(Invitation.class);
 
     final Response response = new MeController().confirmInvitationCode(context, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -271,7 +268,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     Response response = new MeController().getCurrenUserInfo(context);
 
-    // simulate GSON, becase it do not use setter
+    // simulate GSON, because it does not use setter
     final String studentDataJson = "{name: 'lorenzo', surname: 'bugiani', birthdate: 'an invalid date'}";
 
     final StudentData studentData = GsonFactory.getGsonInstance().fromJson(studentDataJson, StudentData.class);
@@ -279,4 +276,76 @@ public class MeControllerTest extends BaseGaeTest {
     response = new MeController().studentData(context, studentData);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
+
+  @Test
+  public void studentEmailDataNull() {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    // to create the user
+    new MeController().getCurrenUserInfo(context).getEntity();
+
+    final Response response = new MeController().studentemail(context, null);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void studentEmailDataHasEmailFieldEmpty() {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    // to create the user
+    new MeController().getCurrenUserInfo(context).getEntity();
+
+    // used Gson because the object's constructor has Preconditions so I could not force this value
+    final String StudentConfirmationEmail = "{email: ''}";
+    final StudentConfirmationEmail data = GsonFactory.getGsonInstance().fromJson(StudentConfirmationEmail, StudentConfirmationEmail.class);
+
+    final Response response = new MeController().studentemail(context, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void studentEmailDataHasEmailFieldNull() {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    // to create the user
+    new MeController().getCurrenUserInfo(context).getEntity();
+
+    // used Gson because the object's constructor has Preconditions so I could not force this value
+    final String StudentConfirmationEmail = "{email: null}";
+    final StudentConfirmationEmail data = GsonFactory.getGsonInstance().fromJson(StudentConfirmationEmail, StudentConfirmationEmail.class);
+
+    final Response response = new MeController().studentemail(context, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void completeStudentEmailStage() {
+
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    Response response = new MeController().getCurrenUserInfo(context);
+    User returnedUser = (User) response.getEntity();
+
+    StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
+    response = new MeController().studentemail(context, data);
+
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+
+    final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
+    final StudentEmailSignupStage savedStage = (StudentEmailSignupStage) returnedUser.getSignupStages().get(signupStageIndentifier).get();
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
+    assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
+  }
+
 }

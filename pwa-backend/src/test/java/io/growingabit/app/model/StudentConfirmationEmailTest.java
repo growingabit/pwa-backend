@@ -20,6 +20,16 @@ public class StudentConfirmationEmailTest {
     new StudentConfirmationEmail("email");
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void nullEmail() {
+    new StudentConfirmationEmail(null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void emptyEmail() {
+    new StudentConfirmationEmail("");
+  }
+
   @Test
   public void tsExpirationIsFuture() {
     assertThat(this.s.getTsExpiration()).isGreaterThan(new DateTime().getMillis());
