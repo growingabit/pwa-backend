@@ -9,11 +9,11 @@ import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BackofficePojoTest extends BaseDatastoreTest {
+public class BackofficePojoTest extends BaseGaeTest {
 
   private final String packageName = "io.growingabit.backoffice.model";
   private Validator validator;

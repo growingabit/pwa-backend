@@ -8,11 +8,11 @@ import com.googlecode.objectify.SaveException;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InvitationTest extends BaseDatastoreTest {
+public class InvitationTest extends BaseGaeTest {
 
   private InvitationDao dao;
   private UserDao userDao;
@@ -91,28 +91,32 @@ public class InvitationTest extends BaseDatastoreTest {
 
   @Test
   public void shouldNotAcceptNullSchool() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSchool("school");
     invitation.setSchool(null);
     assertThat(invitation.getSchool()).isNotEmpty();
   }
 
   @Test
   public void shouldNotAcceptNullSchoolClass() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSchoolClass("Schoolclass");
     invitation.setSchoolClass(null);
     assertThat(invitation.getSchoolClass()).isNotEmpty();
   }
 
   @Test
   public void shouldNotAcceptNullYear() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSchoolYear("2000");
     invitation.setSchoolYear(null);
     assertThat(invitation.getSchoolYear()).isNotEmpty();
   }
 
   @Test
   public void shouldNotAcceptNullSpecialization() {
-    final Invitation invitation = new Invitation("My school", "My class", "This Year", "My Spec");
+    final Invitation invitation = new Invitation();
+    invitation.setSpecialization("specialization");
     invitation.setSpecialization(null);
     assertThat(invitation.getSpecialization()).isNotEmpty();
   }

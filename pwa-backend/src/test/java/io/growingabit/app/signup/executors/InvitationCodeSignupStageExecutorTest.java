@@ -11,11 +11,11 @@ import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InvitationCodeSignupStageExecutorTest extends BaseDatastoreTest {
+public class InvitationCodeSignupStageExecutorTest extends BaseGaeTest {
 
   private UserDao userDao;
   private InvitationDao invitationDao;

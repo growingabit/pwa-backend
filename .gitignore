@@ -69,6 +69,11 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+#################
+### Appengine ###
+#################
+appengine-generated
+
 ############
 ### Misc ###
 ############

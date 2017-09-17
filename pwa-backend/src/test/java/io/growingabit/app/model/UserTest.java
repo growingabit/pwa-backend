@@ -8,13 +8,13 @@ import com.googlecode.objectify.Ref;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.common.dao.BaseDao;
-import io.growingabit.testUtils.BaseDatastoreTest;
+import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-public class UserTest extends BaseDatastoreTest {
+public class UserTest extends BaseGaeTest {
 
   private BaseDao<SignupStage> baseDao;
   private UserDao userDao;

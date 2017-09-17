@@ -17,7 +17,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -26,7 +25,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 @Secured
 @Priority(Priorities.AUTHENTICATION)
@@ -40,6 +40,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
   @Override
   public void filter(final ContainerRequestContext requestContext) throws IOException {
+
     final String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
       final String token = authorizationHeader.substring("Bearer".length()).trim();
@@ -78,7 +79,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
   private class KeyProvider implements RSAKeyProvider {
 
-    private final Logger logger = Logger.getLogger(KeyProvider.class.getName());
+    private final XLogger logger = XLoggerFactory.getXLogger(KeyProvider.class);
     private final JwkProvider jwkProvider;
 
     // Here we can use some more intelligent JwkProvider, that could cache the key.
@@ -94,7 +95,8 @@ public class SecurityFilter implements ContainerRequestFilter {
         final RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
         return (RSAPublicKey) publicKey;
       } catch (final Exception e) {
-        this.logger.severe(ExceptionUtils.getStackTrace(e));
+
+        this.logger.error("Error retrieving Auth0 JWK file", e);
         return null;
       }
     }
