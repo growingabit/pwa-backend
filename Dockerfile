@@ -24,6 +24,6 @@ VOLUME "$USER_HOME_DIR/.m2"
 
 WORKDIR "apache-maven-3.5.0/bin"
 
-EXPOSE 8888
+EXPOSE 8080
 
 ENTRYPOINT ["./mvn", "-f", "/pwa-backend/pom.xml", "clean", "package", "appengine:run"]
