@@ -8,32 +8,32 @@ public class BitcoinAddressValidatorTest {
 
   @Test
   public void validateAddress() {
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")).isTrue();
-    assertThat(BitcoinAddressValidator.validate("1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9")).isTrue();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")).isTrue();
+    assertThat(BitcoinAddressValidator.isValid("1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9")).isTrue();
   }
 
   @Test
   public void doNotValidateInvalidAddress() {
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62j")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62X")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1ANNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1A Na15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62!")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62iz")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62izz")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nJ9")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62I")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("BZbvjr")).isFalse();
-    assertThat(BitcoinAddressValidator.validate("i55j")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62j")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62X")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1ANNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1A Na15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62!")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62iz")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62izz")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nJ9")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62I")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("BZbvjr")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("i55j")).isFalse();
   }
 
   @Test
   public void shoudNotValidateNull() {
-    assertThat(BitcoinAddressValidator.validate(null)).isFalse();
+    assertThat(BitcoinAddressValidator.isValid(null)).isFalse();
   }
 
   @Test
   public void shoudNotValidateEmptyString() {
-    assertThat(BitcoinAddressValidator.validate("")).isFalse();
+    assertThat(BitcoinAddressValidator.isValid("")).isFalse();
   }
 }

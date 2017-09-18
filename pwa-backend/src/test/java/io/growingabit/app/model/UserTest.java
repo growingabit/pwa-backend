@@ -229,14 +229,14 @@ public class UserTest extends BaseGaeTest {
     anotherAddedStage.setUser(Key.create(anotherUser));
     this.baseDao.persist(anotherAddedStage);
 
-    final DummySignupStage returnedStage = user.getMandatorySignupStage(DummySignupStage.class);
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
     assertThat(returnedStage).isEqualTo(addedStage);
   }
 
   @Test
   public void returnNullIfMandatoryStageNotExist() {
     final User user = new User();
-    final DummySignupStage returnedStage = user.getMandatorySignupStage(DummySignupStage.class);
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
     assertThat(returnedStage).isNull();
   }
 
@@ -257,28 +257,28 @@ public class UserTest extends BaseGaeTest {
     anotherAddedStage.setUser(Key.create(anotherUser));
     this.baseDao.persist(anotherAddedStage);
 
-    final DummySignupStage returnedStage = user.getSignupStage(DummySignupStage.class);
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
     assertThat(returnedStage).isEqualTo(addedStage);
   }
 
   @Test
   public void returnNullIfStageNotExist() {
     final User user = new User();
-    final DummySignupStage returnedStage = user.getSignupStage(DummySignupStage.class);
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
     assertThat(returnedStage).isNull();
   }
 
   @Test
   public void returnNullIfStageIdentifierDoesNotExists() {
     final User user = new User();
-    final UnregisteredSignupStage returnedStage = user.getSignupStage(UnregisteredSignupStage.class);
+    final UnregisteredSignupStage returnedStage = user.getStage(UnregisteredSignupStage.class);
     assertThat(returnedStage).isNull();
   }
 
   @Test
   public void returnNullIfMandatoryStageIdentifierDoesNotExists() {
     final User user = new User();
-    final UnregisteredSignupStage returnedStage = user.getMandatorySignupStage(UnregisteredSignupStage.class);
+    final UnregisteredSignupStage returnedStage = user.getStage(UnregisteredSignupStage.class);
     assertThat(returnedStage).isNull();
   }
 

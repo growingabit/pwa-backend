@@ -117,7 +117,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     stage.setData(studentData);
     new SignupStageExecutor(this.user).exec(stage);
 
-    final StudentDataSignupStage savedStage = this.user.getSignupStage(StudentDataSignupStage.class);
+    final StudentDataSignupStage savedStage = this.user.getStage(StudentDataSignupStage.class);
 
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData().getName()).isEqualTo(studentData.getName());
@@ -140,7 +140,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     stage.setData(data);
     new SignupStageExecutor(this.user).exec(stage);
 
-    final StudentEmailSignupStage savedStage = this.user.getSignupStage(StudentEmailSignupStage.class);
+    final StudentEmailSignupStage savedStage = this.user.getStage(StudentEmailSignupStage.class);
 
     assertThat(savedStage.isDone()).isFalse();
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
@@ -170,7 +170,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
 
     new SignupStageExecutor(this.user).exec(stage);
 
-    final WalletSetupSignupStage savedStage = this.user.getSignupStage(WalletSetupSignupStage.class);
+    final WalletSetupSignupStage savedStage = this.user.getStage(WalletSetupSignupStage.class);
 
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData().getAddress()).isEqualTo(address.getAddress());

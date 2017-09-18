@@ -97,7 +97,7 @@ public class MeController {
   @Path("/walletsetup")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response walletSetup(@Context final User currentUsert, final BitcoinAddress address) {
+  public Response walletSetup(@Context final User currentUser, final BitcoinAddress address) {
     if (address == null) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
@@ -105,8 +105,8 @@ public class MeController {
     try {
       final WalletSetupSignupStage stage = new WalletSetupSignupStage();
       stage.setData(address);
-      stage.exec(new SignupStageExecutor(currentUsert));
-      return Response.ok().entity(currentUsert).build();
+      stage.exec(new SignupStageExecutor(currentUser));
+      return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
     }

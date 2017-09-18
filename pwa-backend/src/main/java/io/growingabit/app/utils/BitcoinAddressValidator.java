@@ -9,7 +9,7 @@ public class BitcoinAddressValidator {
 
   private static final String ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-  public static boolean validate(final String addr) {
+  public static boolean isValid(final String addr) {
     if (StringUtils.isEmpty(addr) || addr.length() < 26 || addr.length() > 35) {
       return false;
     }

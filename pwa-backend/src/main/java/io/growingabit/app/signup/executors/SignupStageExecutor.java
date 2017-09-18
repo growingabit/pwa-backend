@@ -34,7 +34,7 @@ public class SignupStageExecutor {
   public void exec(final StudentDataSignupStage stage) throws SignupStageExecutionException {
     try {
       Preconditions.checkNotNull(stage);
-      final StudentDataSignupStage userSignupStage = this.currentuser.getSignupStage(StudentDataSignupStage.class);
+      final StudentDataSignupStage userSignupStage = this.currentuser.getStage(StudentDataSignupStage.class);
 
       final StudentData data = new StudentData(stage.getData());
       userSignupStage.setData(data);
@@ -48,7 +48,7 @@ public class SignupStageExecutor {
   public void exec(final StudentEmailSignupStage stage) throws SignupStageExecutionException {
     Preconditions.checkNotNull(stage);
 
-    final StudentEmailSignupStage userSignupStage = this.currentuser.getSignupStage(StudentEmailSignupStage.class);
+    final StudentEmailSignupStage userSignupStage = this.currentuser.getStage(StudentEmailSignupStage.class);
 
     userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail()));
     new StudentEmailSignupStageDao().persist(userSignupStage);
@@ -61,8 +61,8 @@ public class SignupStageExecutor {
     Preconditions.checkNotNull(stage);
 
     final BitcoinAddress address = stage.getData();
-    if (BitcoinAddressValidator.validate(address.getAddress())) {
-      final WalletSetupSignupStage userSignupStage = this.currentuser.getSignupStage(WalletSetupSignupStage.class);
+    if (BitcoinAddressValidator.isValid(address.getAddress())) {
+      final WalletSetupSignupStage userSignupStage = this.currentuser.getStage(WalletSetupSignupStage.class);
 
       userSignupStage.setData(address);
       userSignupStage.setDone();

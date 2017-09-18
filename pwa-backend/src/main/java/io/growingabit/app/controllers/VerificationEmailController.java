@@ -31,7 +31,7 @@ public class VerificationEmailController {
     try {
       verificationCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
 
-      final StudentEmailSignupStage stage = currentUser.getSignupStage(StudentEmailSignupStage.class);
+      final StudentEmailSignupStage stage = currentUser.getStage(StudentEmailSignupStage.class);
 
       final DateTime dateTime = new DateTime();
       if (!stage.getData().getVerificationCode().equals(verificationCode) || stage.getData().getTsExpiration() > dateTime.plusDays(7).getMillis()) {

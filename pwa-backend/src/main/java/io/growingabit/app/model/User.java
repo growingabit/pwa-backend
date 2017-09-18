@@ -76,12 +76,12 @@ public class User extends BaseModel {
     return true;
   }
 
-  public <T extends SignupStage> T getMandatorySignupStage(final Class<T> signupStageClass) {
-    return this.getStage(signupStageClass, this.mandatorySignupStages);
-  }
-
-  public <T extends SignupStage> T getSignupStage(final Class<T> signupStageClass) {
-    return this.getStage(signupStageClass, this.signupStages);
+  public <T extends SignupStage> T getStage(final Class<T> signupStageClass) {
+    T stage = this.getStage(signupStageClass, this.mandatorySignupStages);
+    if (stage == null) {
+      stage = this.getStage(signupStageClass, this.signupStages);
+    }
+    return stage;
   }
 
   private <T extends SignupStage> T getStage(final Class<T> signupStageClass, final Map<String, Ref<SignupStage>> stages) {
@@ -94,6 +94,5 @@ public class User extends BaseModel {
     }
     return null;
   }
-
 
 }

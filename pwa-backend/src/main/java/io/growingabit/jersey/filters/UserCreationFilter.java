@@ -10,20 +10,20 @@ import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.jersey.annotations.Secured;
 import io.growingabit.jersey.utils.JerseyContextUserFactory;
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 @Secured
 @Priority(Priorities.USER)
 public class UserCreationFilter implements ContainerRequestFilter {
 
-  private final Logger logger = Logger.getLogger(UserCreationFilter.class.getName());
+  private final XLogger logger = XLoggerFactory.getXLogger(UserCreationFilter.class);
 
   @Override
   public void filter(final ContainerRequestContext requestContext) throws IOException {
@@ -45,7 +45,7 @@ public class UserCreationFilter implements ContainerRequestFilter {
         }
         userDao.persist(user);
       } catch (final IllegalAccessException | InstantiationException ex) {
-        this.logger.severe(ExceptionUtils.getStackTrace(ex));
+        this.logger.error("Error during user creation, " + user.getId(), ex);
         requestContext.abortWith(Response.status(Status.INTERNAL_SERVER_ERROR).build());
       }
     }

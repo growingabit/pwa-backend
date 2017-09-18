@@ -96,7 +96,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     final User returnedUser = (User) response.getEntity();
 
-    final InvitationCodeSignupStage savedStage = returnedUser.getMandatorySignupStage(InvitationCodeSignupStage.class);
+    final InvitationCodeSignupStage savedStage = returnedUser.getStage(InvitationCodeSignupStage.class);
 
     assertThat(savedStage.getData().isConfirmed()).isTrue();
     assertThat(savedStage.isDone()).isTrue();
@@ -136,7 +136,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     final User returnedUser = (User) response.getEntity();
 
-    final StudentDataSignupStage savedStage = returnedUser.getSignupStage(StudentDataSignupStage.class);
+    final StudentDataSignupStage savedStage = returnedUser.getStage(StudentDataSignupStage.class);
 
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData().getName()).isEqualTo(studentData.getName());
@@ -195,7 +195,7 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
-    final StudentEmailSignupStage savedStage = returnedUser.getSignupStage(StudentEmailSignupStage.class);
+    final StudentEmailSignupStage savedStage = returnedUser.getStage(StudentEmailSignupStage.class);
 
     assertThat(savedStage.isDone()).isFalse();
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
@@ -213,7 +213,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     final User returnedUser = (User) response.getEntity();
 
-    final WalletSetupSignupStage savedStage = returnedUser.getSignupStage(WalletSetupSignupStage.class);
+    final WalletSetupSignupStage savedStage = returnedUser.getStage(WalletSetupSignupStage.class);
 
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.isDone()).isTrue();

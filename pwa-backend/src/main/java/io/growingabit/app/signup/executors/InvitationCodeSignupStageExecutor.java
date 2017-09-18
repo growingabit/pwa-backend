@@ -38,7 +38,7 @@ class InvitationCodeSignupStageExecutor {
             invitation.setRelatedUserWebSafeKey(Key.create(user));
             InvitationCodeSignupStageExecutor.this.invitationDao.persist(invitation);
 
-            final InvitationCodeSignupStage userSignupStage = user.getMandatorySignupStage(InvitationCodeSignupStage.class);
+            final InvitationCodeSignupStage userSignupStage = user.getStage(InvitationCodeSignupStage.class);
 
             userSignupStage.setData(invitation);
             userSignupStage.setDone();

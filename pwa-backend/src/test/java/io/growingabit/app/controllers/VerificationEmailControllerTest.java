@@ -66,7 +66,7 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
       Response response = new MeController().studentemail(this.currentUser, data);
       final User user = (User) response.getEntity();
 
-      final StudentEmailSignupStage stage = user.getSignupStage(StudentEmailSignupStage.class);
+      final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
 
       final String verificationCode = Base64.encodeBase64URLSafeString(stage.getData().getVerificationCode().getBytes("utf-8"));
 
@@ -106,7 +106,7 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
 
       final User user = (User) response.getEntity();
 
-      final StudentEmailSignupStage stage = user.getSignupStage(StudentEmailSignupStage.class);
+      final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
 
       final String verificationCode = stage.getData().getVerificationCode();
 
@@ -127,7 +127,7 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
 
       final User user = (User) response.getEntity();
 
-      final StudentEmailSignupStage stage = user.getSignupStage(StudentEmailSignupStage.class);
+      final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
 
       final String verificationCode = stage.getData().getVerificationCode();
 

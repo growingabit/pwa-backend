@@ -11,7 +11,7 @@ public class BitcoinAddress {
   }
 
   public BitcoinAddress(final String address) {
-    Preconditions.checkArgument(StringUtils.isNotEmpty(address), "Bitcoin address should not be null");
+    Preconditions.checkArgument(StringUtils.isNotEmpty(address), "Bitcoin address should not be empty or null");
     this.address = address;
   }
 
