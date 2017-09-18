@@ -3,18 +3,20 @@ package io.growingabit.app.signup.executors;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Preconditions;
-
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
+import io.growingabit.app.dao.WalletSetupSignupStageDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
+import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
+import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.tasks.deferred.DeferredTaskSendVerificationEmail;
-import io.growingabit.app.utils.Settings;
+import io.growingabit.app.utils.BitcoinAddressValidator;
 
 public class SignupStageExecutor {
 
@@ -32,8 +34,8 @@ public class SignupStageExecutor {
   public void exec(final StudentDataSignupStage stage) throws SignupStageExecutionException {
     try {
       Preconditions.checkNotNull(stage);
-      final String signupStageIndentifier = Settings.getConfig().getString(StudentDataSignupStage.class.getCanonicalName());
-      final StudentDataSignupStage userSignupStage = (StudentDataSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();
+      final StudentDataSignupStage userSignupStage = this.currentuser.getStage(StudentDataSignupStage.class);
+
       final StudentData data = new StudentData(stage.getData());
       userSignupStage.setData(data);
       userSignupStage.setDone();
@@ -43,17 +45,31 @@ public class SignupStageExecutor {
     }
   }
 
-  public void exec(StudentEmailSignupStage stage) throws SignupStageExecutionException {
+  public void exec(final StudentEmailSignupStage stage) throws SignupStageExecutionException {
     Preconditions.checkNotNull(stage);
 
-    final String signupStageIndentifier = Settings.getConfig().getString(StudentEmailSignupStage.class.getCanonicalName());
-    final StudentEmailSignupStage userSignupStage = (StudentEmailSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();
+    final StudentEmailSignupStage userSignupStage = this.currentuser.getStage(StudentEmailSignupStage.class);
 
     userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail()));
     new StudentEmailSignupStageDao().persist(userSignupStage);
 
-    DeferredTaskSendVerificationEmail deferred = new DeferredTaskSendVerificationEmail(stage.getWebSafeKey());
+    final DeferredTaskSendVerificationEmail deferred = new DeferredTaskSendVerificationEmail(stage.getWebSafeKey());
     QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withPayload(deferred));
+  }
+
+  public void exec(final WalletSetupSignupStage stage) throws SignupStageExecutionException {
+    Preconditions.checkNotNull(stage);
+
+    final BitcoinAddress address = stage.getData();
+    if (BitcoinAddressValidator.isValid(address.getAddress())) {
+      final WalletSetupSignupStage userSignupStage = this.currentuser.getStage(WalletSetupSignupStage.class);
+
+      userSignupStage.setData(address);
+      userSignupStage.setDone();
+      new WalletSetupSignupStageDao().persist(userSignupStage);
+    } else {
+      throw new SignupStageExecutionException("Bitcoin address is invalid");
+    }
   }
 
 }

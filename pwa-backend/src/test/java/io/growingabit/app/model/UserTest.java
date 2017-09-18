@@ -10,6 +10,7 @@ import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
+import io.growingabit.testUtils.UnregisteredSignupStage;
 import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
@@ -209,6 +210,76 @@ public class UserTest extends BaseGaeTest {
     model.setId("id");
     model.setId("");
     assertThat(model.getId()).isNotEmpty();
+  }
+
+  @Test
+  public void returnCorrectMandatorySignupStage() {
+    final User user = new User();
+    user.setId("id");
+    this.userDao.persist(user);
+    final SignupStage addedStage = new DummySignupStage();
+    addedStage.setUser(Key.create(user));
+    this.baseDao.persist(addedStage);
+    user.addMandatorySignupStage(addedStage);
+
+    final User anotherUser = new User();
+    anotherUser.setId("id");
+    this.userDao.persist(anotherUser);
+    final SignupStage anotherAddedStage = new DummySignupStage();
+    anotherAddedStage.setUser(Key.create(anotherUser));
+    this.baseDao.persist(anotherAddedStage);
+
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
+    assertThat(returnedStage).isEqualTo(addedStage);
+  }
+
+  @Test
+  public void returnNullIfMandatoryStageNotExist() {
+    final User user = new User();
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
+    assertThat(returnedStage).isNull();
+  }
+
+  @Test
+  public void returnCorrectSignupStage() {
+    final User user = new User();
+    user.setId("id");
+    this.userDao.persist(user);
+    final SignupStage addedStage = new DummySignupStage();
+    addedStage.setUser(Key.create(user));
+    this.baseDao.persist(addedStage);
+    user.addSignupStage(addedStage);
+
+    final User anotherUser = new User();
+    anotherUser.setId("id");
+    this.userDao.persist(anotherUser);
+    final SignupStage anotherAddedStage = new DummySignupStage();
+    anotherAddedStage.setUser(Key.create(anotherUser));
+    this.baseDao.persist(anotherAddedStage);
+
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
+    assertThat(returnedStage).isEqualTo(addedStage);
+  }
+
+  @Test
+  public void returnNullIfStageNotExist() {
+    final User user = new User();
+    final DummySignupStage returnedStage = user.getStage(DummySignupStage.class);
+    assertThat(returnedStage).isNull();
+  }
+
+  @Test
+  public void returnNullIfStageIdentifierDoesNotExists() {
+    final User user = new User();
+    final UnregisteredSignupStage returnedStage = user.getStage(UnregisteredSignupStage.class);
+    assertThat(returnedStage).isNull();
+  }
+
+  @Test
+  public void returnNullIfMandatoryStageIdentifierDoesNotExists() {
+    final User user = new User();
+    final UnregisteredSignupStage returnedStage = user.getStage(UnregisteredSignupStage.class);
+    assertThat(returnedStage).isNull();
   }
 
 }

@@ -103,13 +103,13 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     @Override
     public RSAPrivateKey getPrivateKey() {
-      // we can safely return null, beacuse we only validate tokens
+      // we can safely return null, beacuse we only isValid tokens
       return null;
     }
 
     @Override
     public String getPrivateKeyId() {
-      // we can safely return null, beacuse we only validate tokens
+      // we can safely return null, beacuse we only isValid tokens
       return null;
     }
   }

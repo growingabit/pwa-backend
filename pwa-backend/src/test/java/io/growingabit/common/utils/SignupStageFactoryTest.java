@@ -84,7 +84,6 @@ public class SignupStageFactoryTest extends BaseGaeTest {
       this.userDao.persist(u);
       final List<SignupStage> list = SignupStageFactory.getSignupStages(Key.create(u));
 
-      final String stageIdentifier = new Settings(new ResourceFetcher()).getConfig().getString(DummySignupStage.class.getCanonicalName());
       assertThat(list.get(0)).isInstanceOf(DummySignupStage.class);
     } catch (final Exception e) {
       assert false;
@@ -160,7 +159,6 @@ public class SignupStageFactoryTest extends BaseGaeTest {
       this.userDao.persist(u);
       final List<SignupStage> list = SignupStageFactory.getMandatorySignupStages(Key.create(u));
 
-      final String stageIdentifier = new Settings(new ResourceFetcher()).getConfig().getString(DummySignupStage.class.getCanonicalName());
       assertThat(list.get(0)).isInstanceOf(DummySignupStage.class);
     } catch (final Exception e) {
       assert false;
