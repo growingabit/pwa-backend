@@ -8,6 +8,7 @@ import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.testUtils.BaseGaeTest;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
       d.run();
       assert true;
     } catch (final Throwable t) {
-      Assert.fail("Should not throws exception");
+      Assert.fail("Should not throws exception " + ExceptionUtils.getStackTrace(t));
     }
   }
 
@@ -38,7 +39,7 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
       d.run();
       assert true;
     } catch (final Throwable t) {
-      Assert.fail("Should not throws exception");
+      Assert.fail("Should not throws exception " + ExceptionUtils.getStackTrace(t));
     }
   }
 
@@ -49,7 +50,7 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
       d.run();
       assert true;
     } catch (final Throwable t) {
-      Assert.fail("Should not throws exception");
+      Assert.fail("Should not throws exception " + ExceptionUtils.getStackTrace(t));
     }
   }
 
@@ -60,7 +61,7 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
       d.run();
       assert true;
     } catch (final Throwable t) {
-      Assert.fail("Should not throws exception");
+      Assert.fail("Should not throws exception " + ExceptionUtils.getStackTrace(t));
     }
   }
 
@@ -82,8 +83,8 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
 
       assert true;
 
-    } catch (final Exception e) {
-      Assert.fail("Should not throws exception");
+    } catch (final Throwable t) {
+      Assert.fail("Should not throws exception " + ExceptionUtils.getStackTrace(t));
     }
 
   }

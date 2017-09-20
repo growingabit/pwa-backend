@@ -5,6 +5,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Preconditions;
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
+import io.growingabit.app.dao.StudentPhoneSignupStageDao;
 import io.growingabit.app.dao.WalletSetupSignupStageDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
@@ -13,10 +14,13 @@ import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.tasks.deferred.DeferredTaskSendVerificationEmail;
+import io.growingabit.app.tasks.deferred.DeferredTaskSendVerificationSMS;
 import io.growingabit.app.utils.BitcoinAddressValidator;
+import io.growingabit.app.utils.Settings;
 
 public class SignupStageExecutor {
 
@@ -70,6 +74,18 @@ public class SignupStageExecutor {
     } else {
       throw new SignupStageExecutionException("Bitcoin address is invalid");
     }
+  }
+
+  public void exec(final StudentPhoneSignupStage stage) throws SignupStageExecutionException {
+    Preconditions.checkNotNull(stage);
+
+    final String signupStageIndentifier = Settings.getConfig().getString(StudentPhoneSignupStage.class.getCanonicalName());
+    final StudentPhoneSignupStage userSignupStage = (StudentPhoneSignupStage) this.currentuser.getSignupStages().get(signupStageIndentifier).get();
+    userSignupStage.setData(stage.getData());
+    new StudentPhoneSignupStageDao().persist(userSignupStage);
+
+    final DeferredTaskSendVerificationSMS deferred = new DeferredTaskSendVerificationSMS(userSignupStage.getWebSafeKey());
+    QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withPayload(deferred));
   }
 
 }

@@ -5,9 +5,11 @@ import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
@@ -111,4 +113,25 @@ public class MeController {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
     }
   }
+
+  @POST
+  @Path("/studentphone")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response studentphone(@Context final User currentUser, final StudentConfirmationPhone studentConfirmationPhone) {
+    if (studentConfirmationPhone == null || StringUtils.isEmpty(studentConfirmationPhone.getPhoneNumber())) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
+    }
+
+    try {
+      final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
+      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber()));
+      stage.exec(new SignupStageExecutor(currentUser));
+      return Response.ok().entity(currentUser).build();
+    } catch (final SignupStageExecutionException e) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
+    }
+
+  }
+
 }
