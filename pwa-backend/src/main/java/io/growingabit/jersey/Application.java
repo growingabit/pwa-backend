@@ -6,6 +6,8 @@ import io.growingabit.app.controllers.VerificationEmailController;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.controllers.InvitationController;
 import io.growingabit.jersey.controllers.HealthCheckController;
+import io.growingabit.jersey.filters.CORSFilter;
+import io.growingabit.jersey.filters.CharsetFilter;
 import io.growingabit.jersey.filters.SecurityFilter;
 import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.jersey.providers.GsonProvider;
@@ -21,15 +23,23 @@ import org.glassfish.jersey.servlet.ServletProperties;
 public class Application extends ResourceConfig {
 
   public Application() {
+    // Avoid classpath scanning!!
+    // Register all statically here
+
+    // Features
     this.register(GsonProvider.class);
     this.register(GaeFeature.class);
     this.register(RolesAllowedDynamicFeature.class);
 
+    // Request filters
     this.register(SecurityFilter.class);
     this.register(UserCreationFilter.class);
 
-    // Avoid classpath scanning!!
-    // Register all endpoints class here
+    // Response filters
+    this.register(CORSFilter.class);
+    this.register(CharsetFilter.class);
+
+    // Api endpoints
     this.register(HealthCheckController.class);
     this.register(InvitationController.class);
     this.register(MeController.class);
