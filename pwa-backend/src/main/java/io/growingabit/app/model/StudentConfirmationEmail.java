@@ -1,11 +1,10 @@
 package io.growingabit.app.model;
 
+import com.google.common.base.Preconditions;
+import io.growingabit.app.utils.SecureStringGenerator;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.joda.time.DateTime;
-
-import com.google.common.base.Preconditions;
-
-import io.growingabit.app.utils.SecureStringGenerator;
 
 public class StudentConfirmationEmail {
 
@@ -16,7 +15,7 @@ public class StudentConfirmationEmail {
   transient Long tsExpiration;
   transient String originHost;
 
-  public StudentConfirmationEmail(String email, String originHost) {
+  public StudentConfirmationEmail(final String email, final String originHost) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
     this.email = email;
     this.verificationCode = generateVerificationCode();
@@ -45,8 +44,8 @@ public class StudentConfirmationEmail {
     return this.originHost;
   }
 
-  public void setOriginHost(String originHost) {
-    Preconditions.checkArgument(originHost != null);
+  public void setOriginHost(final String originHost) {
+    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
     this.originHost = originHost;
   }
 

@@ -2,14 +2,23 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyService;
+import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.User;
+import io.growingabit.app.utils.auth.Auth0UserProfile;
+import io.growingabit.common.utils.SignupStageFactory;
+import io.growingabit.jersey.filters.UserCreationFilter;
+import io.growingabit.testUtils.BaseGaeTest;
+import io.growingabit.testUtils.Utils;
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
@@ -21,23 +30,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.ObjectifyService;
-
-import io.growingabit.app.dao.UserDao;
-import io.growingabit.app.model.StudentConfirmationEmail;
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.app.model.User;
-import io.growingabit.app.utils.auth.Auth0UserProfile;
-import io.growingabit.common.utils.SignupStageFactory;
-import io.growingabit.jersey.filters.UserCreationFilter;
-import io.growingabit.testUtils.BaseGaeTest;
-import io.growingabit.testUtils.Utils;
-
 @RunWith(MockitoJUnitRunner.class)
 public class VerificationEmailControllerTest extends BaseGaeTest {
 
-  private static final String host = "http://localhost";
+  private static final String HOST = "http://localhost";
   private User currentUser;
 
   @Before
@@ -67,9 +63,9 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void checkCode() {
     try {
-      HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(host);
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", host);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
       final User user = (User) response.getEntity();
 
@@ -89,9 +85,9 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void wrongVerificationCode() {
     try {
-      HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn("http://localhost");
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", host);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
       response.getEntity();
@@ -110,9 +106,9 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void rigthCodeButNotEncoded() {
     try {
-      HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn("http://localhost");
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", host);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
       final User user = (User) response.getEntity();
@@ -133,9 +129,9 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void tsExpirationExpired() {
     try {
-      HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn("http://localhost");
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", host);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
       final User user = (User) response.getEntity();

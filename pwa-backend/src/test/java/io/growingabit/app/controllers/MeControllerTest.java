@@ -2,24 +2,8 @@ package io.growingabit.app.controllers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
@@ -39,6 +23,18 @@ import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeControllerTest extends BaseGaeTest {
@@ -174,7 +170,7 @@ public class MeControllerTest extends BaseGaeTest {
 
   @Test
   public void studentEmailDataNull() {
-    HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     final Response response = new MeController().studentemail(req, this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
   }
@@ -183,7 +179,7 @@ public class MeControllerTest extends BaseGaeTest {
   public void studentEmailDataHasEmailFieldEmpty() {
     final StudentConfirmationEmail data = Mockito.mock(StudentConfirmationEmail.class);
     Mockito.when(data.getEmail()).thenReturn("");
-    HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
     final Response response = new MeController().studentemail(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -193,7 +189,7 @@ public class MeControllerTest extends BaseGaeTest {
   public void studentEmailDataHasEmailFieldNull() {
     final StudentConfirmationEmail data = Mockito.mock(StudentConfirmationEmail.class);
     Mockito.when(data.getEmail()).thenReturn(null);
-    HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
     final Response response = new MeController().studentemail(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -201,8 +197,8 @@ public class MeControllerTest extends BaseGaeTest {
 
   @Test
   public void completeStudentEmailStage() {
-    HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    String host = "http://localhost";
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    final String host = "http://localhost";
     Mockito.when(req.getHeader("Host")).thenReturn(host);
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", host);
     final Response response = new MeController().studentemail(req, this.currentUser, data);

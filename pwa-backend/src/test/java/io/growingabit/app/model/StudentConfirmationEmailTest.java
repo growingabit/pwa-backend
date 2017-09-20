@@ -9,7 +9,7 @@ import org.junit.Test;
 public class StudentConfirmationEmailTest {
 
   private StudentConfirmationEmail s;
-  private String host = "http://localhost";
+  private final String host = "http://localhost";
 
   @Before
   public void setup() {
@@ -32,6 +32,11 @@ public class StudentConfirmationEmailTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
+  public void emptyHost() {
+    new StudentConfirmationEmail("email@example.com", "");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
   public void emptyEmail() {
     new StudentConfirmationEmail("", this.host);
   }
@@ -50,7 +55,5 @@ public class StudentConfirmationEmailTest {
   public void verificationCodeIsNotEmpty() {
     assertThat(this.s.getVerificationCode()).isNotEmpty();
   }
-
-
 
 }
