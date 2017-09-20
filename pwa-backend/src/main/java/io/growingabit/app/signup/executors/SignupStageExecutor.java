@@ -101,5 +101,4 @@ public class SignupStageExecutor {
       throw new SignupStageExecutionException("Origin host is null", e);
     }
   }
-
 }

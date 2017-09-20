@@ -1,5 +1,6 @@
 package io.growingabit.app.model;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
@@ -15,7 +16,7 @@ public class StudentConfirmationBlockcertsOTP {
   transient String originHost;
 
   public StudentConfirmationBlockcertsOTP(String originHost) {
-    Preconditions.checkArgument(originHost != null);
+    Preconditions.checkArgument(StringUtils.isNoneEmpty(originHost));
     this.originHost = originHost;
     this.otp = generateBlockcertsOTP();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();

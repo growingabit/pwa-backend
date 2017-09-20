@@ -56,4 +56,9 @@ public class StudentConfirmationEmailTest {
     assertThat(this.s.getVerificationCode()).isNotEmpty();
   }
 
+  @Test
+  public void verificationCodeLength() {
+    assertThat(this.s.getVerificationCode().length()).isEqualTo(30);
+  }
+
 }
