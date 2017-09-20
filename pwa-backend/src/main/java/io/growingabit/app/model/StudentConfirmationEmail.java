@@ -14,12 +14,14 @@ public class StudentConfirmationEmail {
   private String email;
   transient String verificationCode;
   transient Long tsExpiration;
+  transient String originHost;
 
-  public StudentConfirmationEmail(String email) {
+  public StudentConfirmationEmail(String email, String originHost) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
     this.email = email;
     this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
+    this.setOriginHost(originHost);
   }
 
   @SuppressWarnings("unused")
@@ -37,6 +39,15 @@ public class StudentConfirmationEmail {
 
   public Long getTsExpiration() {
     return this.tsExpiration;
+  }
+
+  public String getOriginHost() {
+    return this.originHost;
+  }
+
+  public void setOriginHost(String originHost) {
+    Preconditions.checkArgument(originHost != null);
+    this.originHost = originHost;
   }
 
   public static String generateVerificationCode() {

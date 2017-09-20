@@ -2,22 +2,25 @@ package io.growingabit.mail;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import io.growingabit.app.model.StudentConfirmationEmail;
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.testUtils.BaseGaeTest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.testUtils.BaseGaeTest;
 
 public class MailServiceTest extends BaseGaeTest {
 
@@ -25,7 +28,7 @@ public class MailServiceTest extends BaseGaeTest {
 
   @BeforeClass
   public static void setUp() {
-    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", "http://localhost");
     stage.setData(data);
   }
 
@@ -76,7 +79,7 @@ public class MailServiceTest extends BaseGaeTest {
       method.setAccessible(true);
       final String verificationLink = (String) method.invoke(null, stage);
       assertThat(verificationLink).contains("http");
-      assertThat(verificationLink.contains("localhost") || verificationLink.contains("appspot.com")).isTrue();
+      assertThat(verificationLink).contains("localhost");
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }

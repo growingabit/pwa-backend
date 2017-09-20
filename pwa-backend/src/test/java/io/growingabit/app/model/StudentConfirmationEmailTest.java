@@ -9,25 +9,31 @@ import org.junit.Test;
 public class StudentConfirmationEmailTest {
 
   private StudentConfirmationEmail s;
+  private String host = "http://localhost";
 
   @Before
   public void setup() {
-    this.s = new StudentConfirmationEmail("email@example.com");
+    this.s = new StudentConfirmationEmail("email@example.com", this.host);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void invalideEmail() {
-    new StudentConfirmationEmail("email");
+    new StudentConfirmationEmail("email", this.host);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullEmail() {
-    new StudentConfirmationEmail(null);
+    new StudentConfirmationEmail(null, this.host);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void nullHost() {
+    new StudentConfirmationEmail("email@example.com", null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void emptyEmail() {
-    new StudentConfirmationEmail("");
+    new StudentConfirmationEmail("", this.host);
   }
 
   @Test

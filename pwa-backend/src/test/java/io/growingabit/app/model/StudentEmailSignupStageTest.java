@@ -24,7 +24,7 @@ public class StudentEmailSignupStageTest extends BaseGaeTest {
   @Test
   public void setShouldNotAcceptNull() {
     final StudentEmailSignupStage stage = new StudentEmailSignupStage();
-    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", "http://localhost");
 
     stage.setData(data);
     stage.setData(null);
