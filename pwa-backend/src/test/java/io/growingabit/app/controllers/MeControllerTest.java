@@ -8,9 +8,11 @@ import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
@@ -49,6 +51,7 @@ public class MeControllerTest extends BaseGaeTest {
     ObjectifyService.register(InvitationCodeSignupStage.class);
     ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(StudentEmailSignupStage.class);
+    ObjectifyService.register(StudentPhoneSignupStage.class);
     ObjectifyService.register(WalletSetupSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
@@ -57,6 +60,7 @@ public class MeControllerTest extends BaseGaeTest {
     SignupStageFactory.register(DummySignupStage.class);
     SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentEmailSignupStage.class);
+    SignupStageFactory.register(StudentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
 
     this.invitationDao = new InvitationDao();
@@ -202,6 +206,48 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
     assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
   }
+
+
+  @Test
+  public void studentPhoneDataNull() {
+    final Response response = new MeController().studentphone(this.currentUser, null);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void studentPhoneDataHasPhoneFieldEmpty() {
+    final StudentConfirmationPhone data = Mockito.mock(StudentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn("");
+
+    final Response response = new MeController().studentphone(this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void studentPhoneDataHasPhoneFieldNull() {
+    final StudentConfirmationPhone data = Mockito.mock(StudentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn(null);
+
+    final Response response = new MeController().studentphone(this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void completeStudentPhoneStage() {
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
+    final Response response = new MeController().studentphone(this.currentUser, data);
+
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+
+    final User returnedUser = (User) response.getEntity();
+    final StudentPhoneSignupStage savedStage = returnedUser.getStage(StudentPhoneSignupStage.class);
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getPhoneNumber()).isEqualTo(data.getPhoneNumber());
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
+    assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
+  }
+
 
   @Test
   public void completeWalletDataSignupStage() {

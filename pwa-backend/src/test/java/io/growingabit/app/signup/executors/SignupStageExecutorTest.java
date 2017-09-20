@@ -13,9 +13,11 @@ import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.model.base.SignupStage;
@@ -46,11 +48,13 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     ObjectifyService.factory().register(InvitationCodeSignupStage.class);
     ObjectifyService.factory().register(StudentDataSignupStage.class);
     ObjectifyService.factory().register(StudentEmailSignupStage.class);
+    ObjectifyService.factory().register(StudentPhoneSignupStage.class);
     ObjectifyService.factory().register(WalletSetupSignupStage.class);
 
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
     SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentEmailSignupStage.class);
+    SignupStageFactory.register(StudentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
 
     this.userDao = new UserDao();
@@ -190,6 +194,31 @@ public class SignupStageExecutorTest extends BaseGaeTest {
   public void walletSetupSignupStageMustBeNotNull() {
     final WalletSetupSignupStage stage = null;
     new SignupStageExecutor(this.user).exec(stage);
+  }
+
+  @Test
+  public void completeStudentPhoneConfirmationStep() throws InterruptedException {
+
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
+
+    final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
+    stage.setData(data);
+    new SignupStageExecutor(this.user).exec(stage);
+
+    final StudentPhoneSignupStage savedStage = this.user.getStage(StudentPhoneSignupStage.class);
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getPhoneNumber()).isEqualTo(data.getPhoneNumber());
+    assertThat(savedStage.getData().getTsExpiration()).isNotNull();
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
+    assertThat(savedStage.getData().getVerificationCode()).isNotNull();
+    assertThat(savedStage.getData().getVerificationCode()).isNotEmpty();
+
+    // TODO: try to avoid this magic number here
+    Thread.sleep(1000);
+    final LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+    final QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+    Assert.assertEquals(1, qsi.getTaskInfo().size());
   }
 
 }
