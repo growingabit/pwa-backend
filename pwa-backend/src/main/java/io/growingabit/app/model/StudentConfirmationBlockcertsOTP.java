@@ -11,7 +11,7 @@ public class StudentConfirmationBlockcertsOTP {
 
   private static final int BLOCKCERTS_OTP_LENGTH = 6;
 
-  transient String otp;
+  private String otp;
   transient Long tsExpiration;
   transient String originHost;
 

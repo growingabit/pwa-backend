@@ -2,16 +2,24 @@ package io.growingabit.app.signup.executors;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.joda.time.DateTime;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
+import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -26,10 +34,6 @@ import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.Utils;
-import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SignupStageExecutorTest extends BaseGaeTest {
 
@@ -50,12 +54,14 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     ObjectifyService.factory().register(StudentEmailSignupStage.class);
     ObjectifyService.factory().register(StudentPhoneSignupStage.class);
     ObjectifyService.factory().register(WalletSetupSignupStage.class);
+    ObjectifyService.factory().register(StudentBlockcertsOTPSignupStage.class);
 
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
     SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentEmailSignupStage.class);
     SignupStageFactory.register(StudentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
+    SignupStageFactory.register(StudentBlockcertsOTPSignupStage.class);
 
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
@@ -219,6 +225,23 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     final LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
     final QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
     Assert.assertEquals(1, qsi.getTaskInfo().size());
+  }
+
+  @Test
+  public void completeStudentBlockcertsOtpStep() throws InterruptedException {
+
+    final StudentConfirmationBlockcertsOTP data = new StudentConfirmationBlockcertsOTP("http://locahost");
+
+    final StudentBlockcertsOTPSignupStage stage = new StudentBlockcertsOTPSignupStage();
+    stage.setData(data);
+    new SignupStageExecutor(this.user).exec(stage);
+
+    final StudentBlockcertsOTPSignupStage savedStage = this.user.getStage(StudentBlockcertsOTPSignupStage.class);
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getOtp().length()).isEqualTo(6);
+    assertThat(savedStage.getData().getTsExpiration()).isNotNull();
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
   }
 
 }
