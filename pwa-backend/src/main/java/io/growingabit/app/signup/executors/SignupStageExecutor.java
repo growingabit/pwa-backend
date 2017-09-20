@@ -4,6 +4,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Preconditions;
 
+import io.growingabit.app.dao.StudentBlockcertsOTPSignupStageDao;
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
@@ -11,6 +12,8 @@ import io.growingabit.app.dao.WalletSetupSignupStageDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
+import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
@@ -84,6 +87,19 @@ public class SignupStageExecutor {
 
     final DeferredTaskSendVerificationSMS deferred = new DeferredTaskSendVerificationSMS(userSignupStage.getWebSafeKey());
     QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withPayload(deferred));
+  }
+
+  public void exec(final StudentBlockcertsOTPSignupStage stage) {
+    try {
+      Preconditions.checkNotNull(stage);
+
+      final StudentBlockcertsOTPSignupStage userSignupStage = this.currentuser.getStage(StudentBlockcertsOTPSignupStage.class);
+      userSignupStage.setData(new StudentConfirmationBlockcertsOTP(stage.getData().getOriginHost()));
+
+      new StudentBlockcertsOTPSignupStageDao().persist(userSignupStage);
+    } catch (final IllegalArgumentException e) {
+      throw new SignupStageExecutionException("Origin host is null", e);
+    }
   }
 
 }
