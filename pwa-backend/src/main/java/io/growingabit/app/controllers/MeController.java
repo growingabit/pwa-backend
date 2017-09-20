@@ -16,6 +16,7 @@ import io.growingabit.app.signup.executors.SignupStageExecutor;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.jersey.annotations.Secured;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -79,10 +80,12 @@ public class MeController {
   @Path("/studentemail")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response studentemail(@Context final User currentUser, final StudentConfirmationEmail studentConfirmationEmail) {
+  public Response studentemail(@Context final HttpServletRequest req, @Context final User currentUser, final StudentConfirmationEmail studentConfirmationEmail) {
     if (studentConfirmationEmail == null || StringUtils.isEmpty(studentConfirmationEmail.getEmail())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
+
+    studentConfirmationEmail.setOriginHost(req.getHeader("Host"));
 
     try {
       final StudentEmailSignupStage stage = new StudentEmailSignupStage();

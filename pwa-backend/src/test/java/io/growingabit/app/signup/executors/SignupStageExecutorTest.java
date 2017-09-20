@@ -138,7 +138,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
   @Test
   public void completeStudentEmailConfirmationStep() throws InterruptedException {
 
-    final StudentConfirmationEmail data = new StudentConfirmationEmail("test@example.com");
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("test@example.com", "http://localhost");
 
     final StudentEmailSignupStage stage = new StudentEmailSignupStage();
     stage.setData(data);

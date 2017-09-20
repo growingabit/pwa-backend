@@ -3,6 +3,7 @@ package io.growingabit.app.signup.executors;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Preconditions;
+
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
@@ -54,7 +55,7 @@ public class SignupStageExecutor {
 
     final StudentEmailSignupStage userSignupStage = this.currentuser.getStage(StudentEmailSignupStage.class);
 
-    userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail()));
+    userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail(), stage.getData().getOriginHost()));
     new StudentEmailSignupStageDao().persist(userSignupStage);
 
     final DeferredTaskSendVerificationEmail deferred = new DeferredTaskSendVerificationEmail(stage.getWebSafeKey());

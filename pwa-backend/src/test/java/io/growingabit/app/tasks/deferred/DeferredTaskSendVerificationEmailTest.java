@@ -74,7 +74,7 @@ public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentEmailSignupStage stage = new StudentEmailSignupStage();
-      stage.setData(new StudentConfirmationEmail("test@example.com"));
+      stage.setData(new StudentConfirmationEmail("test@example.com", "http://localhost"));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentEmailSignupStageDao().persist(stage);
 

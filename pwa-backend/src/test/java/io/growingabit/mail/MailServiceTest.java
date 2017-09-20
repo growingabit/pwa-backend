@@ -25,7 +25,7 @@ public class MailServiceTest extends BaseGaeTest {
 
   @BeforeClass
   public static void setUp() {
-    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", "http://localhost");
     stage.setData(data);
   }
 
@@ -76,7 +76,7 @@ public class MailServiceTest extends BaseGaeTest {
       method.setAccessible(true);
       final String verificationLink = (String) method.invoke(null, stage);
       assertThat(verificationLink).contains("http");
-      assertThat(verificationLink.contains("localhost") || verificationLink.contains("appspot.com")).isTrue();
+      assertThat(verificationLink).contains("localhost");
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }

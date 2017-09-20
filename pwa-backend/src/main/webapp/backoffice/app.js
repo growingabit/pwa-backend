@@ -20,7 +20,7 @@ function config($stateProvider, $urlRouterProvider, $locationProvider,
       development: {
         auth0CLientID: '32wl1L4tlptjPImhEvLIbrQSkwmAJx5s',
         auth0Domain: 'growbit-development.eu.auth0.com',
-        auth0CallbakUrl: 'http://localhost:8888/backoffice/index.html#/callback'
+        auth0CallbakUrl: 'http://localhost:8080/backoffice/index.html#/callback'
       },
       production: {
         auth0CLientID: '',

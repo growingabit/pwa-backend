@@ -14,6 +14,7 @@ import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.Utils;
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
@@ -32,7 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class VerificationEmailControllerTest extends BaseGaeTest {
 
-  private String userId;
+  private static final String HOST = "http://localhost";
   private User currentUser;
 
   @Before
@@ -54,7 +55,7 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
     final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
     Mockito.when(requestContext.getSecurityContext()).thenReturn(context);
 
-    //to create the user
+    // to create the user
     new UserCreationFilter().filter(requestContext);
     this.currentUser = new UserDao().find(Key.create(User.class, userId));
   }
@@ -62,8 +63,10 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void checkCode() {
     try {
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
-      Response response = new MeController().studentemail(this.currentUser, data);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
+      Response response = new MeController().studentemail(req, this.currentUser, data);
       final User user = (User) response.getEntity();
 
       final StudentEmailSignupStage stage = user.getStage(StudentEmailSignupStage.class);
@@ -82,10 +85,12 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void wrongVerificationCode() {
     try {
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
-      Response response = new MeController().studentemail(this.currentUser, data);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
+      Response response = new MeController().studentemail(req, this.currentUser, data);
 
-      final User user = (User) response.getEntity();
+      response.getEntity();
 
       final String verificationCode = Base64.encodeBase64URLSafeString("an invalid code".getBytes("utf-8"));
 
@@ -101,8 +106,10 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void rigthCodeButNotEncoded() {
     try {
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
-      Response response = new MeController().studentemail(this.currentUser, data);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
+      Response response = new MeController().studentemail(req, this.currentUser, data);
 
       final User user = (User) response.getEntity();
 
@@ -122,8 +129,10 @@ public class VerificationEmailControllerTest extends BaseGaeTest {
   @Test
   public void tsExpirationExpired() {
     try {
-      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com");
-      Response response = new MeController().studentemail(this.currentUser, data);
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
+      Response response = new MeController().studentemail(req, this.currentUser, data);
 
       final User user = (User) response.getEntity();
 
