@@ -16,7 +16,8 @@ public class StudentConfirmationPhone {
 
   public StudentConfirmationPhone(final String phoneNumber, final String originHost) {
     Preconditions.checkArgument(StringUtils.isNotEmpty(phoneNumber));
-    this.setOriginHost(originHost);
+    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
+    this.originHost = originHost;
     this.phoneNumber = phoneNumber;
     this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
@@ -41,11 +42,6 @@ public class StudentConfirmationPhone {
 
   public String getOriginHost() {
     return this.originHost;
-  }
-
-  public void setOriginHost(final String originHost) {
-    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
-    this.originHost = originHost;
   }
 
   private String generateVerificationCode() {

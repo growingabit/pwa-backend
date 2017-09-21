@@ -17,7 +17,8 @@ public class StudentConfirmationEmail {
 
   public StudentConfirmationEmail(final String email, final String originHost) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
-    this.setOriginHost(originHost);
+    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
+    this.originHost = originHost;
     this.email = email;
     this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
@@ -44,12 +45,7 @@ public class StudentConfirmationEmail {
     return this.originHost;
   }
 
-  public void setOriginHost(final String originHost) {
-    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
-    this.originHost = originHost;
-  }
-
-  public static String generateVerificationCode() {
+  private static String generateVerificationCode() {
     return new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
   }
 }

@@ -38,7 +38,7 @@ public class DeferredTaskSendVerificationSMS implements DeferredTask {
 
         Twilio.init(accountSid, authToken);
 
-        final String verificationLink = "https://" + stage.getData().getOriginHost() + "/verificationemail/" + data.getVerificationCode();
+        final String verificationLink = "https://" + stage.getData().getOriginHost() + "/verify/phone/" + data.getVerificationCode();
 
         final Message message = Message.creator(
             new PhoneNumber(data.getPhoneNumber()),  // to

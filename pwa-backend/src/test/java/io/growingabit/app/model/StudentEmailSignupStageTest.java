@@ -2,14 +2,12 @@ package io.growingabit.app.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
-
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.testUtils.BaseGaeTest;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StudentEmailSignupStageTest extends BaseGaeTest {
 

@@ -2,7 +2,6 @@ package io.growingabit.app.model;
 
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
-
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
@@ -19,7 +18,7 @@ public class StudentEmailSignupStage extends SignupStage<StudentConfirmationEmai
   }
 
   @Override
-  public void setData(StudentConfirmationEmail data) {
+  public void setData(final StudentConfirmationEmail data) {
     if (data != null) {
       this.data = data;
     }
