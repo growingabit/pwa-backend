@@ -17,12 +17,12 @@ public class ParentPhoneSignupStageTest extends BaseGaeTest {
   private static final String PARENT_FIRSTNAME = "firstname";
   private static final String PARENT_LASTNAME = "lastname";
 
-  private ParentPhoneSignupStageDao ParentPhoneSignupStageDao;
+  private ParentPhoneSignupStageDao parentPhoneSignupStageDao;
 
   @Before
   public void setUp() {
     ObjectifyService.register(ParentPhoneSignupStage.class);
-    this.ParentPhoneSignupStageDao = new ParentPhoneSignupStageDao();
+    this.parentPhoneSignupStageDao = new ParentPhoneSignupStageDao();
   }
 
   @Test
@@ -37,7 +37,7 @@ public class ParentPhoneSignupStageTest extends BaseGaeTest {
 
   @Test(expected = SaveException.class)
   public void userIsRequired() {
-    this.ParentPhoneSignupStageDao.persist(new ParentPhoneSignupStage());
+    this.parentPhoneSignupStageDao.persist(new ParentPhoneSignupStage());
   }
 
   @Test

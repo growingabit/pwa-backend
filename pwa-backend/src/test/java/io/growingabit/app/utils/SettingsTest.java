@@ -2,6 +2,8 @@ package io.growingabit.app.utils;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.net.URL;
+
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.configuration2.Configuration;
@@ -16,6 +18,10 @@ import io.growingabit.testUtils.Utils;
 @RunWith(MockitoJUnitRunner.class)
 public class SettingsTest {
 
+  private static final URL DEFAULT_PROPERTIES_URL = SettingsTest.class.getClassLoader().getResource("SettingsTest_default.properties");
+  private static final URL PRODUCTION_PROPERTIES_URL = SettingsTest.class.getClassLoader().getResource("SettingsTest_production.properties");
+  private static final URL DEVELOPMENT_PROPERTIES_URL = SettingsTest.class.getClassLoader().getResource("SettingsTest_development.properties");
+
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
     Utils.clearSettings();
@@ -23,7 +29,11 @@ public class SettingsTest {
 
   @Test
   public void allFileOverwritingTest() {
-    final Configuration configuration = new Settings(new ResourceFetcher()).getConfig();
+    final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME)).thenReturn(DEFAULT_PROPERTIES_URL);
+    Mockito.when(resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME)).thenReturn(PRODUCTION_PROPERTIES_URL);
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(DEVELOPMENT_PROPERTIES_URL);
+    final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
     // dev overwrite all
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("dev");
@@ -51,6 +61,8 @@ public class SettingsTest {
   public void missingDevFileTest() {
     final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME)).thenReturn(DEFAULT_PROPERTIES_URL);
+    Mockito.when(resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME)).thenReturn(PRODUCTION_PROPERTIES_URL);
     Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(null);
     final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
@@ -74,7 +86,9 @@ public class SettingsTest {
   public void missingProdFileTest() {
     final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME)).thenReturn(DEFAULT_PROPERTIES_URL);
     Mockito.when(resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME)).thenReturn(null);
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(DEVELOPMENT_PROPERTIES_URL);
     final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("dev");
@@ -97,8 +111,9 @@ public class SettingsTest {
   public void missingDevAndProdFilesTest() {
     final ResourceFetcher resourceFetcher = Mockito.mock(ResourceFetcher.class);
     Mockito.when(resourceFetcher.fetchResource(Mockito.anyString())).thenCallRealMethod();
-    Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(null);
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEFAULT_PROPERTIES_NAME)).thenReturn(DEFAULT_PROPERTIES_URL);
     Mockito.when(resourceFetcher.fetchResource(Settings.PRODUCTION_PROPERTIES_NAME)).thenReturn(null);
+    Mockito.when(resourceFetcher.fetchResource(Settings.DEV_PROPERTIES_NAME)).thenReturn(null);
     final Configuration configuration = new Settings(resourceFetcher).getConfiguration();
 
     assertThat(configuration.getString("dev-prod-def")).isEqualTo("def");

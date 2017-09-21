@@ -94,5 +94,5 @@ dist
 *.ctxt
 
 # properties files
-**/main/**/production.properties
-**/main/**/development.properties
+**/production.properties
+**/development.properties
