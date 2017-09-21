@@ -7,31 +7,45 @@ import com.google.common.base.Preconditions;
 
 import io.growingabit.app.utils.SecureStringGenerator;
 
-public class StudentConfirmationPhone {
+public class ParentConfirmationPhone {
 
   private static final int VERIFICATION_CODE_LENGTH = 8;
 
   private String phoneNumber;
+  private String name;
+  private String surname;
   private transient String verificationCode;
   private transient Long tsExpiration;
   private transient String originHost;
 
-  public StudentConfirmationPhone(final String phoneNumber, final String originHost) {
+  public ParentConfirmationPhone(final String phoneNumber, final String originHost, final String name, final String surname) {
     Preconditions.checkArgument(StringUtils.isNotEmpty(phoneNumber));
     Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
+    Preconditions.checkArgument(StringUtils.isNotEmpty(name));
+    Preconditions.checkArgument(StringUtils.isNotEmpty(surname));
     this.originHost = originHost;
     this.phoneNumber = phoneNumber;
-    this.verificationCode = this.generateVerificationCode();
+    this.name = name;
+    this.surname = surname;
+    this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
   }
 
   @SuppressWarnings("unused")
-  private StudentConfirmationPhone() {
+  private ParentConfirmationPhone() {
     // only used by Objectify to instantiate the object
   }
 
   public String getPhoneNumber() {
     return this.phoneNumber;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public String getSurname() {
+    return this.surname;
   }
 
   public String getVerificationCode() {
