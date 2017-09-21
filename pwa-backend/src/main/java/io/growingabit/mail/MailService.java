@@ -17,12 +17,6 @@ import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.utils.GoogleUrlShortenerService;
 import io.growingabit.app.utils.Settings;
 
-import com.google.common.collect.ImmutableMap;
-
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.app.utils.GoogleUrlShortenerService;
-import io.growingabit.app.utils.Settings;
-
 public class MailService {
 
   private static final XLogger log = XLoggerFactory.getXLogger(MailService.class);
