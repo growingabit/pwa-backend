@@ -3,7 +3,6 @@ package io.growingabit.app.model;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Random;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

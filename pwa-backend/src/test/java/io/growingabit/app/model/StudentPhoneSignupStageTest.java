@@ -11,6 +11,8 @@ import org.junit.Test;
 
 public class StudentPhoneSignupStageTest extends BaseGaeTest {
 
+  private static final String HOST = "http://www.example.com";
+
   private StudentPhoneSignupStageDao studentPhoneSignupStageDao;
 
   @Before
@@ -22,7 +24,7 @@ public class StudentPhoneSignupStageTest extends BaseGaeTest {
   @Test
   public void setShouldNotAcceptNull() {
     final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
 
     stage.setData(data);
     stage.setData(null);

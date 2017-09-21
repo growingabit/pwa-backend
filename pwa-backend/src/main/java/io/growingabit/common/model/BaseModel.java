@@ -9,10 +9,10 @@ import org.joda.time.DateTime;
 
 public abstract class BaseModel {
 
-  private long creationDate;
+  private transient long creationDate;
 
   @Index
-  private long modifiedDate;
+  private transient long modifiedDate;
 
   public BaseModel() {
     this.creationDate = -1;

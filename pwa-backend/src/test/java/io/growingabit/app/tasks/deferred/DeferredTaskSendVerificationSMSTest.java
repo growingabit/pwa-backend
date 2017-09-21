@@ -26,6 +26,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({Twilio.class, Message.class})
 public class DeferredTaskSendVerificationSMSTest extends BaseGaeTest {
 
+  private static final String HOST = "http://www.example.com";
+
   @Before
   public void setUp() {
     ObjectifyService.register(User.class);
@@ -87,7 +89,7 @@ public class DeferredTaskSendVerificationSMSTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone("+15005550006"));
+      stage.setData(new StudentConfirmationPhone("+15005550006", HOST));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentPhoneSignupStageDao().persist(stage);
 
@@ -112,7 +114,7 @@ public class DeferredTaskSendVerificationSMSTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone("+15005550006"));
+      stage.setData(new StudentConfirmationPhone("+15005550006", HOST));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentPhoneSignupStageDao().persist(stage);
 
@@ -141,7 +143,7 @@ public class DeferredTaskSendVerificationSMSTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone("+15005550006"));
+      stage.setData(new StudentConfirmationPhone("+15005550006", HOST));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentPhoneSignupStageDao().persist(stage);
 

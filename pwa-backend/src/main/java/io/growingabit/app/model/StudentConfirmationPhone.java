@@ -1,5 +1,6 @@
 package io.growingabit.app.model;
 
+import com.google.common.base.Preconditions;
 import io.growingabit.app.utils.SecureStringGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -11,11 +12,12 @@ public class StudentConfirmationPhone {
   private String phoneNumber;
   private transient String verificationCode;
   private transient Long tsExpiration;
+  transient String originHost;
 
-  public StudentConfirmationPhone(final String phoneNumber) {
-    if (StringUtils.isEmpty(phoneNumber)) {
-      throw new IllegalArgumentException("Phnoe number should not be empty or null");
-    }
+  public StudentConfirmationPhone(final String phoneNumber, final String originHost) {
+    Preconditions.checkArgument(StringUtils.isNotEmpty(phoneNumber));
+    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
+    this.originHost = originHost;
     this.phoneNumber = phoneNumber;
     this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
@@ -38,7 +40,12 @@ public class StudentConfirmationPhone {
     return this.tsExpiration;
   }
 
+  public String getOriginHost() {
+    return this.originHost;
+  }
+
   private String generateVerificationCode() {
     return new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextNumericString();
   }
+
 }

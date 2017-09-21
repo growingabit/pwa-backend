@@ -277,8 +277,6 @@
     </dependency>
 
 
-
-
     <!-- Test Dependencies -->
     <dependency>
       <groupId>com.google.appengine</groupId>
@@ -568,7 +566,7 @@
             <format>html</format>
             <format>xml</format>
           </formats>
-          <check />
+          <check/>
         </configuration>
         <executions>
           <execution>
