@@ -58,7 +58,7 @@ public class SignupStageExecutor {
     userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail(), stage.getData().getOriginHost()));
     new StudentEmailSignupStageDao().persist(userSignupStage);
 
-    final DeferredTaskSendVerificationEmail deferred = new DeferredTaskSendVerificationEmail(stage.getWebSafeKey());
+    final DeferredTaskSendVerificationEmail deferred = new DeferredTaskSendVerificationEmail(userSignupStage.getWebSafeKey());
     QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withPayload(deferred));
   }
 
