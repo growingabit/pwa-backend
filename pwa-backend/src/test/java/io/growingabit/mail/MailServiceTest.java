@@ -2,22 +2,25 @@ package io.growingabit.mail;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import io.growingabit.app.model.StudentConfirmationEmail;
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.testUtils.BaseGaeTest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import io.growingabit.app.model.StudentConfirmationEmail;
+import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.testUtils.BaseGaeTest;
 
 public class MailServiceTest extends BaseGaeTest {
 
@@ -49,7 +52,7 @@ public class MailServiceTest extends BaseGaeTest {
       method.setAccessible(true);
       final String verificationCode = (String) method.invoke(null, stage);
 
-      assertThat(verificationCode).contains("/verificationemail/");
+      assertThat(verificationCode).contains("/verify/email/");
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }
@@ -62,7 +65,7 @@ public class MailServiceTest extends BaseGaeTest {
       method.setAccessible(true);
       final String verificationCode = (String) method.invoke(null, stage);
 
-      final String code = new String(Base64.decodeBase64(verificationCode.replace("/verificationemail/", "")), "utf-8");
+      final String code = new String(Base64.decodeBase64(verificationCode.replace("/verify/email/", "")), "utf-8");
       assertThat(stage.getData().getVerificationCode()).isEqualTo(code);
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | UnsupportedEncodingException e) {
       Assert.fail();
