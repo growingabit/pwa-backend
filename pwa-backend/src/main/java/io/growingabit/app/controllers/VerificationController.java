@@ -55,7 +55,6 @@ public class VerificationController {
 
   }
 
-  @Secured
   @Path("phone/{verificationCode}")
   @GET
   public Response verifyPhone(@Context final User currentUser, @PathParam("verificationCode") final String verificationCode) {
@@ -69,6 +68,8 @@ public class VerificationController {
     stage.setDone();
     new StudentPhoneSignupStageDao().persist(stage);
 
+
     return Response.ok().build();
   }
+
 }
