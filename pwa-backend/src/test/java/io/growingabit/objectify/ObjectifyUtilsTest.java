@@ -2,12 +2,15 @@ package io.growingabit.objectify;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.Random;
+
+import org.junit.Test;
+
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+
 import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
-import java.util.Random;
-import org.junit.Test;
 
 public class ObjectifyUtilsTest {
 

@@ -2,13 +2,15 @@ package io.growingabit.common.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseGaeTest;
-import org.junit.Before;
-import org.junit.Test;
 
 
 public class BaseModelTest extends BaseGaeTest {

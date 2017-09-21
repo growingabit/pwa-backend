@@ -1,16 +1,18 @@
 package io.growingabit.backoffice.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+
 import io.growingabit.app.model.User;
 import io.growingabit.app.utils.SecureStringGenerator;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
-import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Cache

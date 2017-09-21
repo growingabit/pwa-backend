@@ -1,12 +1,5 @@
 package io.growingabit.app.controllers;
 
-import com.googlecode.objectify.Key;
-import io.growingabit.app.dao.StudentPhoneSignupStageDao;
-import io.growingabit.app.dao.UserDao;
-import io.growingabit.app.model.StudentPhoneSignupStage;
-import io.growingabit.app.model.User;
-import io.growingabit.app.utils.auth.Auth0UserProfile;
-import io.growingabit.jersey.annotations.Secured;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,9 +7,19 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+
 import org.joda.time.DateTime;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
+
+import com.googlecode.objectify.Key;
+
+import io.growingabit.app.dao.StudentPhoneSignupStageDao;
+import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.StudentPhoneSignupStage;
+import io.growingabit.app.model.User;
+import io.growingabit.app.utils.auth.Auth0UserProfile;
+import io.growingabit.jersey.annotations.Secured;
 
 @Secured
 @Path("api/v1/verify/phone/{verificationCode}")

@@ -1,15 +1,19 @@
 package io.growingabit.mail;
 
-import com.google.common.collect.ImmutableMap;
-import io.growingabit.app.model.StudentEmailSignupStage;
-import io.growingabit.app.utils.GoogleUrlShortenerService;
-import io.growingabit.app.utils.Settings;
 import java.io.UnsupportedEncodingException;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.text.StrSubstitutor;
+
+import com.google.common.collect.ImmutableMap;
+
+import io.growingabit.app.model.StudentEmailSignupStage;
+import io.growingabit.app.utils.GoogleUrlShortenerService;
+import io.growingabit.app.utils.Settings;
 
 public class MailService {
 

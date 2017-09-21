@@ -1,9 +1,11 @@
 package io.growingabit.app.model;
 
-import com.google.common.base.Preconditions;
-import io.growingabit.app.utils.SecureStringGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+
+import com.google.common.base.Preconditions;
+
+import io.growingabit.app.utils.SecureStringGenerator;
 
 public class StudentConfirmationPhone {
 

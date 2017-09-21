@@ -1,7 +1,8 @@
 package io.growingabit.app.model;
 
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Preconditions;
 
 public class BitcoinAddress {
 

@@ -2,12 +2,14 @@ package io.growingabit.app.dao;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.ObjectifyService;
-import io.growingabit.app.model.User;
-import io.growingabit.testUtils.BaseGaeTest;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyService;
+
+import io.growingabit.app.model.User;
+import io.growingabit.testUtils.BaseGaeTest;
 
 public class UserDaoTest extends BaseGaeTest {
 

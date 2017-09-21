@@ -1,11 +1,13 @@
 package io.growingabit.app.tasks.deferred;
 
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
+
 import com.google.appengine.api.taskqueue.DeferredTask;
+
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.mail.MailService;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
 
 public class DeferredTaskSendVerificationEmail implements DeferredTask {
 

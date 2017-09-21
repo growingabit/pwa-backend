@@ -1,7 +1,20 @@
 package io.growingabit.jersey.filters;
 
+import java.io.IOException;
+
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
@@ -9,15 +22,6 @@ import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.jersey.annotations.Secured;
 import io.growingabit.jersey.utils.JerseyContextUserFactory;
-import java.io.IOException;
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
 
 @Secured
 @Priority(Priorities.USER)

@@ -1,13 +1,15 @@
 package io.growingabit.common.utils;
 
-import com.google.common.collect.Lists;
-import com.googlecode.objectify.Key;
-import io.growingabit.app.dao.GenericSignupStageDao;
-import io.growingabit.app.model.User;
-import io.growingabit.app.model.base.SignupStage;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
+import com.googlecode.objectify.Key;
+
+import io.growingabit.app.dao.GenericSignupStageDao;
+import io.growingabit.app.model.User;
+import io.growingabit.app.model.base.SignupStage;
 
 public class SignupStageFactory {
 

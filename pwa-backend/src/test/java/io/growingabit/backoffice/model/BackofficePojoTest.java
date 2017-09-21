@@ -1,5 +1,8 @@
 package io.growingabit.backoffice.model;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.ObjectifyService;
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoClassFilter;
@@ -9,9 +12,8 @@ import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
+
 import io.growingabit.testUtils.BaseGaeTest;
-import org.junit.Before;
-import org.junit.Test;
 
 public class BackofficePojoTest extends BaseGaeTest {
 

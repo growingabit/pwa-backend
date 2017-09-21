@@ -1,17 +1,5 @@
 package io.growingabit.app.tasks.deferred;
 
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.ObjectifyService;
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.rest.api.v2010.account.MessageCreator;
-import com.twilio.type.PhoneNumber;
-import io.growingabit.app.dao.StudentPhoneSignupStageDao;
-import io.growingabit.app.dao.UserDao;
-import io.growingabit.app.model.StudentConfirmationPhone;
-import io.growingabit.app.model.StudentPhoneSignupStage;
-import io.growingabit.app.model.User;
-import io.growingabit.testUtils.BaseGaeTest;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,6 +9,20 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyService;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.rest.api.v2010.account.MessageCreator;
+import com.twilio.type.PhoneNumber;
+
+import io.growingabit.app.dao.StudentPhoneSignupStageDao;
+import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.StudentConfirmationPhone;
+import io.growingabit.app.model.StudentPhoneSignupStage;
+import io.growingabit.app.model.User;
+import io.growingabit.testUtils.BaseGaeTest;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Twilio.class, Message.class})

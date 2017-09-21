@@ -1,18 +1,20 @@
 package io.growingabit.app.tasks.deferred;
 
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
+
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.googlecode.objectify.NotFoundException;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.utils.Settings;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
 
 public class DeferredTaskSendVerificationSMS implements DeferredTask {
 

@@ -1,18 +1,21 @@
 package io.growingabit.app.model;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Load;
+
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.Settings;
 import io.growingabit.common.model.BaseModel;
 import io.gsonfire.annotations.ExposeMethodResult;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Cache

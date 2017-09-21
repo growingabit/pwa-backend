@@ -2,18 +2,21 @@ package io.growingabit.jersey.filter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import io.growingabit.jersey.filters.CORSFilter;
 import java.io.IOException;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import io.growingabit.jersey.filters.CORSFilter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CORSFilterTest {

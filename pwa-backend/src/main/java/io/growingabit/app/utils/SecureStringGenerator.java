@@ -1,8 +1,9 @@
 package io.growingabit.app.utils;
 
-import com.google.common.base.Preconditions;
 import java.security.SecureRandom;
 import java.util.Random;
+
+import com.google.common.base.Preconditions;
 
 public class SecureStringGenerator {
 

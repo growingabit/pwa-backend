@@ -2,6 +2,7 @@ package io.growingabit.app.utils.auth;
 
 import java.security.Principal;
 import java.util.Set;
+
 import javax.ws.rs.core.SecurityContext;
 
 public class Authorizer implements SecurityContext {

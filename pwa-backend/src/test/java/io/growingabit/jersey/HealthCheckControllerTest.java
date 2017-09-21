@@ -1,7 +1,8 @@
 package io.growingabit.jersey;
 
-import io.growingabit.jersey.controllers.HealthCheckController;
 import org.junit.Test;
+
+import io.growingabit.jersey.controllers.HealthCheckController;
 
 public class HealthCheckControllerTest {
 

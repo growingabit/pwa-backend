@@ -1,11 +1,13 @@
 package io.growingabit.common.model;
 
+import org.joda.time.DateTime;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
+
 import io.growingabit.objectify.ObjectifyUtils;
 import io.gsonfire.annotations.ExposeMethodResult;
-import org.joda.time.DateTime;
 
 public abstract class BaseModel {
 
