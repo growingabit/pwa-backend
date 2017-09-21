@@ -1,9 +1,10 @@
 package io.growingabit.objectify;
 
-import io.growingabit.common.utils.FieldsGetter;
-import io.growingabit.objectify.annotations.Required;
 import java.lang.reflect.Field;
 import java.util.List;
+
+import io.growingabit.common.utils.FieldsGetter;
+import io.growingabit.objectify.annotations.Required;
 
 public class ObjectifyUtils {
 

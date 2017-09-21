@@ -2,8 +2,15 @@ package io.growingabit.common.utils;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.List;
+import java.util.Random;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
@@ -11,10 +18,6 @@ import io.growingabit.app.utils.Settings;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
-import java.util.List;
-import java.util.Random;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SignupStageFactoryTest extends BaseGaeTest {
 

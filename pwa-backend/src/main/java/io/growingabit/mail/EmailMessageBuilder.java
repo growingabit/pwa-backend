@@ -1,12 +1,11 @@
 package io.growingabit.mail;
 
-import com.google.common.base.Preconditions;
-import io.growingabit.app.utils.Settings;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -17,8 +16,13 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+
+import com.google.common.base.Preconditions;
+
+import io.growingabit.app.utils.Settings;
 
 public class EmailMessageBuilder {
 

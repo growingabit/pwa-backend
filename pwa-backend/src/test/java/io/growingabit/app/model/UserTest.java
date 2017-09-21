@@ -2,18 +2,21 @@ package io.growingabit.app.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.Random;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.UnregisteredSignupStage;
-import java.util.Random;
-import org.junit.Before;
-import org.junit.Test;
 
 public class UserTest extends BaseGaeTest {
 

@@ -1,6 +1,9 @@
 package io.growingabit.common.utils;
 
+import javax.servlet.http.HttpServlet;
+
 import com.googlecode.objectify.ObjectifyService;
+
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
@@ -8,7 +11,6 @@ import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.backoffice.model.Invitation;
-import javax.servlet.http.HttpServlet;
 
 public class StartupServlet extends HttpServlet {
 

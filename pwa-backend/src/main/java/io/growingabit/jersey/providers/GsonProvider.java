@@ -1,8 +1,5 @@
 package io.growingabit.jersey.providers;
 
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import io.growingabit.app.utils.gson.GsonFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +11,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -23,6 +21,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+
+import io.growingabit.app.utils.gson.GsonFactory;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

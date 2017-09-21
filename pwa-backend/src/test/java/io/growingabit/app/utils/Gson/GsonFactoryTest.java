@@ -2,9 +2,10 @@ package io.growingabit.app.utils.Gson;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.Test;
+
 import io.growingabit.app.utils.gson.GsonFactory;
 import io.gsonfire.annotations.ExposeMethodResult;
-import org.junit.Test;
 
 public class GsonFactoryTest {
 

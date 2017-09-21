@@ -1,9 +1,10 @@
 package io.growingabit.app.utils;
 
-import com.google.common.base.Preconditions;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
 import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.configuration2.CombinedConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -13,6 +14,8 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.OverrideCombiner;
+
+import com.google.common.base.Preconditions;
 
 public class Settings {
 

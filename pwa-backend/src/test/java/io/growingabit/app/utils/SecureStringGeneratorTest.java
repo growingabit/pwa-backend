@@ -3,6 +3,7 @@ package io.growingabit.app.utils;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
 

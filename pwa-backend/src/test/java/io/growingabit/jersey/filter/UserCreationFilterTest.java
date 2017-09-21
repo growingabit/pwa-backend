@@ -2,9 +2,20 @@ package io.growingabit.jersey.filter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.io.IOException;
+import java.util.Map;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.SecurityContext;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentDataSignupStage;
@@ -17,13 +28,6 @@ import io.growingabit.jersey.utils.JerseyContextUserFactory;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
-import java.io.IOException;
-import java.util.Map;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.SecurityContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
 
 public class UserCreationFilterTest extends BaseGaeTest {
 

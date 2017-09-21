@@ -2,9 +2,13 @@ package io.growingabit.app.model.base;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.User;
@@ -12,8 +16,6 @@ import io.growingabit.app.signup.executors.SignupStageExecutor;
 import io.growingabit.common.dao.BaseDao;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SignupStageTest extends BaseGaeTest {
 

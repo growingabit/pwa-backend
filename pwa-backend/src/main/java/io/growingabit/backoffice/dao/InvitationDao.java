@@ -2,6 +2,7 @@ package io.growingabit.backoffice.dao;
 
 import com.google.common.base.Preconditions;
 import com.googlecode.objectify.Key;
+
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.common.dao.BaseDao;
 

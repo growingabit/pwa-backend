@@ -1,9 +1,12 @@
 package io.growingabit.app.model.base;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Parent;
+
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.User;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
@@ -11,7 +14,6 @@ import io.growingabit.app.utils.Settings;
 import io.growingabit.common.model.BaseModel;
 import io.growingabit.objectify.annotations.Required;
 import io.gsonfire.annotations.ExposeMethodResult;
-import org.apache.commons.lang3.StringUtils;
 
 public abstract class SignupStage<T> extends BaseModel {
 

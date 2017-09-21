@@ -2,19 +2,22 @@ package io.growingabit.mail;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import io.growingabit.app.utils.Settings;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import io.growingabit.app.utils.Settings;
 
 public class EmailMessageBuilderTest {
 

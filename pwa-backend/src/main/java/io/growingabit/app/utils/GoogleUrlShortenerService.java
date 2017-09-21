@@ -1,16 +1,18 @@
 package io.growingabit.app.utils;
 
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
+
 import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.urlshortener.Urlshortener;
 import com.google.api.services.urlshortener.UrlshortenerScopes;
 import com.google.common.base.Preconditions;
-import java.io.IOException;
-import java.util.Arrays;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
 
 public class GoogleUrlShortenerService extends Urlshortener {
 

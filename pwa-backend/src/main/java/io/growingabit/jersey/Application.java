@@ -1,6 +1,16 @@
 package io.growingabit.jersey;
 
+import java.util.Map;
+
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.process.internal.RequestScoped;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.glassfish.jersey.server.gae.GaeFeature;
+import org.glassfish.jersey.servlet.ServletProperties;
+
 import com.google.common.collect.ImmutableMap;
+
 import io.growingabit.app.controllers.MeController;
 import io.growingabit.app.controllers.VerificationEmailController;
 import io.growingabit.app.controllers.VerificationPhoneController;
@@ -13,13 +23,6 @@ import io.growingabit.jersey.filters.SecurityFilter;
 import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.jersey.providers.GsonProvider;
 import io.growingabit.jersey.utils.JerseyContextUserFactory;
-import java.util.Map;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.process.internal.RequestScoped;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.glassfish.jersey.server.gae.GaeFeature;
-import org.glassfish.jersey.servlet.ServletProperties;
 
 public class Application extends ResourceConfig {
 

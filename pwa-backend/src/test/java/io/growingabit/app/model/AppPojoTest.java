@@ -1,13 +1,14 @@
 package io.growingabit.app.model;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoClassFilter;
 import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.rule.impl.NoFieldShadowingRule;
 import com.openpojo.validation.rule.impl.NoPublicFieldsExceptStaticFinalRule;
-import org.junit.Before;
-import org.junit.Test;
 
 public class AppPojoTest {
 

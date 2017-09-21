@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.junit.Test;
 
 public class AuthorizerTest {

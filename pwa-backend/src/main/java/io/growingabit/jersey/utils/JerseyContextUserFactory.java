@@ -1,9 +1,11 @@
 package io.growingabit.jersey.utils;
 
-import io.growingabit.app.model.User;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
+
 import org.glassfish.hk2.api.Factory;
+
+import io.growingabit.app.model.User;
 
 public class JerseyContextUserFactory implements Factory<User> {
 

@@ -3,6 +3,7 @@ package io.growingabit.app.model;
 import com.google.common.base.Preconditions;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
+
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;

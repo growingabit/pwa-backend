@@ -1,17 +1,19 @@
 package io.growingabit.app.tasks.deferred;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.testUtils.BaseGaeTest;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class DeferredTaskSendVerificationEmailTest extends BaseGaeTest {
 

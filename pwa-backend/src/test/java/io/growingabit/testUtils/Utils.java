@@ -1,9 +1,10 @@
 package io.growingabit.testUtils;
 
-import io.growingabit.app.utils.Settings;
-import io.growingabit.common.utils.SignupStageFactory;
 import java.lang.reflect.Field;
 import java.util.Collection;
+
+import io.growingabit.app.utils.Settings;
+import io.growingabit.common.utils.SignupStageFactory;
 
 public class Utils {
 

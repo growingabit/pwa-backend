@@ -2,15 +2,17 @@ package io.growingabit.backoffice.model;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.SaveException;
+
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.testUtils.BaseGaeTest;
-import org.junit.Before;
-import org.junit.Test;
 
 public class InvitationTest extends BaseGaeTest {
 
