@@ -52,7 +52,7 @@ public class MailServiceTest extends BaseGaeTest {
       method.setAccessible(true);
       final String verificationCode = (String) method.invoke(null, stage);
 
-      assertThat(verificationCode).contains("/verificationemail/");
+      assertThat(verificationCode).contains("/verify/email/");
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }
@@ -65,7 +65,7 @@ public class MailServiceTest extends BaseGaeTest {
       method.setAccessible(true);
       final String verificationCode = (String) method.invoke(null, stage);
 
-      final String code = new String(Base64.decodeBase64(verificationCode.replace("/verificationemail/", "")), "utf-8");
+      final String code = new String(Base64.decodeBase64(verificationCode.replace("/verify/email/", "")), "utf-8");
       assertThat(stage.getData().getVerificationCode()).isEqualTo(code);
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | UnsupportedEncodingException e) {
       Assert.fail();
