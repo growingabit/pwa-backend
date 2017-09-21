@@ -12,8 +12,7 @@ import org.glassfish.jersey.servlet.ServletProperties;
 import com.google.common.collect.ImmutableMap;
 
 import io.growingabit.app.controllers.MeController;
-import io.growingabit.app.controllers.VerificationEmailController;
-import io.growingabit.app.controllers.VerificationPhoneController;
+import io.growingabit.app.controllers.VerificationController;
 import io.growingabit.app.model.User;
 import io.growingabit.backoffice.controllers.InvitationController;
 import io.growingabit.jersey.controllers.HealthCheckController;
@@ -47,8 +46,7 @@ public class Application extends ResourceConfig {
     this.register(HealthCheckController.class);
     this.register(InvitationController.class);
     this.register(MeController.class);
-    this.register(VerificationEmailController.class);
-    this.register(VerificationPhoneController.class);
+    this.register(VerificationController.class);
 
     this.register(new AbstractBinder() {
       @Override
