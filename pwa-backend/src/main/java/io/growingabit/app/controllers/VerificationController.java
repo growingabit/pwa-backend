@@ -26,7 +26,7 @@ import io.growingabit.jersey.annotations.Secured;
 @Path("api/v1/verify")
 public class VerificationController {
 
-  private final static XLogger log = XLoggerFactory.getXLogger(VerificationController.class);
+  private static final XLogger log = XLoggerFactory.getXLogger(VerificationController.class);
 
   @Secured
   @Path("email/{code}")
