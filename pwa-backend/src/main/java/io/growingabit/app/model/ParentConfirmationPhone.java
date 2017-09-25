@@ -16,14 +16,14 @@ public class ParentConfirmationPhone {
   private String surname;
   private transient String verificationCode;
   private transient Long tsExpiration;
-  private transient String originHost;
+  private transient String origin;
 
-  public ParentConfirmationPhone(final String phoneNumber, final String originHost, final String name, final String surname) {
+  public ParentConfirmationPhone(final String phoneNumber, final String origin, final String name, final String surname) {
     Preconditions.checkArgument(StringUtils.isNotEmpty(phoneNumber));
-    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
+    Preconditions.checkArgument(StringUtils.isNotEmpty(origin));
     Preconditions.checkArgument(StringUtils.isNotEmpty(name));
     Preconditions.checkArgument(StringUtils.isNotEmpty(surname));
-    this.originHost = originHost;
+    this.origin = origin;
     this.phoneNumber = phoneNumber;
     this.name = name;
     this.surname = surname;
@@ -56,8 +56,8 @@ public class ParentConfirmationPhone {
     return this.tsExpiration;
   }
 
-  public String getOriginHost() {
-    return this.originHost;
+  public String getOrigin() {
+    return this.origin;
   }
 
   private String generateVerificationCode() {

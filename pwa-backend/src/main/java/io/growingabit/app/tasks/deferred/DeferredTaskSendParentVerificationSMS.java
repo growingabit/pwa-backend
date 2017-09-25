@@ -1,5 +1,6 @@
 package io.growingabit.app.tasks.deferred;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StrSubstitutor;
@@ -14,9 +15,11 @@ import io.growingabit.app.dao.ParentPhoneSignupStageDao;
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.model.ParentConfirmationPhone;
 import io.growingabit.app.model.ParentPhoneSignupStage;
+import io.growingabit.app.model.ParentPhoneVerificationTaskData;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.utils.Settings;
+import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.sms.SMSSender;
 
 public class DeferredTaskSendParentVerificationSMS implements DeferredTask {
@@ -45,13 +48,22 @@ public class DeferredTaskSendParentVerificationSMS implements DeferredTask {
         final ParentConfirmationPhone parentPhoneData = parentPhoneStage.getData();
         final StudentData studentData = studendDataStage.getData();
 
-        final String verificationLink = "https://" + parentPhoneData.getOriginHost() + "/verify/phone/" + parentPhoneData.getVerificationCode();
+        final String verificationCode = parentPhoneData.getVerificationCode();
+        final String userId = parentPhoneStage.getUser().toWebSafeString();
+
+        final ParentPhoneVerificationTaskData verificationTaskData = new ParentPhoneVerificationTaskData();
+        verificationTaskData.setUserId(userId);
+        verificationTaskData.setVerificationCode(verificationCode);
+
+        final String verficationData = Base64.encodeBase64URLSafeString(GsonFactory.getGsonInstance().toJson(verificationTaskData).getBytes("utf-8"));
+
+        final String verificationLink = "https://" + parentPhoneData.getOrigin() + "/verify/parentphone/" + verficationData;
 
         final ImmutableMap<String, String> map = ImmutableMap.of("verificationLink", verificationLink,
-            "student.firstname", parentPhoneData.getName(),
-            "student.lastname", parentPhoneData.getSurname(),
-            "parent.firstname", studentData.getName(),
-            "parent.lastname", studentData.getSurname()
+            "student.firstname", studentData.getName(),
+            "student.lastname", studentData.getSurname(),
+            "parent.firstname", parentPhoneData.getName(),
+            "parent.lastname", parentPhoneData.getSurname()
         );
 
         new SMSSender().sendMessage(from, parentPhoneData.getPhoneNumber(), new StrSubstitutor(map).replace(text));

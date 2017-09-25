@@ -134,7 +134,12 @@ public class MeController {
 
     try {
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), request.getHeader("Host")));
+      String origin = request.getHeader("Origin");
+      if (StringUtils.isEmpty(origin)) {
+        // assume same origin
+        origin = request.getHeader("Host");
+      }
+      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), origin));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
@@ -175,7 +180,12 @@ public class MeController {
 
     try {
       final ParentPhoneSignupStage stage = new ParentPhoneSignupStage();
-      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), request.getHeader("Host"), parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
+      String origin = request.getHeader("Origin");
+      if (StringUtils.isEmpty(origin)) {
+        // assume same origin
+        origin = request.getHeader("Host");
+      }
+      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), origin, parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
