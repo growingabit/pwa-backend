@@ -21,7 +21,7 @@ public class StudentConfirmationPhone {
     Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
     this.originHost = originHost;
     this.phoneNumber = phoneNumber;
-    this.verificationCode = generateVerificationCode();
+    this.verificationCode = this.generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
   }
 

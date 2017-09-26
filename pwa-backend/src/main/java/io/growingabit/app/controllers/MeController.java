@@ -18,6 +18,8 @@ import com.googlecode.objectify.NotFoundException;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
+import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -27,6 +29,7 @@ import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
+import io.growingabit.app.utils.RequestUtils;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.jersey.annotations.Secured;
@@ -130,6 +133,23 @@ public class MeController {
     try {
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
       stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), request.getHeader("Host")));
+      stage.exec(new SignupStageExecutor(currentUser));
+      return Response.ok().entity(currentUser).build();
+    } catch (final SignupStageExecutionException e) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
+    }
+  }
+
+  @GET
+  @Path("/blockcertsotp")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response blockcertsOTP(@Context HttpServletRequest req, @Context final User currentUser) {
+
+    final StudentConfirmationBlockcertsOTP sBlockcertsOTP = new StudentConfirmationBlockcertsOTP(RequestUtils.getOrigin(req));
+
+    try {
+      final StudentBlockcertsOTPSignupStage stage = new StudentBlockcertsOTPSignupStage();
+      stage.setData(sBlockcertsOTP);
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
