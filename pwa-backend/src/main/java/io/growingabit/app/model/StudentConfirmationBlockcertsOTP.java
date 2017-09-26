@@ -13,7 +13,7 @@ public class StudentConfirmationBlockcertsOTP {
 
   private String nonce;
   private String bitcoinAddress;
-  transient Long tsExpiration;
+  private Long tsExpiration;
   transient String originHost;
 
   public StudentConfirmationBlockcertsOTP(String originHost) {
@@ -32,6 +32,14 @@ public class StudentConfirmationBlockcertsOTP {
     return this.nonce;
   }
 
+  public String getBitcoinAddress() {
+    return this.bitcoinAddress;
+  }
+
+  public void setBitcoinAddress(String bitcoinAddress) {
+    this.bitcoinAddress = bitcoinAddress;
+  }
+
   public Long getTsExpiration() {
     return this.tsExpiration;
   }
@@ -40,7 +48,12 @@ public class StudentConfirmationBlockcertsOTP {
     return this.originHost;
   }
 
+  public void invalidNonce() {
+    this.nonce = null;
+  }
+
   public static String generateBlockcertsOTP() {
     return new SecureStringGenerator(BLOCKCERTS_OTP_LENGTH).nextString();
   }
+
 }

@@ -148,7 +148,7 @@ public class MeController {
   }
 
   @GET
-  @Path("/blockcertsotp")
+  @Path("/blockcerts")
   @Produces(MediaType.APPLICATION_JSON)
   public Response blockcertsOTP(@Context final HttpServletRequest req, @Context final User currentUser) {
 
