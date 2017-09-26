@@ -34,17 +34,17 @@ public class StudentConfirmationBlockcertsOTPTest {
 
   @Test
   public void otpIsNotNull() {
-    assertThat(this.s.getOtp()).isNotNull();
+    assertThat(this.s.getNonce()).isNotNull();
   }
 
   @Test
   public void otpIsNotEmpty() {
-    assertThat(this.s.getOtp()).isNotEmpty();
+    assertThat(this.s.getNonce()).isNotEmpty();
   }
 
   @Test
   public void otpLength() {
-    assertThat(this.s.getOtp().length()).isEqualTo(6);
+    assertThat(this.s.getNonce().length()).isEqualTo(6);
   }
 
 }

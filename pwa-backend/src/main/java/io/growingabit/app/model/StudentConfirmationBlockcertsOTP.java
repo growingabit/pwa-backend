@@ -11,14 +11,15 @@ public class StudentConfirmationBlockcertsOTP {
 
   private static final int BLOCKCERTS_OTP_LENGTH = 6;
 
-  private String otp;
+  private String nonce;
+  private String bitcoinAddress;
   transient Long tsExpiration;
   transient String originHost;
 
   public StudentConfirmationBlockcertsOTP(String originHost) {
-    Preconditions.checkArgument(StringUtils.isNoneEmpty(originHost));
+    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
     this.originHost = originHost;
-    this.otp = generateBlockcertsOTP();
+    this.nonce = generateBlockcertsOTP();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
   }
 
@@ -27,8 +28,8 @@ public class StudentConfirmationBlockcertsOTP {
     // only used by Objectify to instantiate the object
   }
 
-  public String getOtp() {
-    return this.otp;
+  public String getNonce() {
+    return this.nonce;
   }
 
   public Long getTsExpiration() {

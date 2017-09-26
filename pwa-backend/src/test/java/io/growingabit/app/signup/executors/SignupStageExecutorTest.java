@@ -245,7 +245,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     final StudentBlockcertsOTPSignupStage savedStage = this.user.getStage(StudentBlockcertsOTPSignupStage.class);
 
     assertThat(savedStage.isDone()).isFalse();
-    assertThat(savedStage.getData().getOtp().length()).isEqualTo(6);
+    assertThat(savedStage.getData().getNonce().length()).isEqualTo(6);
     assertThat(savedStage.getData().getTsExpiration()).isNotNull();
     assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
   }
