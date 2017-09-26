@@ -64,7 +64,7 @@ public class StudentConfirmationBlockcerts {
 
   private String generateBlockcertsNonce() {
     try {
-      String hash = StringUtils.left(new String(DigestUtils.sha1(this.userId + this.tsExpiration + this.origin), "utf-8"), 10);
+      String hash = StringUtils.left(new String(DigestUtils.sha1(this.userId + this.tsExpiration + this.origin), "utf-8"), 5);
       return Base64.encodeBase64URLSafeString(Joiner.on(":").join(this.userId, hash).getBytes("utf-8"));
     } catch (UnsupportedEncodingException e) {
       throw new SignupStageExecutionException(e);

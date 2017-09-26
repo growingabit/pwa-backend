@@ -315,7 +315,7 @@ public class VerificationControllerTest extends BaseGaeTest {
       final User user = (User) response.getEntity();
       user.getStage(StudentBlockcertsSignupStage.class);
 
-      String hash = StringUtils.left(new String(DigestUtils.sha1("invalid nonce"), "utf-8"), 10);
+      String hash = StringUtils.left(new String(DigestUtils.sha1("invalid nonce"), "utf-8"), 5);
       String nonce = Base64.encodeBase64URLSafeString(Joiner.on(":").join(this.currentUser.getId(), hash).getBytes("utf-8"));;
       StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson("{ \"bitcoinAddress\" : \"1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i\",\"nonce\" : " + nonce + "}", StudentConfirmationBlockcerts.class);
 

@@ -264,7 +264,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
       String userId = list.get(0);
       String hash = list.get(1);
 
-      assertThat(hash).isEqualTo(StringUtils.left(new String(DigestUtils.sha1(data.getUserId() + data.getTsExpiration() + data.getOrigin()), "utf-8"), 10));
+      assertThat(hash).isEqualTo(StringUtils.left(new String(DigestUtils.sha1(data.getUserId() + data.getTsExpiration() + data.getOrigin()), "utf-8"), 5));
       assertThat(userId).isEqualTo(data.getUserId());
 
     } catch (UnsupportedEncodingException e) {

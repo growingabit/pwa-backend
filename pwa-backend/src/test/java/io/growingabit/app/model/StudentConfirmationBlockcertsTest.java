@@ -24,6 +24,7 @@ public class StudentConfirmationBlockcertsTest {
   @Before
   public void setup() {
     this.s = new StudentConfirmationBlockcerts(this.host, this.userId);
+    System.out.println(this.s.getNonce());
   }
 
 
@@ -69,7 +70,8 @@ public class StudentConfirmationBlockcertsTest {
       String userId = list.get(0);
       String hash = list.get(1);
 
-      assertThat(hash).isEqualTo(StringUtils.left(new String(DigestUtils.sha1(this.s.getUserId() + this.s.getTsExpiration() + this.s.getOrigin()), "utf-8"), 10));
+      String left = StringUtils.left(new String(DigestUtils.sha1(this.s.getUserId() + this.s.getTsExpiration() + this.s.getOrigin()), "utf-8"), 5);
+      assertThat(hash).isEqualTo(left);
       assertThat(userId).isEqualTo(this.s.getUserId());
 
     } catch (UnsupportedEncodingException e) {

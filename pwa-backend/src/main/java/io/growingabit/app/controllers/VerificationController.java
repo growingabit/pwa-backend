@@ -111,7 +111,7 @@ public class VerificationController {
       final StudentBlockcertsSignupStage stage = currentUser.getStage(StudentBlockcertsSignupStage.class);
       StudentConfirmationBlockcerts sd = stage.getData();
 
-      if (!StringUtils.left(new String(DigestUtils.sha1(sd.getUserId() + sd.getTsExpiration() + sd.getOrigin()), "utf-8"), 10).equals(hash) || new DateTime().getMillis() > sd.getTsExpiration()) {
+      if (!StringUtils.left(new String(DigestUtils.sha1(sd.getUserId() + sd.getTsExpiration() + sd.getOrigin()), "utf-8"), 5).equals(hash) || new DateTime().getMillis() > sd.getTsExpiration()) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
       }
 
