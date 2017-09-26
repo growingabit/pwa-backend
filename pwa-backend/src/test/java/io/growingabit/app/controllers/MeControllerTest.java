@@ -23,6 +23,8 @@ import com.googlecode.objectify.ObjectifyService;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.ParentConfirmationPhone;
+import io.growingabit.app.model.ParentPhoneSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -59,6 +61,7 @@ public class MeControllerTest extends BaseGaeTest {
     ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(StudentEmailSignupStage.class);
     ObjectifyService.register(StudentPhoneSignupStage.class);
+    ObjectifyService.register(ParentPhoneSignupStage.class);
     ObjectifyService.register(WalletSetupSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
@@ -68,6 +71,7 @@ public class MeControllerTest extends BaseGaeTest {
     SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentEmailSignupStage.class);
     SignupStageFactory.register(StudentPhoneSignupStage.class);
+    SignupStageFactory.register(ParentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
 
     this.invitationDao = new InvitationDao();
@@ -219,7 +223,6 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
   }
 
-
   @Test
   public void studentPhoneDataNull() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
@@ -307,6 +310,99 @@ public class MeControllerTest extends BaseGaeTest {
   public void walletSetupSignupStageMustBeNotNull() {
     final Response response = new MeController().walletSetup(this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataNull() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    final Response response = new MeController().parentphone(req, this.currentUser, null);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataHasPhoneFieldEmpty() {
+    final ParentConfirmationPhone data = Mockito.mock(ParentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn("");
+
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataHasPhoneFieldNull() {
+    final ParentConfirmationPhone data = Mockito.mock(ParentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn(null);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataHasNameFieldNull() {
+    final ParentConfirmationPhone data = Mockito.mock(ParentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn("+15005550006");
+    Mockito.when(data.getName()).thenReturn(null);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataHasNameFieldEmpty() {
+    final ParentConfirmationPhone data = Mockito.mock(ParentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn("+15005550006");
+    Mockito.when(data.getName()).thenReturn("");
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataHasSurnameFieldNull() {
+    final ParentConfirmationPhone data = Mockito.mock(ParentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn("+15005550006");
+    Mockito.when(data.getName()).thenReturn("name");
+    Mockito.when(data.getSurname()).thenReturn(null);
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void parentPhoneDataHasSurnameFieldEmpty() {
+    final ParentConfirmationPhone data = Mockito.mock(ParentConfirmationPhone.class);
+    Mockito.when(data.getPhoneNumber()).thenReturn("+15005550006");
+    Mockito.when(data.getName()).thenReturn("name");
+    Mockito.when(data.getSurname()).thenReturn("");
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test
+  public void completeParentPhoneStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+
+    final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
+
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+
+    final User returnedUser = (User) response.getEntity();
+    final ParentPhoneSignupStage savedStage = returnedUser.getStage(ParentPhoneSignupStage.class);
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getPhoneNumber()).isEqualTo(data.getPhoneNumber());
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
+    assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
   }
 
 }

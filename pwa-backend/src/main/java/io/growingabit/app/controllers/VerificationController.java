@@ -38,8 +38,8 @@ public class VerificationController {
 
       final StudentEmailSignupStage stage = currentUser.getStage(StudentEmailSignupStage.class);
 
-      final DateTime dateTime = new DateTime();
-      if (!stage.getData().getVerificationCode().equals(verificationCode) || stage.getData().getTsExpiration() > dateTime.plusDays(7).getMillis()) {
+      final long now = new DateTime().getMillis();
+      if (!stage.getData().getVerificationCode().equals(verificationCode) || stage.getData().getTsExpiration() < now) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
       }
 

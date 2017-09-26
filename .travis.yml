@@ -23,7 +23,7 @@ before_install:
   - unzip apache-maven-3.5.0-bin.zip
   - apache-maven-3.5.0/bin/mvn -v
 
-# before_script:
+before_script:
 #   - gcloud auth activate-service-account "travis-ci@growbit-0.iam.gserviceaccount.com" --key-file=secrets/travis-cigrowbit-52554fcb00cd.json
 #   - gcloud config set project growbit-0
 

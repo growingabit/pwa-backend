@@ -18,6 +18,8 @@ import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.ParentConfirmationPhone;
+import io.growingabit.app.model.ParentPhoneSignupStage;
 import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
 import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
 import io.growingabit.app.model.StudentConfirmationEmail;
@@ -55,6 +57,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     ObjectifyService.factory().register(StudentDataSignupStage.class);
     ObjectifyService.factory().register(StudentEmailSignupStage.class);
     ObjectifyService.factory().register(StudentPhoneSignupStage.class);
+    ObjectifyService.factory().register(ParentPhoneSignupStage.class);
     ObjectifyService.factory().register(WalletSetupSignupStage.class);
     ObjectifyService.factory().register(StudentBlockcertsOTPSignupStage.class);
 
@@ -62,6 +65,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentEmailSignupStage.class);
     SignupStageFactory.register(StudentPhoneSignupStage.class);
+    SignupStageFactory.register(ParentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
     SignupStageFactory.register(StudentBlockcertsOTPSignupStage.class);
 
@@ -244,6 +248,33 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     assertThat(savedStage.getData().getOtp().length()).isEqualTo(6);
     assertThat(savedStage.getData().getTsExpiration()).isNotNull();
     assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
+  }
+
+  @Test
+  public void completeParentPhoneConfirmationStep() throws InterruptedException {
+
+    final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
+
+    final ParentPhoneSignupStage stage = new ParentPhoneSignupStage();
+    stage.setData(data);
+    new SignupStageExecutor(this.user).exec(stage);
+
+    final ParentPhoneSignupStage savedStage = this.user.getStage(ParentPhoneSignupStage.class);
+
+    assertThat(savedStage.isDone()).isFalse();
+    assertThat(savedStage.getData().getPhoneNumber()).isEqualTo(data.getPhoneNumber());
+    assertThat(savedStage.getData().getName()).isEqualTo(data.getName());
+    assertThat(savedStage.getData().getSurname()).isEqualTo(data.getSurname());
+    assertThat(savedStage.getData().getTsExpiration()).isNotNull();
+    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
+    assertThat(savedStage.getData().getVerificationCode()).isNotNull();
+    assertThat(savedStage.getData().getVerificationCode()).isNotEmpty();
+
+    // TODO: try to avoid this magic number here
+    Thread.sleep(1000);
+    final LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+    final QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+    Assert.assertEquals(1, qsi.getTaskInfo().size());
   }
 
 }

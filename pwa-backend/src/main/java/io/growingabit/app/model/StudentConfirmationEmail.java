@@ -13,9 +13,9 @@ public class StudentConfirmationEmail {
   private static final int VERIFICATION_CODE_LENGTH = 30;
 
   private String email;
-  transient String verificationCode;
-  transient Long tsExpiration;
-  transient String originHost;
+  private transient String verificationCode;
+  private transient Long tsExpiration;
+  private transient String originHost;
 
   public StudentConfirmationEmail(final String email, final String originHost) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));

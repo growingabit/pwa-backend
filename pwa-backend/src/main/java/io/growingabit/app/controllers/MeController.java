@@ -18,6 +18,8 @@ import com.googlecode.objectify.NotFoundException;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
+import io.growingabit.app.model.ParentConfirmationPhone;
+import io.growingabit.app.model.ParentPhoneSignupStage;
 import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
 import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
 import io.growingabit.app.model.StudentConfirmationEmail;
@@ -132,7 +134,12 @@ public class MeController {
 
     try {
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), request.getHeader("Host")));
+      String origin = request.getHeader("Origin");
+      if (StringUtils.isEmpty(origin)) {
+        // assume same origin
+        origin = request.getHeader("Host");
+      }
+      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), origin));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
@@ -143,13 +150,42 @@ public class MeController {
   @GET
   @Path("/blockcertsotp")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response blockcertsOTP(@Context HttpServletRequest req, @Context final User currentUser) {
+  public Response blockcertsOTP(@Context final HttpServletRequest req, @Context final User currentUser) {
 
     final StudentConfirmationBlockcertsOTP sBlockcertsOTP = new StudentConfirmationBlockcertsOTP(RequestUtils.getOrigin(req));
 
     try {
       final StudentBlockcertsOTPSignupStage stage = new StudentBlockcertsOTPSignupStage();
       stage.setData(sBlockcertsOTP);
+      stage.exec(new SignupStageExecutor(currentUser));
+      return Response.ok().entity(currentUser).build();
+    } catch (final SignupStageExecutionException e) {
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(e.getMessage()).build();
+    }
+
+  }
+
+  @POST
+  @Path("/parentphone")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response parentphone(@Context final HttpServletRequest request, @Context final User currentUser, final ParentConfirmationPhone parentConfirmationPhone) {
+    if (parentConfirmationPhone == null ||
+        StringUtils.isEmpty(parentConfirmationPhone.getPhoneNumber()) ||
+        StringUtils.isEmpty(parentConfirmationPhone.getName()) ||
+        StringUtils.isEmpty(parentConfirmationPhone.getSurname())) {
+
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
+    }
+
+    try {
+      final ParentPhoneSignupStage stage = new ParentPhoneSignupStage();
+      String origin = request.getHeader("Origin");
+      if (StringUtils.isEmpty(origin)) {
+        // assume same origin
+        origin = request.getHeader("Host");
+      }
+      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), origin, parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
