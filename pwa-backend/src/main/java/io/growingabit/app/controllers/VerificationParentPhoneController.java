@@ -27,17 +27,15 @@ public class VerificationParentPhoneController {
 
   @GET
   public Response verifyPhone(@PathParam("verificationCode") final String verificationCode) {
-    final String decodedCode;
-    final UserDao userDao = new UserDao();
+
     try {
-      decodedCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
+      final String decodedCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
       final ParentPhoneVerificationTaskData verificationTaskData = GsonFactory.getGsonInstance().fromJson(decodedCode, ParentPhoneVerificationTaskData.class);
-      final User currentUser = userDao.find(verificationTaskData.getUserId());
+      final User currentUser = new UserDao().find(verificationTaskData.getUserId());
 
       final ParentPhoneSignupStage stage = currentUser.getStage(ParentPhoneSignupStage.class);
 
-      final long now = new DateTime().getMillis();
-      if (!stage.getData().getVerificationCode().equals(verificationTaskData.getVerificationCode()) || stage.getData().getTsExpiration() < now) {
+      if (!stage.getData().getVerificationCode().equals(verificationTaskData.getVerificationCode()) || new DateTime().getMillis() > stage.getData().getTsExpiration()) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
       }
 

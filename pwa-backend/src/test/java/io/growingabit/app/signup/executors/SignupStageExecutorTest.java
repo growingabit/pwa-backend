@@ -2,6 +2,12 @@ package io.growingabit.app.signup.executors;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,6 +17,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.common.base.Splitter;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 
@@ -20,8 +27,8 @@ import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.ParentConfirmationPhone;
 import io.growingabit.app.model.ParentPhoneSignupStage;
-import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
-import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
+import io.growingabit.app.model.StudentBlockcertsSignupStage;
+import io.growingabit.app.model.StudentConfirmationBlockcerts;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -59,7 +66,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     ObjectifyService.factory().register(StudentPhoneSignupStage.class);
     ObjectifyService.factory().register(ParentPhoneSignupStage.class);
     ObjectifyService.factory().register(WalletSetupSignupStage.class);
-    ObjectifyService.factory().register(StudentBlockcertsOTPSignupStage.class);
+    ObjectifyService.factory().register(StudentBlockcertsSignupStage.class);
 
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
     SignupStageFactory.register(StudentDataSignupStage.class);
@@ -67,7 +74,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     SignupStageFactory.register(StudentPhoneSignupStage.class);
     SignupStageFactory.register(ParentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
-    SignupStageFactory.register(StudentBlockcertsOTPSignupStage.class);
+    SignupStageFactory.register(StudentBlockcertsSignupStage.class);
 
     this.userDao = new UserDao();
     this.invitationDao = new InvitationDao();
@@ -234,20 +241,35 @@ public class SignupStageExecutorTest extends BaseGaeTest {
   }
 
   @Test
-  public void completeStudentBlockcertsOtpStep() throws InterruptedException {
+  public void completeStudentBlockcertsStep() throws InterruptedException {
 
-    final StudentConfirmationBlockcertsOTP data = new StudentConfirmationBlockcertsOTP("http://locahost");
+    try {
 
-    final StudentBlockcertsOTPSignupStage stage = new StudentBlockcertsOTPSignupStage();
-    stage.setData(data);
-    new SignupStageExecutor(this.user).exec(stage);
+      final StudentConfirmationBlockcerts data = new StudentConfirmationBlockcerts("http://locahost", this.user.getId());
 
-    final StudentBlockcertsOTPSignupStage savedStage = this.user.getStage(StudentBlockcertsOTPSignupStage.class);
+      final StudentBlockcertsSignupStage stage = new StudentBlockcertsSignupStage();
+      stage.setData(data);
+      new SignupStageExecutor(this.user).exec(stage);
 
-    assertThat(savedStage.isDone()).isFalse();
-    assertThat(savedStage.getData().getNonce().length()).isEqualTo(6);
-    assertThat(savedStage.getData().getTsExpiration()).isNotNull();
-    assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
+      final StudentBlockcertsSignupStage savedStage = this.user.getStage(StudentBlockcertsSignupStage.class);
+
+      assertThat(savedStage.isDone()).isFalse();
+      assertThat(savedStage.getData().getOrigin()).isNotNull();
+      assertThat(savedStage.getData().getUserId()).isNotNull();
+      assertThat(savedStage.getData().getTsExpiration()).isNotNull();
+      assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
+
+
+      List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(savedStage.getData().getNonce()), "utf-8"));
+      String userId = list.get(0);
+      String hash = list.get(1);
+
+      assertThat(hash).isEqualTo(StringUtils.left(new String(DigestUtils.sha1(data.getUserId() + data.getTsExpiration() + data.getOrigin()), "utf-8"), 10));
+      assertThat(userId).isEqualTo(data.getUserId());
+
+    } catch (UnsupportedEncodingException e) {
+      Assert.fail();
+    }
   }
 
   @Test

@@ -20,8 +20,8 @@ import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.ParentConfirmationPhone;
 import io.growingabit.app.model.ParentPhoneSignupStage;
-import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
-import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
+import io.growingabit.app.model.StudentBlockcertsSignupStage;
+import io.growingabit.app.model.StudentConfirmationBlockcerts;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -51,6 +51,12 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response confirmInvitationCode(@Context final User currentUser, final Invitation i) {
+
+    final InvitationCodeSignupStage userSignupStage = currentUser.getStage(InvitationCodeSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
+
     try {
       final Invitation invitation = new InvitationDao().findByInvitationCode(i.getInvitationCode());
       final InvitationCodeSignupStage signupStage = new InvitationCodeSignupStage();
@@ -69,6 +75,12 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response studentData(@Context final User currentUser, final StudentData data) {
+
+    final StudentDataSignupStage userSignupStage = currentUser.getStage(StudentDataSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
+
     if (data == null) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
@@ -88,6 +100,12 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response studentemail(@Context final HttpServletRequest req, @Context final User currentUser, final StudentConfirmationEmail studentConfirmationEmail) {
+
+    final StudentEmailSignupStage userSignupStage = currentUser.getStage(StudentEmailSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
+
     if (studentConfirmationEmail == null || StringUtils.isEmpty(studentConfirmationEmail.getEmail())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
@@ -108,6 +126,12 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response walletSetup(@Context final User currentUser, final BitcoinAddress address) {
+
+    final WalletSetupSignupStage userSignupStage = currentUser.getStage(WalletSetupSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
+
     if (address == null) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
@@ -127,6 +151,12 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response studentphone(@Context final HttpServletRequest request, @Context final User currentUser, final StudentConfirmationPhone studentConfirmationPhone) {
+
+    final StudentPhoneSignupStage userSignupStage = currentUser.getStage(StudentPhoneSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
+
     if (studentConfirmationPhone == null || StringUtils.isEmpty(studentConfirmationPhone.getPhoneNumber())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
@@ -144,12 +174,16 @@ public class MeController {
   @GET
   @Path("/blockcerts")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response blockcertsOTP(@Context final HttpServletRequest req, @Context final User currentUser) {
+  public Response blockcerts(@Context final HttpServletRequest req, @Context final User currentUser) {
 
-    final StudentConfirmationBlockcertsOTP sBlockcertsOTP = new StudentConfirmationBlockcertsOTP(RequestUtils.getOrigin(req));
+    final StudentBlockcertsSignupStage userSignupStage = currentUser.getStage(StudentBlockcertsSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
 
     try {
-      final StudentBlockcertsOTPSignupStage stage = new StudentBlockcertsOTPSignupStage();
+      final StudentConfirmationBlockcerts sBlockcertsOTP = new StudentConfirmationBlockcerts(RequestUtils.getOrigin(req), currentUser.getId());
+      final StudentBlockcertsSignupStage stage = new StudentBlockcertsSignupStage();
       stage.setData(sBlockcertsOTP);
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
@@ -164,6 +198,12 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response parentphone(@Context final HttpServletRequest request, @Context final User currentUser, final ParentConfirmationPhone parentConfirmationPhone) {
+
+    final ParentPhoneSignupStage userSignupStage = currentUser.getStage(ParentPhoneSignupStage.class);
+    if (userSignupStage != null && userSignupStage.isDone()) {
+      return Response.status(HttpServletResponse.SC_CONFLICT).build();
+    }
+
     if (parentConfirmationPhone == null || StringUtils.isEmpty(parentConfirmationPhone.getPhoneNumber()) || StringUtils.isEmpty(parentConfirmationPhone.getName()) || StringUtils.isEmpty(parentConfirmationPhone.getSurname())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }

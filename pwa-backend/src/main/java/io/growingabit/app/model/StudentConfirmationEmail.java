@@ -15,12 +15,12 @@ public class StudentConfirmationEmail {
   private String email;
   private transient String verificationCode;
   private transient Long tsExpiration;
-  private transient String originHost;
+  private transient String origin;
 
-  public StudentConfirmationEmail(final String email, final String originHost) {
+  public StudentConfirmationEmail(final String email, final String origin) {
     Preconditions.checkArgument(EmailValidator.getInstance().isValid(email));
-    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
-    this.originHost = originHost;
+    Preconditions.checkArgument(StringUtils.isNotEmpty(origin));
+    this.origin = origin;
     this.email = email;
     this.verificationCode = generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
@@ -43,11 +43,15 @@ public class StudentConfirmationEmail {
     return this.tsExpiration;
   }
 
-  public String getOriginHost() {
-    return this.originHost;
+  public String getOrigin() {
+    return this.origin;
   }
 
   private static String generateVerificationCode() {
     return new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
+  }
+
+  public void invalidVerificationCode() {
+    this.verificationCode = null;
   }
 }

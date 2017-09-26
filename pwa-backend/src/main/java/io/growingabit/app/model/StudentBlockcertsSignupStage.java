@@ -9,17 +9,17 @@ import io.growingabit.app.signup.executors.SignupStageExecutor;
 
 @Entity
 @Cache
-public class StudentBlockcertsOTPSignupStage extends SignupStage<StudentConfirmationBlockcertsOTP> {
+public class StudentBlockcertsSignupStage extends SignupStage<StudentConfirmationBlockcerts> {
 
-  private StudentConfirmationBlockcertsOTP data;
+  private StudentConfirmationBlockcerts data;
 
   @Override
-  public StudentConfirmationBlockcertsOTP getData() {
+  public StudentConfirmationBlockcerts getData() {
     return this.data;
   }
 
   @Override
-  public void setData(StudentConfirmationBlockcertsOTP data) {
+  public void setData(StudentConfirmationBlockcerts data) {
     if (data != null) {
       this.data = data;
     }
