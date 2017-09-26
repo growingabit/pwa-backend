@@ -14,10 +14,8 @@ import org.joda.time.DateTime;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
-import io.growingabit.app.dao.StudentBlockcertsOTPSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
-import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
@@ -73,35 +71,4 @@ public class VerificationController {
 
     return Response.ok().build();
   }
-
-  @Secured
-  @Path("blockcertsotp/{otp}")
-  @GET
-  public Response verifyBlockcertsOTP(@Context final User currentUser, @PathParam("otp") String otp) {
-
-    log.entry(otp);
-
-    try {
-      otp = new String(Base64.decodeBase64(otp), "utf-8");
-
-      final StudentBlockcertsOTPSignupStage stage = currentUser.getStage(StudentBlockcertsOTPSignupStage.class);
-
-      final DateTime dateTime = new DateTime();
-      if (!stage.getData().getOtp().equals(otp) || stage.getData().getTsExpiration() > dateTime.plusDays(7).getMillis()) {
-        return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
-      }
-
-      stage.setDone();
-      new StudentBlockcertsOTPSignupStageDao().persist(stage);
-
-      return Response.ok().build();
-
-    } catch (final UnsupportedEncodingException e) {
-      log.catching(e);
-      return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
-    }
-
-  }
-
-
 }

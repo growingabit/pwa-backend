@@ -29,6 +29,7 @@ import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
 import io.growingabit.app.signup.executors.SignupStageExecutor;
+import io.growingabit.app.utils.RequestUtils;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
 import io.growingabit.jersey.annotations.Secured;
@@ -144,7 +145,7 @@ public class MeController {
   @Produces(MediaType.APPLICATION_JSON)
   public Response blockcertsOTP(@Context HttpServletRequest req, @Context final User currentUser) {
 
-    final StudentConfirmationBlockcertsOTP sBlockcertsOTP = new StudentConfirmationBlockcertsOTP(req.getHeader("Host"));
+    final StudentConfirmationBlockcertsOTP sBlockcertsOTP = new StudentConfirmationBlockcertsOTP(RequestUtils.getOrigin(req));
 
     try {
       final StudentBlockcertsOTPSignupStage stage = new StudentBlockcertsOTPSignupStage();

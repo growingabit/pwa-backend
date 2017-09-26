@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dispatch-entries>
+  <dispatch>
+    <url>*/api.growbit.xyz/*</url>
+    <module>pwa-backend</module>
+  </dispatch>
+  <dispatch>
+    <url>*/api/*</url>
+    <module>pwa-backend</module>
+  </dispatch>
+  <dispatch>
+    <url>*/backoffice/*</url>
+    <module>pwa-backend</module>
+  </dispatch>
+  <dispatch>
+    <url>*/*</url>
+    <module>default</module>
+  </dispatch>
+</dispatch-entries>
