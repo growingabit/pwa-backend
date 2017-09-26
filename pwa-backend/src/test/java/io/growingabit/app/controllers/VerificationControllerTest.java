@@ -31,6 +31,7 @@ import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
+import io.growingabit.app.utils.RequestUtils;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.common.utils.SignupStageFactory;
 import io.growingabit.jersey.filters.UserCreationFilter;
@@ -73,7 +74,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void checkEmailCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
       final User user = (User) response.getEntity();
@@ -95,7 +96,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void wrongEmailVerificationCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
@@ -116,7 +117,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void rigthCodeButNotEncoded() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
@@ -140,7 +141,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void emailTsExpirationExpired() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
@@ -166,7 +167,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void checkPhoneCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
       Response response = new MeController().studentphone(req, this.currentUser, data);
       final User user = (User) response.getEntity();
@@ -188,7 +189,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void wrongPhoneVerificationCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
       Response response = new MeController().studentphone(req, this.currentUser, data);
 
@@ -210,7 +211,7 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void phoneTsExpirationExpired() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
       Response response = new MeController().studentphone(req, this.currentUser, data);
 

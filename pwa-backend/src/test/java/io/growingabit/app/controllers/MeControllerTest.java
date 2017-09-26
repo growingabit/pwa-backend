@@ -33,6 +33,7 @@ import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
+import io.growingabit.app.utils.RequestUtils;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
@@ -208,7 +209,7 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentEmailStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
     final Response response = new MeController().studentemail(req, this.currentUser, data);
 
@@ -254,7 +255,7 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
     final Response response = new MeController().studentphone(req, this.currentUser, data);
@@ -389,7 +390,7 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeParentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
     final Response response = new MeController().parentphone(req, this.currentUser, data);

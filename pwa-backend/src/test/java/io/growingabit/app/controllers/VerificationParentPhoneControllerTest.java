@@ -29,6 +29,7 @@ import io.growingabit.app.model.ParentPhoneSignupStage;
 import io.growingabit.app.model.ParentPhoneVerificationTaskData;
 import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.User;
+import io.growingabit.app.utils.RequestUtils;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.common.utils.SignupStageFactory;
@@ -73,7 +74,7 @@ public class VerificationParentPhoneControllerTest extends BaseGaeTest {
   public void checkCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
       Response response = new MeController().parentphone(req, this.currentUser, data);
       final User user = (User) response.getEntity();
@@ -102,7 +103,7 @@ public class VerificationParentPhoneControllerTest extends BaseGaeTest {
   public void wrongVerificationCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
       Response response = new MeController().parentphone(req, this.currentUser, data);
 
@@ -131,7 +132,7 @@ public class VerificationParentPhoneControllerTest extends BaseGaeTest {
   public void tsExpirationExpired() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
       Response response = new MeController().parentphone(req, this.currentUser, data);
 

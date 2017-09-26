@@ -41,7 +41,6 @@ import io.growingabit.jersey.annotations.Secured;
 public class MeController {
 
   @GET
-  @Path("")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getCurrenUserInfo(@Context final User currentUser) {
     return Response.ok().entity(currentUser).build();
@@ -95,7 +94,7 @@ public class MeController {
 
     try {
       final StudentEmailSignupStage stage = new StudentEmailSignupStage();
-      stage.setData(new StudentConfirmationEmail(studentConfirmationEmail.getEmail(), req.getHeader("Host")));
+      stage.setData(new StudentConfirmationEmail(studentConfirmationEmail.getEmail(), RequestUtils.getOrigin(req)));
       stage.exec(new SignupStageExecutor(currentUser));
 
       return Response.ok().entity(currentUser).build();
@@ -134,12 +133,7 @@ public class MeController {
 
     try {
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      String origin = request.getHeader("Origin");
-      if (StringUtils.isEmpty(origin)) {
-        // assume same origin
-        origin = request.getHeader("Host");
-      }
-      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), origin));
+      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), RequestUtils.getOrigin(request)));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
@@ -170,22 +164,13 @@ public class MeController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public Response parentphone(@Context final HttpServletRequest request, @Context final User currentUser, final ParentConfirmationPhone parentConfirmationPhone) {
-    if (parentConfirmationPhone == null ||
-        StringUtils.isEmpty(parentConfirmationPhone.getPhoneNumber()) ||
-        StringUtils.isEmpty(parentConfirmationPhone.getName()) ||
-        StringUtils.isEmpty(parentConfirmationPhone.getSurname())) {
-
+    if (parentConfirmationPhone == null || StringUtils.isEmpty(parentConfirmationPhone.getPhoneNumber()) || StringUtils.isEmpty(parentConfirmationPhone.getName()) || StringUtils.isEmpty(parentConfirmationPhone.getSurname())) {
       return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
     }
 
     try {
       final ParentPhoneSignupStage stage = new ParentPhoneSignupStage();
-      String origin = request.getHeader("Origin");
-      if (StringUtils.isEmpty(origin)) {
-        // assume same origin
-        origin = request.getHeader("Host");
-      }
-      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), origin, parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
+      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), RequestUtils.getOrigin(request), parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
