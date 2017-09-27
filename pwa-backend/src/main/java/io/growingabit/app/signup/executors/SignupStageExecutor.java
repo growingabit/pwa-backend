@@ -5,7 +5,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Preconditions;
 
 import io.growingabit.app.dao.ParentPhoneSignupStageDao;
-import io.growingabit.app.dao.StudentBlockcertsOTPSignupStageDao;
+import io.growingabit.app.dao.StudentBlockcertsSignupStageDao;
 import io.growingabit.app.dao.StudentDataSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
@@ -14,8 +14,7 @@ import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.ParentPhoneSignupStage;
-import io.growingabit.app.model.StudentBlockcertsOTPSignupStage;
-import io.growingabit.app.model.StudentConfirmationBlockcertsOTP;
+import io.growingabit.app.model.StudentBlockcertsSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentData;
 import io.growingabit.app.model.StudentDataSignupStage;
@@ -59,7 +58,7 @@ public class SignupStageExecutor {
 
     final StudentEmailSignupStage userSignupStage = this.currentuser.getStage(StudentEmailSignupStage.class);
 
-    userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail(), stage.getData().getOriginHost()));
+    userSignupStage.setData(new StudentConfirmationEmail(stage.getData().getEmail(), stage.getData().getOrigin()));
     new StudentEmailSignupStageDao().persist(userSignupStage);
 
     final DeferredTaskSendVerificationEmail deferred = new DeferredTaskSendVerificationEmail(userSignupStage.getWebSafeKey());
@@ -105,16 +104,12 @@ public class SignupStageExecutor {
     QueueFactory.getDefaultQueue().add(TaskOptions.Builder.withPayload(deferred));
   }
 
-  public void exec(final StudentBlockcertsOTPSignupStage stage) {
-    try {
-      Preconditions.checkNotNull(stage);
+  public void exec(final StudentBlockcertsSignupStage stage) throws SignupStageExecutionException {
+    Preconditions.checkNotNull(stage);
 
-      final StudentBlockcertsOTPSignupStage userSignupStage = this.currentuser.getStage(StudentBlockcertsOTPSignupStage.class);
-      userSignupStage.setData(new StudentConfirmationBlockcertsOTP(stage.getData().getOriginHost()));
+    final StudentBlockcertsSignupStage userSignupStage = this.currentuser.getStage(StudentBlockcertsSignupStage.class);
+    userSignupStage.setData(stage.getData());
 
-      new StudentBlockcertsOTPSignupStageDao().persist(userSignupStage);
-    } catch (final IllegalArgumentException e) {
-      throw new SignupStageExecutionException("Origin host is null", e);
-    }
+    new StudentBlockcertsSignupStageDao().persist(userSignupStage);
   }
 }

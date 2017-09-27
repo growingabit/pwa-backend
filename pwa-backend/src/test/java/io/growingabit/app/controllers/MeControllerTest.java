@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
@@ -25,6 +26,7 @@ import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.ParentConfirmationPhone;
 import io.growingabit.app.model.ParentPhoneSignupStage;
+import io.growingabit.app.model.StudentBlockcertsSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -33,6 +35,7 @@ import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.WalletSetupSignupStage;
+import io.growingabit.app.utils.RequestUtils;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
 import io.growingabit.backoffice.dao.InvitationDao;
 import io.growingabit.backoffice.model.Invitation;
@@ -61,8 +64,9 @@ public class MeControllerTest extends BaseGaeTest {
     ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(StudentEmailSignupStage.class);
     ObjectifyService.register(StudentPhoneSignupStage.class);
-    ObjectifyService.register(ParentPhoneSignupStage.class);
     ObjectifyService.register(WalletSetupSignupStage.class);
+    ObjectifyService.register(ParentPhoneSignupStage.class);
+    ObjectifyService.register(StudentBlockcertsSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
@@ -73,6 +77,7 @@ public class MeControllerTest extends BaseGaeTest {
     SignupStageFactory.register(StudentPhoneSignupStage.class);
     SignupStageFactory.register(ParentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
+    SignupStageFactory.register(StudentBlockcertsSignupStage.class);
 
     this.invitationDao = new InvitationDao();
     final String userId = "id";
@@ -118,6 +123,20 @@ public class MeControllerTest extends BaseGaeTest {
   }
 
   @Test
+  public void doubleInvitationCode() {
+    final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
+    this.invitationDao.persist(invitation);
+
+    final Invitation i = Mockito.mock(Invitation.class);
+    Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
+
+    new MeController().confirmInvitationCode(this.currentUser, i);
+    Response response = new MeController().confirmInvitationCode(this.currentUser, i);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
+
+  }
+
+  @Test
   public void invitationCodeAlreadyUsed() {
     final Invitation invitation = new Invitation("My school1", "My class1", "This Year1", "My Spec1");
     invitation.setConfirmed();
@@ -158,6 +177,18 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.getData().getSurname()).isEqualTo(studentData.getSurname());
     assertThat(savedStage.getData().getBirthdate()).isEqualTo(studentData.getBirthdate());
 
+  }
+
+  @Test
+  public void doubleStudentDataStep() {
+    final StudentData studentData = new StudentData();
+    studentData.setName("Lorenzo");
+    studentData.setSurname("Bugiani");
+    studentData.setBirthdate("19/04/1985");
+
+    new MeController().studentData(this.currentUser, studentData);
+    Response response = new MeController().studentData(this.currentUser, studentData);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
   @Test
@@ -208,10 +239,10 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentEmailStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
-    final Response response = new MeController().studentemail(req, this.currentUser, data);
 
+    final Response response = new MeController().studentemail(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
@@ -221,6 +252,20 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.getData().getEmail()).isEqualTo(data.getEmail());
     assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
     assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
+  }
+
+  @Test
+  public void doubleStudentEmailStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
+
+    new MeController().studentemail(req, this.currentUser, data);
+
+    this.currentUser.getStage(StudentEmailSignupStage.class).setDone();
+
+    Response response = new MeController().studentemail(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
   @Test
@@ -254,11 +299,11 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
-    final Response response = new MeController().studentphone(req, this.currentUser, data);
 
+    final Response response = new MeController().studentphone(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
@@ -270,6 +315,21 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
   }
 
+  @Test
+  public void doubleStudentPhoneStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+
+    new MeController().studentphone(req, this.currentUser, data);
+
+    this.currentUser.getStage(StudentPhoneSignupStage.class).setDone();
+
+    Response response = new MeController().studentphone(req, this.currentUser, data);
+
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
+  }
 
   @Test
   public void completeWalletDataSignupStage() {
@@ -286,6 +346,17 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.isDone()).isTrue();
     assertThat(savedStage.getData().getAddress()).isEqualTo(address.getAddress());
+  }
+
+  @Test
+  public void doubleWalletDataSignupStage() {
+    final String validAddress = "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i";
+    final BitcoinAddress address = new BitcoinAddress(validAddress);
+
+    new MeController().walletSetup(this.currentUser, address);
+
+    Response response = new MeController().walletSetup(this.currentUser, address);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
   @Test
@@ -310,6 +381,41 @@ public class MeControllerTest extends BaseGaeTest {
   public void walletSetupSignupStageMustBeNotNull() {
     final Response response = new MeController().walletSetup(this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void blockcertsOriginAndHostNull() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    PowerMockito.when(req.getHeader("Origin")).thenReturn(null);
+    PowerMockito.when(req.getHeader("Host")).thenReturn(null);
+    new MeController().blockcerts(req, this.currentUser);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void blockcertsUserIdNull() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    this.currentUser.setId(null);
+    new MeController().blockcerts(req, this.currentUser);
+  }
+
+  @Test
+  public void completeBlockcertsStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    Response response = new MeController().blockcerts(req, this.currentUser);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+  }
+
+  @Test
+  public void doubleBlockcertsStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+
+    new MeController().blockcerts(req, this.currentUser);
+    this.currentUser.getStage(StudentBlockcertsSignupStage.class).setDone();
+
+    Response response = new MeController().blockcerts(req, this.currentUser);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
   @Test
@@ -389,11 +495,11 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeParentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(req.getHeader("Host")).thenReturn(HOST);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
-    final Response response = new MeController().parentphone(req, this.currentUser, data);
 
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 
     final User returnedUser = (User) response.getEntity();
@@ -403,6 +509,21 @@ public class MeControllerTest extends BaseGaeTest {
     assertThat(savedStage.getData().getPhoneNumber()).isEqualTo(data.getPhoneNumber());
     assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().plusDays(6).getMillis());
     assertThat(savedStage.getData().getTsExpiration()).isLessThan(new DateTime().plusDays(8).getMillis());
+  }
+
+  @Test
+  public void doubleParentPhoneStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+
+    final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
+
+    new MeController().parentphone(req, this.currentUser, data);
+
+    this.currentUser.getStage(ParentPhoneSignupStage.class).setDone();
+
+    Response response = new MeController().parentphone(req, this.currentUser, data);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
 }
