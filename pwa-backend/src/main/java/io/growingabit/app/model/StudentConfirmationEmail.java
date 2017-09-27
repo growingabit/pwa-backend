@@ -51,7 +51,7 @@ public class StudentConfirmationEmail {
     return new SecureStringGenerator(VERIFICATION_CODE_LENGTH).nextString();
   }
 
-  public void invalidVerificationCode() {
+  public void invalidateVerificationCode() {
     this.verificationCode = null;
   }
 }

@@ -58,7 +58,7 @@ public class StudentConfirmationBlockcerts {
     return this.origin;
   }
 
-  public void invalidNonce() {
+  public void invalidateNonce() {
     this.nonce = null;
   }
 

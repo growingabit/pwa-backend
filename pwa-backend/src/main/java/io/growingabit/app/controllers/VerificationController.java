@@ -62,7 +62,7 @@ public class VerificationController {
       }
 
       stage.setDone();
-      stage.getData().invalidVerificationCode();
+      stage.getData().invalidateVerificationCode();
 
       new StudentEmailSignupStageDao().persist(stage);
 
@@ -138,14 +138,14 @@ public class VerificationController {
 
       final User currentUser = new UserDao().find(Key.create(User.class, userId));
       final StudentBlockcertsSignupStage stage = currentUser.getStage(StudentBlockcertsSignupStage.class);
-      StudentConfirmationBlockcerts sd = stage.getData();
+      StudentConfirmationBlockcerts studentConfirmationData = stage.getData();
 
-      if (!StringUtils.left(new String(DigestUtils.sha1(sd.getUserId() + sd.getTsExpiration() + sd.getOrigin()), "utf-8"), 5).equals(hash) || new DateTime().getMillis() > sd.getTsExpiration()) {
+      if (!StringUtils.left(new String(DigestUtils.sha1(studentConfirmationData.getUserId() + studentConfirmationData.getTsExpiration() + studentConfirmationData.getOrigin()), "utf-8"), 5).equals(hash) || new DateTime().getMillis() > studentConfirmationData.getTsExpiration()) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
       }
 
       stage.setDone();
-      stage.getData().invalidNonce();
+      stage.getData().invalidateNonce();
       stage.getData().setBitcoinAddress(studentConfirmationBlockcerts.getBitcoinAddress());
 
       new StudentBlockcertsSignupStageDao().persist(stage);

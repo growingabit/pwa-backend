@@ -182,9 +182,9 @@ public class MeController {
     }
 
     try {
-      final StudentConfirmationBlockcerts sBlockcertsOTP = new StudentConfirmationBlockcerts(RequestUtils.getOrigin(req), currentUser.getId());
+      final StudentConfirmationBlockcerts studentConfirmationBlockcerts = new StudentConfirmationBlockcerts(RequestUtils.getOrigin(req), currentUser.getId());
       final StudentBlockcertsSignupStage stage = new StudentBlockcertsSignupStage();
-      stage.setData(sBlockcertsOTP);
+      stage.setData(studentConfirmationBlockcerts);
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
