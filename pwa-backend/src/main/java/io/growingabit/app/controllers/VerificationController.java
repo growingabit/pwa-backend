@@ -24,16 +24,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.googlecode.objectify.Key;
 
+import io.growingabit.app.dao.ParentPhoneSignupStageDao;
 import io.growingabit.app.dao.StudentBlockcertsSignupStageDao;
 import io.growingabit.app.dao.StudentEmailSignupStageDao;
 import io.growingabit.app.dao.StudentPhoneSignupStageDao;
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.ParentPhoneSignupStage;
+import io.growingabit.app.model.ParentPhoneVerificationTaskData;
 import io.growingabit.app.model.StudentBlockcertsSignupStage;
 import io.growingabit.app.model.StudentConfirmationBlockcerts;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.utils.BitcoinAddressValidator;
+import io.growingabit.app.utils.gson.GsonFactory;
 import io.growingabit.jersey.annotations.Secured;
 
 @Path("api/v1/verify")
@@ -86,6 +90,31 @@ public class VerificationController {
     new StudentPhoneSignupStageDao().persist(stage);
 
     return Response.ok().build();
+  }
+
+  @Path("parentphone/{verificationCode}")
+  @GET
+  public Response verifyPhone(@PathParam("verificationCode") final String verificationCode) {
+
+    try {
+      final String decodedCode = new String(Base64.decodeBase64(verificationCode), "utf-8");
+      final ParentPhoneVerificationTaskData verificationTaskData = GsonFactory.getGsonInstance().fromJson(decodedCode, ParentPhoneVerificationTaskData.class);
+      final User currentUser = new UserDao().find(verificationTaskData.getUserId());
+
+      final ParentPhoneSignupStage stage = currentUser.getStage(ParentPhoneSignupStage.class);
+
+      if (!stage.getData().getVerificationCode().equals(verificationTaskData.getVerificationCode()) || new DateTime().getMillis() > stage.getData().getTsExpiration()) {
+        return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
+      }
+
+      stage.setDone();
+      new ParentPhoneSignupStageDao().persist(stage);
+
+      return Response.ok().build();
+    } catch (final UnsupportedEncodingException e) {
+      log.catching(e);
+      return Response.status(HttpServletResponse.SC_BAD_REQUEST).build();
+    }
   }
 
   @Path("blockcerts")

@@ -29,10 +29,14 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 
 import io.growingabit.app.dao.UserDao;
+import io.growingabit.app.model.ParentConfirmationPhone;
+import io.growingabit.app.model.ParentPhoneSignupStage;
+import io.growingabit.app.model.ParentPhoneVerificationTaskData;
 import io.growingabit.app.model.StudentBlockcertsSignupStage;
 import io.growingabit.app.model.StudentConfirmationBlockcerts;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
+import io.growingabit.app.model.StudentDataSignupStage;
 import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.StudentPhoneSignupStage;
 import io.growingabit.app.model.User;
@@ -49,6 +53,8 @@ public class VerificationControllerTest extends BaseGaeTest {
 
   private static final String EMAIL_EXAMPLE_COM = "email@example.com";
   private static final String HOST = "http://localhost";
+  private static final String NAME = "name";
+  private static final String SURNAME = "surname";
   private User currentUser;
 
   @Before
@@ -58,11 +64,15 @@ public class VerificationControllerTest extends BaseGaeTest {
 
     ObjectifyService.register(User.class);
     ObjectifyService.register(StudentEmailSignupStage.class);
+    ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(StudentPhoneSignupStage.class);
+    ObjectifyService.register(ParentPhoneSignupStage.class);
     ObjectifyService.register(StudentBlockcertsSignupStage.class);
 
     SignupStageFactory.register(StudentEmailSignupStage.class);
+    SignupStageFactory.register(StudentDataSignupStage.class);
     SignupStageFactory.register(StudentPhoneSignupStage.class);
+    SignupStageFactory.register(ParentPhoneSignupStage.class);
     SignupStageFactory.register(StudentBlockcertsSignupStage.class);
 
     final String userId = "id";
@@ -232,6 +242,99 @@ public class VerificationControllerTest extends BaseGaeTest {
       DateTimeUtils.setCurrentMillisFixed(new DateTime().plusDays(8).getMillis());
 
       response = new VerificationController().verifyPhone(this.currentUser, verificationCode);
+      assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+
+      DateTimeUtils.setCurrentMillisSystem();
+
+    } catch (final Exception e) {
+      Assert.fail(ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  @Test
+  public void checkCode() {
+    try {
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
+      Response response = new MeController().parentphone(req, this.currentUser, data);
+      final User user = (User) response.getEntity();
+
+      final ParentPhoneSignupStage stage = user.getStage(ParentPhoneSignupStage.class);
+
+      final String verificationCode = stage.getData().getVerificationCode();
+      final String userId = this.currentUser.getWebSafeKey();
+
+      final ParentPhoneVerificationTaskData verificationTaskData = new ParentPhoneVerificationTaskData();
+      verificationTaskData.setUserId(userId);
+      verificationTaskData.setVerificationCode(verificationCode);
+
+      final String verficationData = Base64.encodeBase64URLSafeString(GsonFactory.getGsonInstance().toJson(verificationTaskData).getBytes("utf-8"));
+
+      response = new VerificationController().verifyPhone(verficationData);
+
+      assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+
+    } catch (final Exception e) {
+      Assert.fail(ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  @Test
+  public void wrongVerificationCode() {
+    try {
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
+      Response response = new MeController().parentphone(req, this.currentUser, data);
+
+      response.getEntity();
+
+      final String verificationCode = "an invalid code";
+      final String userId = this.currentUser.getWebSafeKey();
+
+      final ParentPhoneVerificationTaskData verificationTaskData = new ParentPhoneVerificationTaskData();
+      verificationTaskData.setUserId(userId);
+      verificationTaskData.setVerificationCode(verificationCode);
+
+      final String verficationData = Base64.encodeBase64URLSafeString(GsonFactory.getGsonInstance().toJson(verificationTaskData).getBytes("utf-8"));
+
+      response = new VerificationController().verifyPhone(verficationData);
+
+      assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
+
+    } catch (final Exception e) {
+      Assert.fail(ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  @Test
+  @Ignore
+  public void tsExpirationExpired() {
+    try {
+      final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
+      Response response = new MeController().parentphone(req, this.currentUser, data);
+
+      final User user = (User) response.getEntity();
+
+      final ParentPhoneSignupStage stage = user.getStage(ParentPhoneSignupStage.class);
+
+      final String verificationCode = stage.getData().getVerificationCode();
+      final String userId = this.currentUser.getWebSafeKey();
+
+      final ParentPhoneVerificationTaskData verificationTaskData = new ParentPhoneVerificationTaskData();
+      verificationTaskData.setUserId(userId);
+      verificationTaskData.setVerificationCode(verificationCode);
+
+      final String verficationData = Base64.encodeBase64URLSafeString(GsonFactory.getGsonInstance().toJson(verificationTaskData).getBytes("utf-8"));
+
+      response = new VerificationController().verifyPhone(verficationData);
+
+      DateTimeUtils.setCurrentMillisFixed(new DateTime().plusDays(8).getMillis());
+
+      response = new VerificationController().verifyPhone(verificationCode);
       assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
 
       DateTimeUtils.setCurrentMillisSystem();
