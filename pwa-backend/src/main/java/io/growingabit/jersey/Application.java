@@ -18,6 +18,7 @@ import io.growingabit.backoffice.controllers.InvitationController;
 import io.growingabit.jersey.controllers.HealthCheckController;
 import io.growingabit.jersey.filters.CORSFilter;
 import io.growingabit.jersey.filters.CharsetFilter;
+import io.growingabit.jersey.filters.OriginFilter;
 import io.growingabit.jersey.filters.SecurityFilter;
 import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.jersey.providers.GsonProvider;
@@ -36,6 +37,7 @@ public class Application extends ResourceConfig {
 
     // Request filters
     this.register(SecurityFilter.class);
+    this.register(OriginFilter.class);
     this.register(UserCreationFilter.class);
 
     // Response filters
