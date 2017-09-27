@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
@@ -25,6 +26,7 @@ import io.growingabit.app.model.BitcoinAddress;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.ParentConfirmationPhone;
 import io.growingabit.app.model.ParentPhoneSignupStage;
+import io.growingabit.app.model.StudentBlockcertsSignupStage;
 import io.growingabit.app.model.StudentConfirmationEmail;
 import io.growingabit.app.model.StudentConfirmationPhone;
 import io.growingabit.app.model.StudentData;
@@ -62,8 +64,9 @@ public class MeControllerTest extends BaseGaeTest {
     ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(StudentEmailSignupStage.class);
     ObjectifyService.register(StudentPhoneSignupStage.class);
-    ObjectifyService.register(ParentPhoneSignupStage.class);
     ObjectifyService.register(WalletSetupSignupStage.class);
+    ObjectifyService.register(ParentPhoneSignupStage.class);
+    ObjectifyService.register(StudentBlockcertsSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
@@ -74,6 +77,7 @@ public class MeControllerTest extends BaseGaeTest {
     SignupStageFactory.register(StudentPhoneSignupStage.class);
     SignupStageFactory.register(ParentPhoneSignupStage.class);
     SignupStageFactory.register(WalletSetupSignupStage.class);
+    SignupStageFactory.register(StudentBlockcertsSignupStage.class);
 
     this.invitationDao = new InvitationDao();
     final String userId = "id";
@@ -377,6 +381,41 @@ public class MeControllerTest extends BaseGaeTest {
   public void walletSetupSignupStageMustBeNotNull() {
     final Response response = new MeController().walletSetup(this.currentUser, null);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void blockcertsOriginAndHostNull() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    PowerMockito.when(req.getHeader("Origin")).thenReturn(null);
+    PowerMockito.when(req.getHeader("Host")).thenReturn(null);
+    new MeController().blockcerts(req, this.currentUser);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void blockcertsUserIdNull() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    this.currentUser.setId(null);
+    new MeController().blockcerts(req, this.currentUser);
+  }
+
+  @Test
+  public void completeBlockcertsStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    Response response = new MeController().blockcerts(req, this.currentUser);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
+  }
+
+  @Test
+  public void doubleBlockcertsStage() {
+    final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+
+    new MeController().blockcerts(req, this.currentUser);
+    this.currentUser.getStage(StudentBlockcertsSignupStage.class).setDone();
+
+    Response response = new MeController().blockcerts(req, this.currentUser);
+    assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
   @Test
