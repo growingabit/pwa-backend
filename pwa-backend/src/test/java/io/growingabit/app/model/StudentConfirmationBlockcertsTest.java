@@ -24,7 +24,6 @@ public class StudentConfirmationBlockcertsTest {
   @Before
   public void setup() {
     this.s = new StudentConfirmationBlockcerts(this.host, this.userId);
-    System.out.println(this.s.getNonce());
   }
 
 
@@ -66,15 +65,15 @@ public class StudentConfirmationBlockcertsTest {
   @Test
   public void validNonce() {
     try {
-      List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(this.s.getNonce()), "utf-8"));
-      String userId = list.get(0);
-      String hash = list.get(1);
+      final List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(this.s.getNonce()), "utf-8"));
+      final String userId = list.get(0);
+      final String hash = list.get(1);
 
-      String left = StringUtils.left(new String(DigestUtils.sha1(this.s.getUserId() + this.s.getTsExpiration() + this.s.getOrigin()), "utf-8"), 5);
+      final String left = StringUtils.left(new String(DigestUtils.sha1(this.s.getUserId() + this.s.getTsExpiration() + this.s.getOrigin()), "utf-8"), 5);
       assertThat(hash).isEqualTo(left);
       assertThat(userId).isEqualTo(this.s.getUserId());
 
-    } catch (UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       e.printStackTrace();
       Assert.fail();
     }

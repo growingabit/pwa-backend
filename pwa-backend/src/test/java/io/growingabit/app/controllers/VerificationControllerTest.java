@@ -22,7 +22,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.common.base.Joiner;
 import com.googlecode.objectify.Key;
@@ -48,7 +50,8 @@ import io.growingabit.jersey.filters.UserCreationFilter;
 import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.Utils;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(RequestUtils.class)
 public class VerificationControllerTest extends BaseGaeTest {
 
   private static final String EMAIL_EXAMPLE_COM = "email@example.com";
@@ -93,7 +96,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void checkEmailCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail(EMAIL_EXAMPLE_COM, HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
       final User user = (User) response.getEntity();
@@ -115,7 +119,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void wrongEmailVerificationCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail(EMAIL_EXAMPLE_COM, HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
@@ -136,7 +141,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void rigthCodeButNotEncoded() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationEmail data = new StudentConfirmationEmail(EMAIL_EXAMPLE_COM, HOST);
       Response response = new MeController().studentemail(req, this.currentUser, data);
 
@@ -186,7 +192,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void checkPhoneCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
       Response response = new MeController().studentphone(req, this.currentUser, data);
       final User user = (User) response.getEntity();
@@ -208,6 +215,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void wrongPhoneVerificationCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
       Response response = new MeController().studentphone(req, this.currentUser, data);
@@ -229,7 +238,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void phoneTsExpirationExpired() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
       Response response = new MeController().studentphone(req, this.currentUser, data);
 
@@ -255,7 +265,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void checkCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
       Response response = new MeController().parentphone(req, this.currentUser, data);
       final User user = (User) response.getEntity();
@@ -284,7 +295,8 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void wrongVerificationCode() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, NAME, SURNAME);
       Response response = new MeController().parentphone(req, this.currentUser, data);
 
@@ -348,13 +360,14 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void checkBlockcertsVerify() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Response response = new MeController().blockcerts(req, this.currentUser);
 
       final User user = (User) response.getEntity();
       final StudentBlockcertsSignupStage stage = user.getStage(StudentBlockcertsSignupStage.class);
 
-      StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson(GsonFactory.getGsonInstance().toJson(stage.getData()), StudentConfirmationBlockcerts.class);
+      final StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson(GsonFactory.getGsonInstance().toJson(stage.getData()), StudentConfirmationBlockcerts.class);
       s.setBitcoinAddress("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i");
 
       response = new VerificationController().verifyBlockcerts(s);
@@ -370,13 +383,14 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void invalidBitcoinAddress() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Response response = new MeController().blockcerts(req, this.currentUser);
 
       final User user = (User) response.getEntity();
       final StudentBlockcertsSignupStage stage = user.getStage(StudentBlockcertsSignupStage.class);
 
-      StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson(GsonFactory.getGsonInstance().toJson(stage.getData()), StudentConfirmationBlockcerts.class);
+      final StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson(GsonFactory.getGsonInstance().toJson(stage.getData()), StudentConfirmationBlockcerts.class);
       s.setBitcoinAddress("fofoofoofofofoof");
 
       response = new VerificationController().verifyBlockcerts(s);
@@ -392,13 +406,14 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void invalidBase64Address() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Response response = new MeController().blockcerts(req, this.currentUser);
 
       final User user = (User) response.getEntity();
       user.getStage(StudentBlockcertsSignupStage.class);
 
-      StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson("{ \"bitcoinAddress\" : \"1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i\",\"nonce\" : \"invalid nonce\"}", StudentConfirmationBlockcerts.class);
+      final StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson("{ \"bitcoinAddress\" : \"1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i\",\"nonce\" : \"invalid nonce\"}", StudentConfirmationBlockcerts.class);
 
       response = new VerificationController().verifyBlockcerts(s);
       assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
@@ -412,15 +427,17 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void invalidNonceAddress() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Response response = new MeController().blockcerts(req, this.currentUser);
 
       final User user = (User) response.getEntity();
       user.getStage(StudentBlockcertsSignupStage.class);
 
-      String hash = StringUtils.left(new String(DigestUtils.sha1("invalid nonce"), "utf-8"), 5);
-      String nonce = Base64.encodeBase64URLSafeString(Joiner.on(":").join(this.currentUser.getId(), hash).getBytes("utf-8"));;
-      StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson("{ \"bitcoinAddress\" : \"1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i\",\"nonce\" : " + nonce + "}", StudentConfirmationBlockcerts.class);
+      final String hash = StringUtils.left(new String(DigestUtils.sha1("invalid nonce"), "utf-8"), 5);
+      final String nonce = Base64.encodeBase64URLSafeString(Joiner.on(":").join(this.currentUser.getId(), hash).getBytes("utf-8"));
+      ;
+      final StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson("{ \"bitcoinAddress\" : \"1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i\",\"nonce\" : " + nonce + "}", StudentConfirmationBlockcerts.class);
 
       response = new VerificationController().verifyBlockcerts(s);
       assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_FORBIDDEN);
@@ -434,13 +451,14 @@ public class VerificationControllerTest extends BaseGaeTest {
   public void blockcertsTsExpired() {
     try {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-      Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+      PowerMockito.mockStatic(RequestUtils.class);
+      PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Response response = new MeController().blockcerts(req, this.currentUser);
 
       final User user = (User) response.getEntity();
       final StudentBlockcertsSignupStage stage = user.getStage(StudentBlockcertsSignupStage.class);
 
-      StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson(GsonFactory.getGsonInstance().toJson(stage.getData()), StudentConfirmationBlockcerts.class);
+      final StudentConfirmationBlockcerts s = GsonFactory.getGsonInstance().fromJson(GsonFactory.getGsonInstance().toJson(stage.getData()), StudentConfirmationBlockcerts.class);
       s.setBitcoinAddress("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i");
 
       DateTimeUtils.setCurrentMillisFixed(new DateTime().plusDays(8).getMillis());
