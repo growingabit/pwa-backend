@@ -7,7 +7,6 @@ import javax.ws.rs.core.MediaType;
 
 public class CharsetFilter implements ContainerResponseFilter {
 
-
   @Override
   public void filter(final ContainerRequestContext request, final ContainerResponseContext response) {
     final MediaType type = response.getMediaType();
