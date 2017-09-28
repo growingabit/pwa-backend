@@ -24,11 +24,14 @@ import io.growingabit.testUtils.BaseGaeTest;
 
 public class MailServiceTest extends BaseGaeTest {
 
+  private static final String ORIGIN = "http://localhost";
+  private static final String HOST = "localhost";
+  private static final String EMAIL_EXAMPLE_COM = "email@example.com";
   private static final StudentEmailSignupStage stage = new StudentEmailSignupStage();
 
   @BeforeClass
   public static void setUp() {
-    final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", "http://localhost");
+    final StudentConfirmationEmail data = new StudentConfirmationEmail(EMAIL_EXAMPLE_COM, ORIGIN);
     stage.setData(data);
   }
 
@@ -68,19 +71,6 @@ public class MailServiceTest extends BaseGaeTest {
       final String code = new String(Base64.decodeBase64(verificationCode.replace("/verify/email/", "")), "utf-8");
       assertThat(stage.getData().getVerificationCode()).isEqualTo(code);
     } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | UnsupportedEncodingException e) {
-      Assert.fail();
-    }
-  }
-
-  @Test
-  public void verificationLinkIsValid() {
-    try {
-      final Method method = MailService.class.getDeclaredMethod("createVerificationLink", StudentEmailSignupStage.class);
-      method.setAccessible(true);
-      final String verificationLink = (String) method.invoke(null, stage);
-      assertThat(verificationLink).contains("http");
-      assertThat(verificationLink).contains("localhost");
-    } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       Assert.fail();
     }
   }
