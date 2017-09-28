@@ -6,8 +6,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RequestUtils {
 
-  public static String getOrigin(HttpServletRequest req) {
-    return StringUtils.isNotEmpty(req.getHeader("Origin")) ? req.getHeader("Origin") : req.getHeader("Host");
+  public static String getOrigin(final HttpServletRequest req) {
+    String origin = StringUtils.isNotEmpty(req.getHeader("Origin")) ? req.getHeader("Origin") : req.getHeader("Host");
+    if (StringUtils.isNotEmpty(origin) && !origin.startsWith("http://") && !origin.startsWith("https://")) {
+      origin = "https://" + origin;
+    }
+    return origin;
   }
 
 }

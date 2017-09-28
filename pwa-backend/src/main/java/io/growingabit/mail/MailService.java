@@ -31,7 +31,7 @@ public class MailService {
   }
 
   private static String createVerificationLink(final StudentEmailSignupStage studentEmailSignupStage) throws UnsupportedEncodingException {
-    final String verificationLink = "https://" + studentEmailSignupStage.getData().getOrigin();
+    final String verificationLink = studentEmailSignupStage.getData().getOrigin();
     return verificationLink + createVerificationCode(studentEmailSignupStage);
   }
 

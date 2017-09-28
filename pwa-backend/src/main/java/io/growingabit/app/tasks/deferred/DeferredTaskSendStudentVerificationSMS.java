@@ -34,7 +34,7 @@ public class DeferredTaskSendStudentVerificationSMS implements DeferredTask {
         final StudentPhoneSignupStage stage = new StudentPhoneSignupStageDao().find(this.studentPhoneSignupStageKey);
         final StudentConfirmationPhone data = stage.getData();
 
-        final String verificationLink = "https://" + stage.getData().getOrigin() + "/verify/phone/" + data.getVerificationCode();
+        final String verificationLink = stage.getData().getOrigin() + "/verify/phone/" + data.getVerificationCode();
 
         new SMSSender().sendMessage(from, data.getPhoneNumber(), text + " " + verificationLink);
 

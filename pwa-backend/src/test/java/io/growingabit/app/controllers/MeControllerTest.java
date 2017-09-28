@@ -15,8 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
@@ -45,7 +46,8 @@ import io.growingabit.testUtils.BaseGaeTest;
 import io.growingabit.testUtils.DummySignupStage;
 import io.growingabit.testUtils.Utils;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(RequestUtils.class)
 public class MeControllerTest extends BaseGaeTest {
 
   private static final String HOST = "http://www.example.com";
@@ -131,7 +133,7 @@ public class MeControllerTest extends BaseGaeTest {
     Mockito.when(i.getInvitationCode()).thenReturn(invitation.getInvitationCode());
 
     new MeController().confirmInvitationCode(this.currentUser, i);
-    Response response = new MeController().confirmInvitationCode(this.currentUser, i);
+    final Response response = new MeController().confirmInvitationCode(this.currentUser, i);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
 
   }
@@ -187,7 +189,7 @@ public class MeControllerTest extends BaseGaeTest {
     studentData.setBirthdate("19/04/1985");
 
     new MeController().studentData(this.currentUser, studentData);
-    Response response = new MeController().studentData(this.currentUser, studentData);
+    final Response response = new MeController().studentData(this.currentUser, studentData);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
@@ -239,7 +241,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentEmailStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
 
     final Response response = new MeController().studentemail(req, this.currentUser, data);
@@ -257,14 +260,15 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void doubleStudentEmailStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
     final StudentConfirmationEmail data = new StudentConfirmationEmail("email@example.com", HOST);
 
     new MeController().studentemail(req, this.currentUser, data);
 
     this.currentUser.getStage(StudentEmailSignupStage.class).setDone();
 
-    Response response = new MeController().studentemail(req, this.currentUser, data);
+    final Response response = new MeController().studentemail(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
@@ -299,7 +303,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeStudentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
 
@@ -318,7 +323,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void doubleStudentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
 
@@ -326,7 +332,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     this.currentUser.getStage(StudentPhoneSignupStage.class).setDone();
 
-    Response response = new MeController().studentphone(req, this.currentUser, data);
+    final Response response = new MeController().studentphone(req, this.currentUser, data);
 
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
@@ -355,7 +361,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     new MeController().walletSetup(this.currentUser, address);
 
-    Response response = new MeController().walletSetup(this.currentUser, address);
+    final Response response = new MeController().walletSetup(this.currentUser, address);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
@@ -386,8 +392,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test(expected = IllegalArgumentException.class)
   public void blockcertsOriginAndHostNull() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    PowerMockito.when(req.getHeader("Origin")).thenReturn(null);
-    PowerMockito.when(req.getHeader("Host")).thenReturn(null);
+    Mockito.when(req.getHeader("Origin")).thenReturn(null);
+    Mockito.when(req.getHeader("Host")).thenReturn(null);
     new MeController().blockcerts(req, this.currentUser);
   }
 
@@ -401,20 +407,22 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeBlockcertsStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
-    Response response = new MeController().blockcerts(req, this.currentUser);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    final Response response = new MeController().blockcerts(req, this.currentUser);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
   }
 
   @Test
   public void doubleBlockcertsStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     new MeController().blockcerts(req, this.currentUser);
     this.currentUser.getStage(StudentBlockcertsSignupStage.class).setDone();
 
-    Response response = new MeController().blockcerts(req, this.currentUser);
+    final Response response = new MeController().blockcerts(req, this.currentUser);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
@@ -495,7 +503,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void completeParentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
 
@@ -514,7 +523,8 @@ public class MeControllerTest extends BaseGaeTest {
   @Test
   public void doubleParentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.mockStatic(RequestUtils.class);
+    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
     final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
 
@@ -522,7 +532,7 @@ public class MeControllerTest extends BaseGaeTest {
 
     this.currentUser.getStage(ParentPhoneSignupStage.class).setDone();
 
-    Response response = new MeController().parentphone(req, this.currentUser, data);
+    final Response response = new MeController().parentphone(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_CONFLICT);
   }
 
