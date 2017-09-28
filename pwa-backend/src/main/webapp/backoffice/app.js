@@ -13,19 +13,25 @@ function config($stateProvider, $urlRouterProvider, $locationProvider,
 
   envServiceProvider.config({
     domains: {
-      development: ['localhost'],
-      production: ['*.appspot.com'],
+      local: ['localhost'],
+      development: ['growbit-0-dev.appspot.com'],
+      production: ['https://abc.growbit.xyz'],
     },
     vars: {
-      development: {
+	local: {
         auth0CLientID: '32wl1L4tlptjPImhEvLIbrQSkwmAJx5s',
         auth0Domain: 'growbit-development.eu.auth0.com',
         auth0CallbakUrl: 'http://localhost:8080/backoffice/index.html#/callback'
       },
+      development: {
+	  auth0CLientID: '32wl1L4tlptjPImhEvLIbrQSkwmAJx5s',
+	  auth0Domain: 'growbit-development.eu.auth0.com',
+	  auth0CallbakUrl: 'https://growbit-0-dev.appspot.com/backoffice/index.html#/callback'
+      },
       production: {
-        auth0CLientID: '',
-        auth0Domain: '',
-        auth0CallbakUrl: ''
+        auth0CLientID: 'aB4EbELMT7MHTwZRDv2ivV5TIFItysL6',
+        auth0Domain: 'growbit.auth0.com',
+        auth0CallbakUrl: 'https://abc.growbit.xyz/backoffice/index.html#/callback'
       }
     }
   });
