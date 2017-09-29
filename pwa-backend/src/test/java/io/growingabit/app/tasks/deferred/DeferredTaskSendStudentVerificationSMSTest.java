@@ -91,7 +91,7 @@ public class DeferredTaskSendStudentVerificationSMSTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone("+15005550006", HOST));
+      stage.setData(new StudentConfirmationPhone("+15005550006"));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentPhoneSignupStageDao().persist(stage);
 
@@ -116,7 +116,7 @@ public class DeferredTaskSendStudentVerificationSMSTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone("+15005550006", HOST));
+      stage.setData(new StudentConfirmationPhone("+15005550006"));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentPhoneSignupStageDao().persist(stage);
 
@@ -145,7 +145,7 @@ public class DeferredTaskSendStudentVerificationSMSTest extends BaseGaeTest {
       new UserDao().persist(user);
 
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone("+15005550006", HOST));
+      stage.setData(new StudentConfirmationPhone("+15005550006"));
       stage.setUser(Key.create(User.class, user.getId()));
       new StudentPhoneSignupStageDao().persist(stage);
 

@@ -163,7 +163,7 @@ public class MeController {
 
     try {
       final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber(), RequestUtils.getOrigin(request)));
+      stage.setData(new StudentConfirmationPhone(studentConfirmationPhone.getPhoneNumber()));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {

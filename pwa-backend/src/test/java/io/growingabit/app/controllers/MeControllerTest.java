@@ -306,7 +306,7 @@ public class MeControllerTest extends BaseGaeTest {
     PowerMockito.mockStatic(RequestUtils.class);
     PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
 
     final Response response = new MeController().studentphone(req, this.currentUser, data);
     assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
@@ -326,7 +326,7 @@ public class MeControllerTest extends BaseGaeTest {
     PowerMockito.mockStatic(RequestUtils.class);
     PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
 
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
 
     new MeController().studentphone(req, this.currentUser, data);
 

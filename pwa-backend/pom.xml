@@ -524,7 +524,8 @@
             </java.util.logging.config.file>
           </systemPropertyVariables>
           <!-- Sets the VM argument line used when unit tests are run. -->
-          <argLine>${surefireArgLine}</argLine>
+          <!--<argLine>${surefireArgLine}</argLine>-->
+          <argLine>-XX:PermSize=512m -XX:MaxPermSize=2048m</argLine>
           <!-- Skips unit tests if the value of skip.unit.tests property is true -->
           <skip>${skip.unit.tests}</skip>
         </configuration>

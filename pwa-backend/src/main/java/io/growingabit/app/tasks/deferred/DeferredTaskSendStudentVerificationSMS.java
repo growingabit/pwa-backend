@@ -34,9 +34,7 @@ public class DeferredTaskSendStudentVerificationSMS implements DeferredTask {
         final StudentPhoneSignupStage stage = new StudentPhoneSignupStageDao().find(this.studentPhoneSignupStageKey);
         final StudentConfirmationPhone data = stage.getData();
 
-        final String verificationLink = stage.getData().getOrigin() + "/verify/phone/" + data.getVerificationCode();
-
-        new SMSSender().sendMessage(from, data.getPhoneNumber(), text + " " + verificationLink);
+        new SMSSender().sendMessage(from, data.getPhoneNumber(), text + " " + data.getVerificationCode());
 
       } catch (final NotFoundException e) {
         log.error("Signup stage not found " + this.studentPhoneSignupStageKey);

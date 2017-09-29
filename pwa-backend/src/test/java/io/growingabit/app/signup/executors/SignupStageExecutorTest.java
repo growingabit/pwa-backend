@@ -218,7 +218,7 @@ public class SignupStageExecutorTest extends BaseGaeTest {
   @Test
   public void completeStudentPhoneConfirmationStep() throws InterruptedException {
 
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
 
     final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
     stage.setData(data);
