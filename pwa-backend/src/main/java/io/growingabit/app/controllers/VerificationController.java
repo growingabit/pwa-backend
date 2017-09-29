@@ -77,6 +77,7 @@ public class VerificationController {
 
   }
 
+  @Secured
   @Path("phone/{verificationCode}")
   @GET
   public Response verifyPhone(@Context final User currentUser, @PathParam("verificationCode") final String verificationCode) {
@@ -120,7 +121,7 @@ public class VerificationController {
   @Path("blockcerts")
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response verifyBlockcerts(StudentConfirmationBlockcerts studentConfirmationBlockcerts) {
+  public Response verifyBlockcerts(final StudentConfirmationBlockcerts studentConfirmationBlockcerts) {
 
     log.entry(studentConfirmationBlockcerts);
 
@@ -130,15 +131,15 @@ public class VerificationController {
 
     try {
 
-      List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(studentConfirmationBlockcerts.getNonce()), "utf-8"));
+      final List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(studentConfirmationBlockcerts.getNonce()), "utf-8"));
       Preconditions.checkArgument(list.size() == 2);
 
-      String userId = list.get(0);
-      String hash = list.get(1);
+      final String userId = list.get(0);
+      final String hash = list.get(1);
 
       final User currentUser = new UserDao().find(Key.create(User.class, userId));
       final StudentBlockcertsSignupStage stage = currentUser.getStage(StudentBlockcertsSignupStage.class);
-      StudentConfirmationBlockcerts studentConfirmationData = stage.getData();
+      final StudentConfirmationBlockcerts studentConfirmationData = stage.getData();
 
       if (!StringUtils.left(new String(DigestUtils.sha1(studentConfirmationData.getUserId() + studentConfirmationData.getTsExpiration() + studentConfirmationData.getOrigin()), "utf-8"), 5).equals(hash) || new DateTime().getMillis() > studentConfirmationData.getTsExpiration()) {
         return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
