@@ -14,12 +14,9 @@ public class StudentConfirmationPhone {
   private String phoneNumber;
   private transient String verificationCode;
   private transient Long tsExpiration;
-  private transient String origin;
 
-  public StudentConfirmationPhone(final String phoneNumber, final String originHost) {
+  public StudentConfirmationPhone(final String phoneNumber) {
     Preconditions.checkArgument(StringUtils.isNotEmpty(phoneNumber));
-    Preconditions.checkArgument(StringUtils.isNotEmpty(originHost));
-    this.origin = originHost;
     this.phoneNumber = phoneNumber;
     this.verificationCode = this.generateVerificationCode();
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
@@ -40,10 +37,6 @@ public class StudentConfirmationPhone {
 
   public Long getTsExpiration() {
     return this.tsExpiration;
-  }
-
-  public String getOrigin() {
-    return this.origin;
   }
 
   private String generateVerificationCode() {

@@ -194,7 +194,7 @@ public class VerificationControllerTest extends BaseGaeTest {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
       PowerMockito.mockStatic(RequestUtils.class);
       PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
-      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
       Response response = new MeController().studentphone(req, this.currentUser, data);
       final User user = (User) response.getEntity();
 
@@ -218,7 +218,7 @@ public class VerificationControllerTest extends BaseGaeTest {
       PowerMockito.mockStatic(RequestUtils.class);
       PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
       Mockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
-      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
       Response response = new MeController().studentphone(req, this.currentUser, data);
 
       response.getEntity();
@@ -240,7 +240,7 @@ public class VerificationControllerTest extends BaseGaeTest {
       final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
       PowerMockito.mockStatic(RequestUtils.class);
       PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
-      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+      final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
       Response response = new MeController().studentphone(req, this.currentUser, data);
 
       final User user = (User) response.getEntity();

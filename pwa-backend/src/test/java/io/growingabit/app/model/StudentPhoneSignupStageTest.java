@@ -13,8 +13,6 @@ import io.growingabit.testUtils.BaseGaeTest;
 
 public class StudentPhoneSignupStageTest extends BaseGaeTest {
 
-  private static final String HOST = "http://www.example.com";
-
   private StudentPhoneSignupStageDao studentPhoneSignupStageDao;
 
   @Before
@@ -26,7 +24,7 @@ public class StudentPhoneSignupStageTest extends BaseGaeTest {
   @Test
   public void setShouldNotAcceptNull() {
     final StudentPhoneSignupStage stage = new StudentPhoneSignupStage();
-    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006", HOST);
+    final StudentConfirmationPhone data = new StudentConfirmationPhone("+15005550006");
 
     stage.setData(data);
     stage.setData(null);

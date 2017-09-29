@@ -10,37 +10,26 @@ import org.junit.Test;
 public class StudentConfirmationPhoneTest {
 
   private StudentConfirmationPhone confirmationPhone;
-  private static final String HOST = "http://www.example.com";
 
   @Before
   public void setup() {
-    this.confirmationPhone = new StudentConfirmationPhone("+15005550006", HOST);
+    this.confirmationPhone = new StudentConfirmationPhone("+15005550006");
   }
 
   @Test(expected = IllegalArgumentException.class)
   @Ignore
   public void invalideNumber() {
-    new StudentConfirmationPhone("an invalid number", HOST);
+    new StudentConfirmationPhone("an invalid number");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullNumber() {
-    new StudentConfirmationPhone(null, HOST);
+    new StudentConfirmationPhone(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void emptyNumber() {
-    new StudentConfirmationPhone("", HOST);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void nullHost() {
-    new StudentConfirmationPhone("+15005550006", null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void emptyHost() {
-    new StudentConfirmationPhone("+15005550006", "");
+    new StudentConfirmationPhone("");
   }
 
   @Test
