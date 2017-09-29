@@ -42,6 +42,8 @@ public class SecurityFilter implements ContainerRequestFilter {
   private static final String ROLES_CLAIM = CUSTOM_CLAIMS_NAMESPACE + "roles";
   private static final String JWK_URL = config.getString("jwk.url");
 
+  private static final XLogger log = XLoggerFactory.getXLogger(SecurityFilter.class);
+
   @Override
   public void filter(final ContainerRequestContext requestContext) throws IOException {
 
@@ -49,7 +51,7 @@ public class SecurityFilter implements ContainerRequestFilter {
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
       final String token = authorizationHeader.substring("Bearer".length()).trim();
       try {
-        final DecodedJWT jwt = validateToken(token);
+        final DecodedJWT jwt = this.validateToken(token);
 
         final String[] roles = jwt.getClaim(ROLES_CLAIM).asArray(String.class);
         Set<String> rolesSet = null;
@@ -60,6 +62,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         }
 
         final String userid = jwt.getSubject();
+        log.info("Accesso di {}", userid);
 
         final String username = jwt.getClaim("nickname").asString();
         final boolean isSecure = requestContext.getSecurityContext().isSecure();
@@ -97,7 +100,7 @@ public class SecurityFilter implements ContainerRequestFilter {
       try {
         final Jwk jwk = this.jwkProvider.get(kid);
         final RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
-        return (RSAPublicKey) publicKey;
+        return publicKey;
       } catch (final Exception e) {
 
         this.logger.error("Error retrieving Auth0 JWK file", e);
