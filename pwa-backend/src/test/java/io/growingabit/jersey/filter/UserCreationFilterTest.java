@@ -19,6 +19,7 @@ import com.googlecode.objectify.Ref;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.model.InvitationCodeSignupStage;
 import io.growingabit.app.model.StudentDataSignupStage;
+import io.growingabit.app.model.StudentEmailSignupStage;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 import io.growingabit.app.utils.auth.Auth0UserProfile;
@@ -42,9 +43,10 @@ public class UserCreationFilterTest extends BaseGaeTest {
     ObjectifyService.register(StudentDataSignupStage.class);
     ObjectifyService.register(InvitationCodeSignupStage.class);
     ObjectifyService.register(DummySignupStage.class);
+    ObjectifyService.register(StudentEmailSignupStage.class);
 
     SignupStageFactory.register(StudentDataSignupStage.class);
-    SignupStageFactory.register(DummySignupStage.class);
+    SignupStageFactory.register(StudentEmailSignupStage.class);
 
     SignupStageFactory.registerMandatory(DummySignupStage.class);
     SignupStageFactory.registerMandatory(InvitationCodeSignupStage.class);
@@ -140,6 +142,50 @@ public class UserCreationFilterTest extends BaseGaeTest {
 
     final User createdUser = this.userDao.find(Key.create(User.class, this.userId));
     Mockito.verify(requestContext, Mockito.times(1)).setProperty(JerseyContextUserFactory.CONTEXT_USER_PROPERTY_NAME, createdUser);
+  }
+
+  @Test
+  public void adSignupStageIfMissing() throws IOException {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+    Mockito.when(requestContext.getSecurityContext()).thenReturn(context);
+
+    User user = new User();
+    user.setId(this.userId);
+    this.userDao.persist(user);
+
+    new UserCreationFilter().filter(requestContext);
+
+    user = this.userDao.find(Key.create(User.class, this.userId));
+    final Map<String, Ref<SignupStage>> signupStages = user.getSignupStages();
+
+    assertThat(signupStages).hasSize(2);
+  }
+
+  @Test
+  public void adMandatorySignupStageIfMissing() throws IOException {
+    final Auth0UserProfile userProfile = new Auth0UserProfile(this.userId, "name");
+
+    final SecurityContext context = Mockito.mock(SecurityContext.class);
+    Mockito.when(context.getUserPrincipal()).thenReturn(userProfile);
+
+    final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+    Mockito.when(requestContext.getSecurityContext()).thenReturn(context);
+
+    User user = new User();
+    user.setId(this.userId);
+    this.userDao.persist(user);
+
+    new UserCreationFilter().filter(requestContext);
+
+    user = this.userDao.find(Key.create(User.class, this.userId));
+    final Map<String, Ref<SignupStage>> signupStages = user.getMandatorySignupStages();
+
+    assertThat(signupStages).hasSize(2);
   }
 
 }

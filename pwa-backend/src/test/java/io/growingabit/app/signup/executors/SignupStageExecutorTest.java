@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 
+import io.growingabit.app.dao.GenericSignupStageDao;
 import io.growingabit.app.dao.UserDao;
 import io.growingabit.app.exceptions.SignupStageExecutionException;
 import io.growingabit.app.model.BitcoinAddress;
@@ -83,10 +84,20 @@ public class SignupStageExecutorTest extends BaseGaeTest {
     this.user.setId("id");
     this.userDao.persist(this.user);
     final Key<User> userKey = Key.create(this.user);
-    for (final SignupStage signupStage : SignupStageFactory.getMandatorySignupStages(userKey)) {
+
+    final GenericSignupStageDao genericSignupStageDao = new GenericSignupStageDao();
+
+    final List<SignupStage> mandatoryStages = SignupStageFactory.getMandatorySignupStages(userKey);
+    genericSignupStageDao.persist(mandatoryStages);
+
+    for (final SignupStage signupStage : mandatoryStages) {
       this.user.addMandatorySignupStage(signupStage);
     }
-    for (final SignupStage signupStage : SignupStageFactory.getSignupStages(userKey)) {
+
+    final List<SignupStage> stages = SignupStageFactory.getSignupStages(userKey);
+    genericSignupStageDao.persist(stages);
+
+    for (final SignupStage signupStage : stages) {
       this.user.addSignupStage(signupStage);
     }
     this.userDao.persist(this.user);
@@ -259,15 +270,14 @@ public class SignupStageExecutorTest extends BaseGaeTest {
       assertThat(savedStage.getData().getTsExpiration()).isNotNull();
       assertThat(savedStage.getData().getTsExpiration()).isGreaterThan(new DateTime().getMillis());
 
-
-      List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(savedStage.getData().getNonce()), "utf-8"));
-      String userId = list.get(0);
-      String hash = list.get(1);
+      final List<String> list = Splitter.on(":").splitToList(new String(Base64.decodeBase64(savedStage.getData().getNonce()), "utf-8"));
+      final String userId = list.get(0);
+      final String hash = list.get(1);
 
       assertThat(hash).isEqualTo(StringUtils.left(new String(DigestUtils.sha1(data.getUserId() + data.getTsExpiration() + data.getOrigin()), "utf-8"), 5));
       assertThat(userId).isEqualTo(data.getUserId());
 
-    } catch (UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       Assert.fail();
     }
   }
