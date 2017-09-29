@@ -7,7 +7,6 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 
-import io.growingabit.app.dao.GenericSignupStageDao;
 import io.growingabit.app.model.User;
 import io.growingabit.app.model.base.SignupStage;
 
@@ -15,7 +14,6 @@ public class SignupStageFactory {
 
   private static final Set<Class> signupStages = new LinkedHashSet<>();
   private static final Set<Class> mandatorySignupStages = new LinkedHashSet<>();
-  private static final GenericSignupStageDao genericSignupStageDao = new GenericSignupStageDao();
 
   public static <T extends SignupStage> void register(final Class<T> stageClass) {
     signupStages.add(stageClass);
@@ -43,7 +41,6 @@ public class SignupStageFactory {
       list.add(signupStage);
     }
 
-    genericSignupStageDao.persist(list);
     return list;
   }
 
