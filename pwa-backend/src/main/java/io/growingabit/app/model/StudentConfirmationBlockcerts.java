@@ -11,6 +11,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 
 import io.growingabit.app.exceptions.SignupStageExecutionException;
+import io.growingabit.app.utils.Settings;
 
 public class StudentConfirmationBlockcerts {
 
@@ -19,14 +20,17 @@ public class StudentConfirmationBlockcerts {
   private String userId;
   private Long tsExpiration;
   private String origin;
+  private String issuer;
 
   public StudentConfirmationBlockcerts(String origin, String userId) {
     Preconditions.checkArgument(StringUtils.isNotEmpty(origin));
     Preconditions.checkArgument(StringUtils.isNotEmpty(userId));
+    Preconditions.checkArgument(StringUtils.isNotEmpty(Settings.getConfig().getString("issuer")));
     this.userId = userId;
     this.tsExpiration = new DateTime().plusDays(7).getMillis();
     this.origin = origin;
     this.nonce = this.generateBlockcertsNonce();
+    this.issuer = Settings.getConfig().getString("issuer");
   }
 
   @SuppressWarnings("unused")
@@ -56,6 +60,10 @@ public class StudentConfirmationBlockcerts {
 
   public String getOrigin() {
     return this.origin;
+  }
+
+  public String getIssuer() {
+    return this.issuer;
   }
 
   public void invalidateNonce() {
