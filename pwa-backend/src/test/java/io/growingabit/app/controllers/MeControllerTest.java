@@ -504,7 +504,7 @@ public class MeControllerTest extends BaseGaeTest {
   public void completeParentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     PowerMockito.mockStatic(RequestUtils.class);
-    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.when(RequestUtils.getHost(req)).thenReturn(HOST);
 
     final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
 
@@ -524,7 +524,7 @@ public class MeControllerTest extends BaseGaeTest {
   public void doubleParentPhoneStage() {
     final HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     PowerMockito.mockStatic(RequestUtils.class);
-    PowerMockito.when(RequestUtils.getOrigin(req)).thenReturn(HOST);
+    PowerMockito.when(RequestUtils.getHost(req)).thenReturn(HOST);
 
     final ParentConfirmationPhone data = new ParentConfirmationPhone("+15005550006", HOST, "name", "surname");
 

@@ -7,11 +7,20 @@ import org.apache.commons.lang3.StringUtils;
 public class RequestUtils {
 
   public static String getOrigin(final HttpServletRequest req) {
-    String origin = StringUtils.isNotEmpty(req.getHeader("Origin")) ? req.getHeader("Origin") : req.getHeader("Host");
-    if (StringUtils.isNotEmpty(origin) && !origin.startsWith("http://") && !origin.startsWith("https://")) {
-      origin = "https://" + origin;
+    final String origin = StringUtils.isNotEmpty(req.getHeader("Origin")) ? req.getHeader("Origin") : req.getHeader("Host");
+    return addSchemeIfMissing(origin);
+  }
+
+  public static String getHost(final HttpServletRequest req) {
+    final String host = req.getHeader("Host");
+    return addSchemeIfMissing(host);
+  }
+
+  private static String addSchemeIfMissing(String url) {
+    if (StringUtils.isNotEmpty(url) && !url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
     }
-    return origin;
+    return url;
   }
 
 }
