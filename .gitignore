@@ -96,3 +96,6 @@ dist
 # properties files
 **/production.properties
 **/development.properties
+
+# jenv java version file
+.java-version
