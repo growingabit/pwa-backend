@@ -57,7 +57,7 @@ public class DeferredTaskSendParentVerificationSMS implements DeferredTask {
 
         final String verficationData = Base64.encodeBase64URLSafeString(GsonFactory.getGsonInstance().toJson(verificationTaskData).getBytes("utf-8"));
 
-        final String verificationLink = parentPhoneData.getOrigin() + "/verify/parentphone/" + verficationData;
+        final String verificationLink = parentPhoneData.getHost() + "/api/v1/verify/parentphone/" + verficationData;
 
         final ImmutableMap<String, String> map = ImmutableMap.of("verificationLink", verificationLink,
             "student.firstname", studentData.getName(),

@@ -210,7 +210,7 @@ public class MeController {
 
     try {
       final ParentPhoneSignupStage stage = new ParentPhoneSignupStage();
-      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), RequestUtils.getOrigin(request), parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
+      stage.setData(new ParentConfirmationPhone(parentConfirmationPhone.getPhoneNumber(), RequestUtils.getHost(request), parentConfirmationPhone.getName(), parentConfirmationPhone.getSurname()));
       stage.exec(new SignupStageExecutor(currentUser));
       return Response.ok().entity(currentUser).build();
     } catch (final SignupStageExecutionException e) {
