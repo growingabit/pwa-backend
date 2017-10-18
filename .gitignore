@@ -99,3 +99,6 @@ dist
 
 # jenv java version file
 .java-version
+
+# direnv file
+.envrc
