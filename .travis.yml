@@ -19,8 +19,10 @@ before_install:
   - echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
   - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
   - sudo apt-get update && sudo apt-get install -y kubectl google-cloud-sdk google-cloud-sdk-app-engine-java wget unzip
-  - wget http://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip
-  - unzip apache-maven-3.5.0-bin.zip
+  - wget https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip
+  - unzip -qq apache-maven-3.5.0-bin.zip
+  - export M2_HOME=$PWD/apache-maven-3.5.0
+  - export PATH=$M2_HOME/bin:$PATH
   - apache-maven-3.5.0/bin/mvn -v
 
 before_script:
