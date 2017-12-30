@@ -1,0 +1,55 @@
+{
+  "@context": [
+    "https://w3id.org/openbadges/v2", 
+    "https://w3id.org/blockcerts/v2"
+  ], 
+  "badge": {
+    "criteria": {
+      "narrative": "Nibh iriure ei nam, modo ridens neglegentur mel eu. At his cibo mucius."
+    }, 
+    "description": "Lorem ipsum dolor sit amet, mei docendi concludaturque ad, cu nec partem graece. Est aperiam consetetur cu, expetenda moderatius neglegentur ei nam, suas dolor laudem eam an.", 
+    "id": "urn:uuid:82a4c9f2-3588-457b-80ea-da695571b8fc", 
+    "image": "", 
+      "name": "University of Learning", 
+      "revocationList": "https://www.blockcerts.org/samples/2.0/revocation-list-testnet.json", 
+      "type": "Profile", 
+      "url": "https://www.issuer.org"
+    }, 
+    "name": "Certificate of Accomplishment", 
+    "signatureLines": [
+      {
+        "image": "", 
+        "jobTitle": "University Issuer", 
+        "name": "Your signature", 
+        "type": [
+          "SignatureLine", 
+          "Extension"
+        ]
+      }
+    ], 
+    "type": "BadgeClass"
+  }, 
+  "id": "urn:uuid:3bc1a96a-3501-46ed-8f75-49612bbac257", 
+  "issuedOn": "2017-07-20T09:33:47.490752+00:00", 
+  "recipient": {
+    "hashed": false, 
+    "identity": "eularia@landroth.org", 
+    "type": "email"
+  }, 
+  "recipientProfile": {
+    "name": "Eularia Landroth", 
+    "publicKey": "ecdsa-koblitz-pubkey:mtr98kany9G1XYNU74pRnfBQmaCg2FZLmc", 
+    "type": [
+      "RecipientProfile", 
+      "Extension"
+    ]
+  }, 
+  "type": "Assertion", 
+  "verification": {
+    "publicKey": "ecdsa-koblitz-pubkey:msBCHdwaQ7N2ypBYupkp6uNxtr9Pg76imj", 
+    "type": [
+      "MerkleProofVerification2017", 
+      "Extension"
+    ]
+  }
+}
