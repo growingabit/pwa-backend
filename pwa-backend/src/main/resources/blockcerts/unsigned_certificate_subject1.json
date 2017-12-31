@@ -3,61 +3,54 @@
     "https://w3id.org/openbadges/v2",
     "https://w3id.org/blockcerts/v2"
   ],
-  // https://www.imsglobal.org/sites/default/files/Badges/OBv2p0/index.html#Assertion
   "badge": {
-    "criteria": {
-      "narrative": "farsi dare dai prof una descrizione piu' lunga"
-    },
+    "id": "https://openbadges.growbit.xyz/{scuola}/{yyyy}/gestione-progetto-organizzazione-impresa",
+    "type": "BadgeClass",
+    "name": "gestione progetto, organizzazione d'impresa",
     "description": "gestione progetto, organizzazione d'impresa",
-    // https://tools.ietf.org/html/rfc3987#section-3.2
-    // URI to IRI dovrebbe essere easy se abbiamo solo ASCII dentro l'URL
-    // invece che URN puntare a https://openbadges.growbit.xyz/{scuola}/{yyyy}/gestione-progetto-organizzazione-impresa
-    // cosi le usiamo anche per il seo
-    "id": "urn:uuid:{badge_guid}",
     "image": "",
-      "name": "ITI Leonardo da Vinci",
-    // far puntare la revocaction ad una servlet cosi che possiamo variarne il contenuto al volo se sbagliamo
+    "criteria": "https://openbadges.growbit.xyz/{scuola}/{yyyy}/gestione-progetto-organizzazione-impresa/criteria",
+    "issuer": {
+      "name": "GrowBit",
       "revocationList": "https://www.blockcerts.org/samples/2.0/revocation-list-testnet.json",
       "type": "Profile",
-      "url": "https://www.issuer.org"
+      "url": "https://www.growbit.xyz"
     },
-    "name": "gestione progetto, organizzazione d'impresa",
     "signatureLines": [
       {
-        "image": "",
-        "jobTitle": "University Issuer",
-        "name": "Your signature",
+        "image": "http://www.isisdavinci.gov.it/pvw/custom/FIII0015/img/FIII0015_testata-04.png ",
+        "jobTitle": "ISTITUTO STATALE DI ISTRUZIONE SUPERIORE",
+        "name": "LEONARDO DA VINCI FIRENZE",
         "type": [
           "SignatureLine",
           "Extension"
         ]
       }
     ],
-    "type": "BadgeClass" //https://www.imsglobal.org/sites/default/files/Badges/OBv2p0/index.html#BadgeClass
-    "alignment" : [
+    "alignment": [
       {
-        "targetName" : "Voto registro nazionale italiano",
-        "targetFramework" : "Sentiamo i prof",
-        "targetUrl": "http:// url ad una pagina che spiega i voti da 1 a 10 italiani??"
-        "targetCode" : "5"
+        "targetName": "POF ISTITUTO STATALE DI ISTRUZIONE SUPERIORE LEONARDO DA VINCI FIRENZE",
+        "targetFramework": "DPR 122/2009",
+        "targetUrl": "http://web.archive.org/web/20171231171015/http://www.isisdavinci.gov.it/pvw/app/FIII0015/pvw_img.php?sede_codice=FIII0015&doc=2092212&inl=1",
+        "targetCode": "5"
       }
     ]
   },
   "evidence": {
-         "name":  "high school grade",
-          "description": "higth school grade for subject 'gestione progetto, organizzazione d'impresa'",
-        "genre": "scritto|pratico|orale"
+    "id": "https://openbadges.growbit.xyz/evidence/scritto|pratico|orale",
+    "name": "High school grade from Spaggiari ClasseViva",
+    "description": "High school grade for subject 'gestione progetto, organizzazione d'impresa' retrieve from the Spaggiari ClasseViva national registry database",
+    "genre": "scritto|pratico|orale"
   },
-  "id": "https://openbadges.growbit.xyz/assertions/{assertion_uid}", // una pagina per ora uguale per tutti che spiega come questa e' stata generata > link ad un articolo medium del pilota
+  "id": "https://openbadges.growbit.xyz/assertions/{assertion_uid} << uuid uguale per tutte le nostre assertion, nella pagina spieghiamo come funziona",
   "issuedOn": "2017-07-20T09:33:47.490752+00:00",
   "recipient": {
-        //https://www.imsglobal.org/sites/default/files/Badges/OBv2p0/index.html#IdentityObject
     "hashed": true,
-    "identity": "hash(studentemail)",
+    "identity": "hash(studente@mail.com)",
     "type": "email"
   },
   "recipientProfile": {
-    "name": "A student",
+    "name": "A student (assolutamente non mettiamo il nome qua)",
     "publicKey": "ecdsa-koblitz-pubkey:mtr98kany9G1XYNU74pRnfBQmaCg2FZLmc",
     "type": [
       "RecipientProfile",
