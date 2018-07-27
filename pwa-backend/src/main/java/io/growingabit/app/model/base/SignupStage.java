@@ -31,7 +31,7 @@ public abstract class SignupStage<T> extends BaseModel {
   private boolean isDone;
 
   @Ignore
-  transient private final String stageIdentifier;
+  private final String stageIdentifier;
 
   public SignupStage() {
     super();
